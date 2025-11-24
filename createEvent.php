@@ -291,6 +291,14 @@ endif;
 																		<td id="confirmEndDate"></td>
 																	</tr>
 																	<tr>
+																		+ <th>Tarikh Buka Pendaftaran</th>
+																		+ <td id="confirmOpenRegistration"></td>
+																		+ </tr>
+																	+ <tr>
+																		+ <th>Tarikh Tutup Pendaftaran</th>
+																		+ <td id="confirmCloseRegistration"></td>
+																		+ </tr>
+																	<tr>
 																		<th>Negeri</th>
 																		<td id="confirmState"></td>
 																	</tr>
@@ -444,6 +452,8 @@ endif;
 				const eventType = document.querySelector('#jenisEvent').selectedOptions[0]?.text || '';
 				const startDate = document.querySelector('[name="event_startDate"]').value;
 				const endDate = document.querySelector('[name="event_endDate"]').value;
+				const openRegistration = document.querySelector('[name="event_openRegistration"]').value;
+				const closeRegistration = document.querySelector('[name="event_closeRegistration"]').value;
 				const state = document.querySelector('#negeriSelect').selectedOptions[0]?.text || '';
 				const locationName = document.querySelector('[name="location_name"]').value;
 				const building = document.querySelector('[name="building_name"]').value;
@@ -462,6 +472,8 @@ endif;
 				document.getElementById('confirmEventType').textContent = eventType;
 				document.getElementById('confirmStartDate').textContent = startDate;
 				document.getElementById('confirmEndDate').textContent = endDate;
+				document.getElementById('confirmOpenRegistration').textContent = openRegistration;
+				document.getElementById('confirmCloseRegistration').textContent = closeRegistration;
 				document.getElementById('confirmState').textContent = state;
 				document.getElementById('confirmLocationName').textContent = locationName;
 				document.getElementById('confirmBuilding').textContent = building;

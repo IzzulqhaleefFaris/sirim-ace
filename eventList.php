@@ -192,7 +192,7 @@ if (!isset($_SESSION['userId'])) {
                     </div>
 
                     <div class="modal-body">
-                        <table class="table table-bordered">
+                        <!-- <table class="table table-bordered">
                             <tbody>
                                 <tr>
                                     <th>Nama Event</th>
@@ -215,11 +215,40 @@ if (!isset($_SESSION['userId'])) {
                                     <td id="viewEnd"></td>
                                 </tr>
                                 <tr>
-                                    <th>Lokasi</th>
+                                    <th>Tarikh Buka Daftar</th>
+                                    <td id="viewRegisterDate"></td>
+                                </tr>
+                                <tr>
+                                    <th>Tarikh Tutup Daftar</th>
+                                    <td id="viewCloseRegisterDate"></td>
+                                </tr>
+                                <tr>
+                                    <th>Alamat Penuh</th>
+                                    <td id="viewAddress"></td>
+                                </tr>
+                                <tr>
+                                    <th>Negeri</th>
+                                    <td id="viewStates"></td>
+                                </tr>
+                                <tr>
+                                    <th>Nama Lokasi</th>
                                     <td id="viewLocation"></td>
                                 </tr>
+                                <tr>
+                                    <th>Bangunan</th>
+                                    <td id="viewBuilding"></td>
+                                </tr>
+                                <tr>
+                                    <th>Bilik</th>
+                                    <td id="viewRoom"></td>
+                                </tr>
+                                <tr>
+                                    <th>Aras</th>
+                                    <td id="viewLevel"></td>
+                                </tr>
                             </tbody>
-                        </table>
+                        </table> -->
+                        Pending
                     </div>
 
                     <div class="modal-footer">
@@ -277,9 +306,45 @@ if (!isset($_SESSION['userId'])) {
                     document.getElementById("viewType").textContent = this.dataset.type;
                     document.getElementById("viewStart").textContent = this.dataset.start;
                     document.getElementById("viewEnd").textContent = this.dataset.end;
+                    document.getElementById("viewOpenRegistration").textContent = this.dataset.x;
+                    document.getElementById("viewCloseRegistration").textContent = this.dataset.x;
+                    document.getElementById("viewAddress").textContent = this.dataset.address;
+                    document.getElementById("viewx").textContent = this.dataset.x;
                     document.getElementById("viewLocation").textContent = this.dataset.location;
                 });
             });
+        });
+    </script>
+    <script>
+        document.addEventListener("click", function(e) {
+            const btn = e.target.closest(".btn-delete");
+            if (!btn) return;
+
+            let id = btn.dataset.id;
+            console.log("Deleting ID:", id)
+
+            if (!id) {
+                alert("Error: missing event ID");
+                return;
+            }
+
+            if (confirm("Are you sure want to delete this event?")) {
+                fetch("deleteEvent.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: "id=" + encodeURIComponent(id),
+                    })
+                    .then(res => res.text())
+                    .then(data => {
+                        if (data.trim() === "success") {
+                            location.reload();
+                        } else {
+                            alert("Error: " + data);
+                        }
+                    });
+            }
         });
     </script>
 </body>
