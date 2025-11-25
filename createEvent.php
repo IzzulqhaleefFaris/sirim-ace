@@ -1,4 +1,5 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) session_start();
 include 'include/eventCreation.php';
 $eventCreated = $_SESSION['event_created'] ?? null;
 unset($_SESSION['event_created']);
@@ -291,13 +292,13 @@ endif;
 																		<td id="confirmEndDate"></td>
 																	</tr>
 																	<tr>
-																		+ <th>Tarikh Buka Pendaftaran</th>
-																		+ <td id="confirmOpenRegistration"></td>
-																		+ </tr>
-																	+ <tr>
-																		+ <th>Tarikh Tutup Pendaftaran</th>
-																		+ <td id="confirmCloseRegistration"></td>
-																		+ </tr>
+																		<th>Tarikh Buka Pendaftaran</th>
+																		<td id="confirmOpenRegistration"></td>
+																		</tr>
+																	<tr>
+																		<th>Tarikh Tutup Pendaftaran</th>
+																		<td id="confirmCloseRegistration"></td>
+																		</tr>
 																	<tr>
 																		<th>Negeri</th>
 																		<td id="confirmState"></td>

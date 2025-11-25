@@ -60,6 +60,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirectBack();
     }
 
+    // Convert dates to timestamps for easy comparison
+    $startDateTS = strtotime($event_startDate);
+    $endDateTS = strtotime($event_endDate);
+    $openRegTS = strtotime($event_openRegistration);
+    $closeRegTS = strtotime($event_closeRegistration);
+
+    if ($endDateTS < $startDateTS) {
+        $_SESSION['msg'] = [
+            'type' => 'warning',
+            'text' => '⚠️ Event end date cannot be earlier than start date.'
+        ];
+        redirectBack();
+    }
+
+    if ($closeRegTS < $openRegTS) {
+        $_SESSION['msg'] = [
+            'type' => 'warning',
+            'text' => '⚠️ Registration closing date cannot be earlier than opening date.'
+        ];
+        redirectBack();
+    }
+
+    if ($openRegTS > $startDateTS) {
+        $_SESSION['msg'] = [
+            'type' => 'warning',
+            'text' => '⚠️ Registration cannot open after event starts.'
+        ];
+        redirectBack();
+    }
+
+    if ($closeRegTS > $endDateTS) {
+        $_SESSION['msg'] = [
+            'type' => 'warning',
+            'text' => '⚠️ Registration cannot close after event ends.'
+        ];
+        redirectBack();
+    }
+
     $conn->begin_transaction();
     try {
         $location_id = nextCode($conn, 'att_location', 'location_id', 'LOC', 3);
