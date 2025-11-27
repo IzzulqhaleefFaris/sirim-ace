@@ -100,9 +100,12 @@ if ($stmt === false) {
     exit;
 }
 
+$openReg = $openReg ?: null;
+$closeReg = $closeReg ?: null;
+
 // Bind all as strings (IDs are alphanumeric)
 $stmt->bind_param(
-    "ssssssss", // 8 strings
+    "ssssssss",
     $name,
     $event_type_id,
     $start,

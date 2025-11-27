@@ -84,12 +84,13 @@ $states = $conn->query("SELECT * FROM att_state");
                             <div class="row justify-content-center">
                                 <div class="col-md-8 col-lg-6">
                                     <div class="container mt-4">
-                                        <h2>Edit Event</h2>
+                                        <h2>Edit Event</h2><br>
 
                                         <form action="updateEvent.php" method="POST">
 
                                             <!-- hidden id -->
                                             <input type="hidden" name="event_id" value="<?= htmlspecialchars($event['event_id']) ?>">
+                                            <input type="hidden" name="location_id" value="<?= htmlspecialchars($event['location_id']) ?>">
 
                                             <div class="mb-3">
                                                 <label>Nama Event</label>
@@ -142,7 +143,6 @@ $states = $conn->query("SELECT * FROM att_state");
                                                 <label>Alamat</label>
                                                 <input type="text" name="location_address" class="form-control"
                                                     value="<?= htmlspecialchars($event['location_address']) ?>">
-                                                <input type="hidden" name="location_id" value="<?= htmlspecialchars($event['location_id']) ?>">
 
                                             </div>
 
