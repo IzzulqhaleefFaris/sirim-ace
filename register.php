@@ -67,15 +67,11 @@ if (isset($_SESSION['userId'])) {
                                         </div>
                                     </div>
                                 </div>
-                                <form action="#!">
+                                <form action="registerCode.php" method="POST">
                                     <div class="row gy-3 gy-md-4 overflow-hidden">
                                         <div class="col-12">
                                             <label for="name" class="form-label">Nama Penuh <span class="text-danger">*</span></label>
-                                            <input type="email" class="form-control" name="name" id="name" placeholder="Isikan Nama Penuh Anda" required>
-                                        </div>
-                                        <div class="col-12">
-                                            <label for="userId" class="form-label">Nama ID <span class="text-danger">*</span></label>
-                                            <input type="email" class="form-control" name="userId" id="userId" placeholder="Isikan Nama Unik untuk dipaparkan pada profil" required>
+                                            <input type="text" class="form-control" name="name" id="name" placeholder="Isikan Nama Penuh Anda" required>
                                         </div>
                                         <div class="col-12">
                                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
