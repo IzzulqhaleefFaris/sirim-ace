@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     error_log("Form submitted to eventCreation.php");
 }
 
-include 'include/config.php';
+include __DIR__ . '/config.php';
 
 // Helper function
 function nextCode($conn, $table, $code_col, $prefix, $numDigits = 3)
@@ -105,6 +105,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             INSERT INTO att_location (location_id, location_name, building_name, location_address, location_room, location_level, state_id)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
+
+        if (!$stmtLoc) {
+            die("❌ SQL ERROR (att_location insert): " . $conn->error);
+        }
+
         $stmtLoc->bind_param("sssssss", $location_id, $location_name, $building_name, $location_address, $location_room, $location_level, $state_id);
         $stmtLoc->execute();
         $stmtLoc->close();
@@ -116,6 +121,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             INSERT INTO att_event (event_id, event_name, event_description, event_type_id, location_id, state_id, 
                             event_startDate, event_endDate, event_openRegistration, event_closeRegistration)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        if (!$stmtEv) {
+            die("❌ SQL ERROR (att_event insert): " . $conn->error);
+        }
+
         $stmtEv->bind_param(
             "ssssssssss",
             $event_id,
