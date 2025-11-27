@@ -86,7 +86,7 @@ $states = $conn->query("SELECT * FROM att_state");
                                     <div class="container mt-4">
                                         <h2>Edit Event</h2><br>
 
-                                        <form action="updateEvent.php" method="POST">
+                                        <form action="Org_UpdateEvent.php" method="POST">
 
                                             <!-- hidden id -->
                                             <input type="hidden" name="event_id" value="<?= htmlspecialchars($event['event_id']) ?>">
@@ -159,7 +159,7 @@ $states = $conn->query("SELECT * FROM att_state");
                                             </div>
 
                                             <button class="btn btn-primary mt-3">Update Event</button>
-                                            <a href="eventList.php" class="btn btn-secondary mt-3">Cancel</a>
+                                            <a href="Org_EventList.php" class="btn btn-secondary mt-3">Cancel</a>
 
                                         </form>
                                     </div>

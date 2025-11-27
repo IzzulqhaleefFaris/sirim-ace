@@ -66,8 +66,8 @@ if (!isset($_SESSION['userId'])) {
 										<br>
 										<!--<a><img alt="Logo" src="assets/media/logos/sepang2.png" class="h-100px" /></a>-->
 										<div class="d-grid gap-2">
-											<a href="createEvent.php" type="button" class="btn btn-lg btn-info" style="font-size: 20px;"><i class="bi bi-calendar-event"></i>&nbsp;Daftar Event</a>
-											<a href="eventList.php" type="button" class="btn btn-lg btn-primary" style="font-size: 20px;"><i class="bi bi-card-list"></i>&nbsp;Senarai Event</a>
+											<a href="Org_CreateEvent.php" type="button" class="btn btn-lg btn-info" style="font-size: 20px;"><i class="bi bi-calendar-event"></i>&nbsp;Daftar Event</a>
+											<a href="Org_EventList.php" type="button" class="btn btn-lg btn-primary" style="font-size: 20px;"><i class="bi bi-card-list"></i>&nbsp;Senarai Event</a>
 											<a href="scanner2.php?r=MULA" type="button" class="btn btn-lg btn-info" style="font-size: 20px;"><i class="bi bi-upc-scan fs-2"></i>&nbsp;Imbas Kedatangan</a>
 
 											<div class="btn-group">

@@ -66,7 +66,7 @@ if (!isset($_SESSION['userId'])) {
                                 <div class="card shadow-sm">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5 class="card-title fs-1" style="font-weight: 700">Senarai Event</h5>
-                                        <a href="createEvent.php" class="btn btn-sm btn-primary d-flex align-items-center">
+                                        <a href="Org_CreateEvent.php" class="btn btn-sm btn-primary d-flex align-items-center">
                                             <i class="bi bi-plus-square-fill me-1"></i> Tambah Event
                                         </a>
                                     </div>
@@ -120,7 +120,7 @@ if (!isset($_SESSION['userId'])) {
                                                                     <td>" . htmlspecialchars($row['event_endDate']) . "</td>
                                                                     
                                                                     <td>
-                                                                        <a href='editEvent.php?id={$row['event_id']}' class='btn btn-warning btn-sm me-1'>Edit</a>
+                                                                        <a href='Org_EditEvent.php?id={$row['event_id']}' class='btn btn-warning btn-sm me-1'>Edit</a>
                                                                         <button class='btn btn-danger btn-sm btn-delete' data-id='{$row['event_id']}'>Delete</button>
                                                                     </td>
                                                                 </tr>
@@ -171,7 +171,7 @@ if (!isset($_SESSION['userId'])) {
 
                 if (!confirm('Adakah anda pasti mahu memadam event ini?')) return;
 
-                fetch('deleteEvent.php', {
+                fetch('Org_DeleteEvent.php', {
                         method: 'POST',
                         credentials: 'same-origin',
                         headers: {

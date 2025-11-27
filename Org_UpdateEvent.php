@@ -4,15 +4,15 @@ include __DIR__ . '/include/config.php';
 
 // verify DB connection exists
 if (!isset($conn) || !$conn) {
-    error_log("DB connection missing in updateEvent.php");
+    error_log("DB connection missing in Org_UpdateEvent.php");
     $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Database connection error.'];
-    header("Location: eventList.php");
+    header("Location: Org_EventList.php");
     exit;
 }
 
 // ensure POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: eventList.php");
+    header("Location: Org_EventList.php");
     exit;
 }
 
@@ -32,7 +32,7 @@ $event_type_id = trim($_POST['event_type_id'] ?? '');
 // Validation
 if ($eventId === '' || $name === '' || $start === '' || $end === '') {
     $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Sila lengkapkan semua medan yang diperlukan.'];
-    header("Location: editEvent.php?id=" . urlencode($eventId));
+    header("Location: Org_EditEvent.php?id=" . urlencode($eventId));
     exit;
 }
 
@@ -44,22 +44,22 @@ $closeTS = $closeReg ? strtotime($closeReg) : null;
 
 if ($endTS < $startTS) {
     $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Tarikh tamat tidak boleh lebih awal dari tarikh mula'];
-    header("Location: editEvent.php?id=" . urlencode($eventId));
+    header("Location: Org_EditEvent.php?id=" . urlencode($eventId));
     exit;
 }
 if ($openTS !== null && $closeTS !== null && $closeTS < $openTS) {
     $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Tarikh tutup pendaftaran tidak boleh lebih awal dari tarikh buka'];
-    header("Location: editEvent.php?id=" . urlencode($eventId));
+    header("Location: Org_EditEvent.php?id=" . urlencode($eventId));
     exit;
 }
 if ($openTS !== null && $openTS > $startTS) {
     $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Tarikh buka pendaftaran tidak boleh selepas tarikh mula event'];
-    header("Location: editEvent.php?id=" . urlencode($eventId));
+    header("Location: Org_EditEvent.php?id=" . urlencode($eventId));
     exit;
 }
 if ($closeTS !== null && $closeTS > $endTS) {
     $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Tarikh tutup pendaftaran tidak boleh selepas tarikh tamat event'];
-    header("Location: editEvent.php?id=" . urlencode($eventId));
+    header("Location: Org_EditEvent.php?id=" . urlencode($eventId));
     exit;
 }
 
@@ -71,7 +71,7 @@ if ($locationId !== '') {
     if ($stmtLoc === false) {
         error_log("Prepare failed (loc): " . $conn->error);
         $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Ralat pangkalan data (location).'];
-        header("Location: editEvent.php?id=" . urlencode($eventId));
+        header("Location: Org_EditEvent.php?id=" . urlencode($eventId));
         exit;
     }
     $stmtLoc->bind_param("sssss", $location_name, $building_name, $location_address, $state_id, $locationId);
@@ -79,7 +79,7 @@ if ($locationId !== '') {
         error_log("Execute failed (loc): " . $stmtLoc->error);
         $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Gagal mengemaskini lokasi: ' . $stmtLoc->error];
         $stmtLoc->close();
-        header("Location: editEvent.php?id=" . urlencode($eventId));
+        header("Location: Org_EditEvent.php?id=" . urlencode($eventId));
         exit;
     }
     $stmtLoc->close();
@@ -96,7 +96,7 @@ $stmt = $conn->prepare($sql);
 if ($stmt === false) {
     error_log("Prepare failed: " . $conn->error . " | SQL: " . $sql);
     $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Ralat pangkalan data: ' . $conn->error];
-    header("Location: editEvent.php?id=" . urlencode($eventId));
+    header("Location: Org_EditEvent.php?id=" . urlencode($eventId));
     exit;
 }
 
@@ -124,5 +124,5 @@ if ($stmt->execute()) {
 }
 
 $stmt->close();
-header("Location: eventList.php");
+header("Location: Org_EventList.php");
 exit;

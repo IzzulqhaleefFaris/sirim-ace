@@ -28,7 +28,7 @@ function nextCode($conn, $table, $code_col, $prefix, $numDigits = 3)
 
 function redirectBack()
 {
-    header("Location: createEvent.php");
+    header("Location: /attendance/Org_CreateEvent.php");
     exit;
 }
 

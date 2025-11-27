@@ -66,7 +66,7 @@ endif;
 								<div class="col-md-8 col-lg-6">
 									<!--begin::Section-->
 									<div class="py-0">
-										<form id="eventForm" method="POST" action="createEvent.php">
+										<form id="eventForm" method="POST" action="Org_CreateEvent.php">
 											<div class="card shadow-sm">
 												<div class="card-header">
 													<h5 class="card-title fs-1" style="font-weight: 700">Pendaftaran Event</h5>
