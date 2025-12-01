@@ -294,11 +294,11 @@ endif;
 																	<tr>
 																		<th>Tarikh Buka Pendaftaran</th>
 																		<td id="confirmOpenRegistration"></td>
-																		</tr>
+																	</tr>
 																	<tr>
 																		<th>Tarikh Tutup Pendaftaran</th>
 																		<td id="confirmCloseRegistration"></td>
-																		</tr>
+																	</tr>
 																	<tr>
 																		<th>Negeri</th>
 																		<td id="confirmState"></td>
@@ -511,6 +511,13 @@ endif;
 				if (e.key === "Enter") {
 					e.preventDefault();
 				}
+			});
+		</script>
+
+		<script>
+			document.getElementById('startDate').addEventListener('change', function() {
+				const [year, month, day] = this.value.split("-");
+				document.getElementById('formattedDate').textContent = `${day}/${month}/${year}`;
 			});
 		</script>
 	</div>

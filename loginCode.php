@@ -15,16 +15,8 @@ if(isset($_POST['login']))
 		$username = $_REQUEST["user_name"];
 	    $password = $_REQUEST["user_pass"];
 		
-		//$md5Password = md5($password);
 		$encryptPassword = md5($password);
-		//$inputKey = "B86B3763E7616E8F738B26FDBBAF2";
-		//$blockSize = 256;
-		//$aes = new AES($password, $inputKey, $blockSize);
-		//$enc = $aes->encrypt();
-		//$decrypt = $aes->decrypt();
-		//echo $decrypt;
 		
-		//$sql = "SELECT * FROM user WHERE userId = '".$username."' AND password = '".$enc."'";
         $sql = "SELECT * FROM user WHERE userId = '".$username."' AND password = '".$encryptPassword."'";
 		$rs = mysqli_query($conn,$sql);
 		$getNumRows = mysqli_num_rows($rs);

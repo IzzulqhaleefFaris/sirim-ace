@@ -74,12 +74,24 @@ if (isset($_SESSION['userId'])) {
                                             <input type="text" class="form-control" name="name" id="name" placeholder="Isikan Nama Penuh Anda" required>
                                         </div>
                                         <div class="col-12">
+                                            <label for="userId" class="form-label">User ID <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="userId" id="userId" placeholder="Isikan User ID Anda" required>
+                                        </div>
+                                        <div class="col-12">
                                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                                             <input type="email" class="form-control" name="email" id="email" placeholder="Isikan Email Anda" required>
                                         </div>
                                         <div class="col-12">
                                             <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
                                             <input type="password" class="form-control" name="password" id="password" placeholder="Masukkan Password Anda" value="" required>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label>Role</label><br>
+                                            <select name="roleId" required>
+                                                <option value="1">Pentadbir (Organiser)</option>
+                                                <option value="2">Penguatkuasa (Participant)</option>
+                                            </select><br><br>
                                         </div>
                                         <div class="col-12">
                                             <div class="form-check">
@@ -99,10 +111,10 @@ if (isset($_SESSION['userId'])) {
                                 <div class="row">
                                     <div class="col-12">
                                         <hr class="mt-5 mb-4 border-secondary-subtle">
-                                        <p class="m-0 text-dark text-center">Sudah mempunyai akaun? <a href="#!" class="link-primary text-decoration-none">Log Masuk</a></p>
+                                        <p class="m-0 text-dark text-center">Sudah mempunyai akaun? <a href="/attendance/" class="link-primary text-decoration-none">Log Masuk</a></p>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <!-- <div class="row">
                                     <div class="col-12">
                                         <p class="mt-5 mb-4">Log Masuk Melalui:</p>
                                         <div class="d-flex gap-3 flex-column flex-xl-row">
@@ -126,7 +138,7 @@ if (isset($_SESSION['userId'])) {
                                             </a>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
