@@ -38,13 +38,13 @@ if(isset($_POST['login']))
                 $queryInsert  = "INSERT INTO useraccess (userId, tarikhMasuk)VALUES('$username', CURRENT_TIMESTAMP())";
 		        $resultInsert = mysqli_query($conn, $queryInsert);
 				//header('location:dashboard.php?pg=ADM');
-				header('location:home.php?pg=OFCR');
+				header('location:Org_Home.php?pg=OFCR');
 				exit;
 			}else if($_SESSION["roleId"] == 2 && $_SESSION["status"] == 'A')
 			{
                 $queryInsert  = "INSERT INTO useraccess (userId, tarikhMasuk)VALUES('$username', CURRENT_TIMESTAMP())";
 		        $resultInsert = mysqli_query($conn, $queryInsert);
-				header('location:home.php?pg=OFCR');
+				header('location:Part_Home.php?pg=OFCR');
 				exit;
 			}else if($_SESSION["roleId"] == 3 && $_SESSION["status"] == 'A')
 			{

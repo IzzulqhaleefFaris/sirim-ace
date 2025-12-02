@@ -3,12 +3,12 @@
 include "include/config.php";
 ini_set('max_execution_time', 300);
 error_reporting(0);
-if (!isset($_SESSION)) {
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
-    $user = $_SESSION["userId"];
-    $role = $_SESSION["roleId"];
-    $nama = $_SESSION["nama"];
 }
+$user = $_SESSION['userId'] ?? null;
+$role = $_SESSION['roleId'] ?? null;
+$nama = $_SESSION['nama'] ?? null;
 ?>
 
 <?php
@@ -17,6 +17,31 @@ $userId = $_SESSION["userId"];
 $sql = "SELECT * FROM user WHERE userId = '$userId'";
 $query = mysqli_query($conn, $sql);
 $rows = mysqli_fetch_array($query, MYSQLI_ASSOC);
+
+// get userId from session
+$userId = $_SESSION['userId'] ?? null;
+$userName = $_SESSION['nama'] ?? null;
+$roleId = $_SESSION['roleId'] ?? null;
+
+// fetch name + role if not stored in session
+if ($userId && empty($userName)) {
+    $stmt = $conn->prepare("SELECT nama, roleId FROM user WHERE userId = ?");
+    if ($stmt) {
+        $stmt->bind_param("s", $userId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        if ($res && ($row = $res->fetch_assoc())) {
+            $userName = $row['nama'];
+            $roleId = $row['roleId'];
+            // cache into session to avoid repeated queries
+            $_SESSION['nama'] = $userName;
+            $_SESSION['roleId'] = $roleId;
+        }
+        $stmt->close();
+    } else {
+        error_log("Prepare failed: " . $conn->error);
+    }
+}
 ?>
 
 <!--begin::Header-->
@@ -57,9 +82,13 @@ $rows = mysqli_fetch_array($query, MYSQLI_ASSOC);
                             <div class="d-flex flex-column">
                                 <div class="fw-bolder text-light d-flex align-items-center fs-5"><?php echo $user; ?></div>
                                 <?php if ($_SESSION["roleId"] == '1') { ?>
-                                    <a href="#" class="fw-bold text-muted fs-7">Administrator</a>
+                                    <a href="#" class="fw-bold text-muted fs-7">
+                                        <?php echo htmlspecialchars($userName); ?>
+                                    </a>
                                 <?php } else if ($_SESSION["roleId"] == '2') { ?>
-                                    <a href="#" class="fw-bold text-muted fs-7">Penguatkuasa</a>
+                                    <a href="#" class="fw-bold text-muted fs-7">
+                                        <?php echo htmlspecialchars($userName); ?>
+                                    </a>
                                 <?php } else { ?>
                                     <a href="#" class="fw-bold text-muted fs-7">Operator</a>
                                 <?php } ?>
