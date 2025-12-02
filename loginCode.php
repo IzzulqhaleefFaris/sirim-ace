@@ -57,8 +57,13 @@ if(isset($_POST['login']))
 				exit;
 			}
 		}else{
-			header('location:loginError.php?ReturnId=1');
-			exit;
+			// login failed - set flash message and redirect to index
+            $_SESSION['msg'] = [
+                'type' => 'danger',
+                'text' => 'Akaun tidak wujud atau kata laluan salah.'
+            ];
+            header('Location: index.php');
+            exit;
 		}
 	}else{
 		header('location:login.php');

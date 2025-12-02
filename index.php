@@ -9,6 +9,13 @@ if (isset($_SESSION['userId'])) {
 	header('Location: home.php');
 	exit;
 }
+
+$msg = $_SESSION['msg'] ?? null;
+if ($msg) {
+	$msgType = is_array($msg) ? ($msg['type'] ?? 'info') : 'info';
+	$msgText = is_array($msg) ? ($msg['text'] ?? '') : $msg;
+	unset($_SESSION['msg']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -65,6 +72,34 @@ if (isset($_SESSION['userId'])) {
 <!--begin::Body-->
 
 <body id="kt_body" class="bg-white header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed toolbar-tablet-and-mobile-fixed aside-enabled aside-fixed" style="--kt-toolbar-height:55px;--kt-toolbar-height-tablet-and-mobile:55px">
+	<?php if (!empty($msgText)): ?>
+		<!-- Flash message modal -->
+		<div class="modal fade" id="sessionMsgModal" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header bg-<?= htmlspecialchars($msgType) ?> text-white">
+						<h5 class="modal-title"><?= ($msgType === 'danger' ? 'Ralat' : 'Makluman') ?></h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p><?= htmlspecialchars($msgText) ?></p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				var modalEl = document.getElementById('sessionMsgModal');
+				if (modalEl && typeof bootstrap !== 'undefined') {
+					new bootstrap.Modal(modalEl).show();
+				} else if (modalEl) {
+					// fallback: simple alert if bootstrap not available
+					alert(modalEl.querySelector('.modal-body p').textContent);
+				}
+			});
+		</script>
+	<?php endif; ?>
 	<!--begin::Main-->
 	<div class="d-flex flex-column flex-root">
 		<!--begin::Authentication - Sign-in -->
