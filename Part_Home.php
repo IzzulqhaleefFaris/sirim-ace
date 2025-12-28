@@ -1,11 +1,87 @@
 <?php
 session_start();
+include "include/config.php";
 
 // Redirect to login if not logged in
 if (!isset($_SESSION['userId'])) {
 	header('Location: /attendance');
 	exit;
 }
+
+$stats = [
+	'totalEvents' => 0,
+	'eventsThisMonth' => 0,
+	'upcomingEventsCount' => 0,
+];
+
+$upcomingEvents = [];
+$eventsError = null;
+
+if (isset($conn) && $conn instanceof mysqli) {
+	$totalEventsRes = $conn->query("SELECT COUNT(*) AS total FROM att_event");
+	if ($totalEventsRes && ($row = $totalEventsRes->fetch_assoc())) {
+		$stats['totalEvents'] = (int) $row['total'];
+	}
+
+	$thisMonthRes = $conn->query("SELECT COUNT(*) AS total FROM att_event WHERE YEAR(event_startDate) = YEAR(CURDATE()) AND MONTH(event_startDate) = MONTH(CURDATE())");
+	if ($thisMonthRes && ($row = $thisMonthRes->fetch_assoc())) {
+		$stats['eventsThisMonth'] = (int) $row['total'];
+	}
+
+	$upcomingCountRes = $conn->query("SELECT COUNT(*) AS total FROM att_event WHERE event_startDate >= CURDATE()");
+	if ($upcomingCountRes && ($row = $upcomingCountRes->fetch_assoc())) {
+		$stats['upcomingEventsCount'] = (int) $row['total'];
+	}
+
+	$upcomingSql = "
+		SELECT e.event_id,
+			   e.event_name,
+			   e.event_startDate,
+			   e.event_endDate,
+			   l.location_name,
+			   t.event_type_name
+		FROM att_event e
+		LEFT JOIN att_location l ON e.location_id = l.location_id
+		LEFT JOIN att_event_type t ON e.event_type_id = t.event_type_id
+		WHERE e.event_startDate >= CURDATE()
+		ORDER BY e.event_startDate ASC
+		LIMIT 5";
+
+	$upcomingRes = $conn->query($upcomingSql);
+	if ($upcomingRes) {
+		while ($event = $upcomingRes->fetch_assoc()) {
+			$upcomingEvents[] = $event;
+		}
+	} else {
+		$eventsError = "Tidak dapat memuatkan senarai event.";
+	}
+} else {
+	$eventsError = "Sambungan pangkalan data tidak tersedia.";
+}
+
+if (!function_exists('formatEventDateRange')) {
+	function formatEventDateRange(?string $start, ?string $end): string
+	{
+		if (!$start) {
+			return '-';
+		}
+
+		$startDate = date_create($start);
+		$endDate = $end ? date_create($end) : null;
+		if (!$startDate) {
+			return htmlspecialchars($start);
+		}
+
+		$startFmt = $startDate->format('d M Y');
+
+		if ($endDate && $endDate->format('Y-m-d') !== $startDate->format('Y-m-d')) {
+			return $startFmt . ' - ' . $endDate->format('d M Y');
+		}
+
+		return $startFmt;
+	}
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -51,19 +127,28 @@ if (!isset($_SESSION['userId'])) {
 
 						
 						<div id="kt_content_container" class="container">
-							<!--begin::Section-->
-							<div class="py-0">
-								<div class="card shadow-sm">
-									<div class="card-body">
-										<br>
-										<div class="d-grid gap-2">
-											
+							<!--begin::Dashboard Section-->
+							<div class="py-6 py-lg-10">
+								<div class="row g-5 g-xl-10 mb-5 mb-xl-10">
+									<!-- First column data -->
+									<div class="col-md-4">
+										<div class="card shadow-sm border-0 h-100">	
+											<div class="card-body">
+												<span class="text-muted fw-bold">Jumlah Event</span>
+												<h2 class="fw-bold mb-1"><?php echo number_format($stats['totalEvents']); ?></h2>
+												<p class="text-muted mb-0">Keseluruhan event tersenarai</p>
+											</div>
 										</div>
-										<br>
+									</div>
+									<!-- Second column data -->
+									<div class="col-md-4">
+										<div class="card shadow-sm border-0 h-100">	
+											<div class></div>
+										</div>
 									</div>
 								</div>
 							</div>
-							<!--end::Section-->
+							<!--end::Dashboard Section-->
 						</div>
 						<!--end::Container-->
 					</div>
