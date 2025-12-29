@@ -125,25 +125,115 @@ if (!function_exists('formatEventDateRange')) {
 					<!--begin::Post-->
 					<div class="post d-flex flex-column-fluid" id="kt_post">
 
-						
+
 						<div id="kt_content_container" class="container">
 							<!--begin::Dashboard Section-->
 							<div class="py-6 py-lg-10">
 								<div class="row g-5 g-xl-10 mb-5 mb-xl-10">
 									<!-- First column data -->
 									<div class="col-md-4">
-										<div class="card shadow-sm border-0 h-100">	
-											<div class="card-body">
-												<span class="text-muted fw-bold">Jumlah Event</span>
-												<h2 class="fw-bold mb-1"><?php echo number_format($stats['totalEvents']); ?></h2>
-												<p class="text-muted mb-0">Keseluruhan event tersenarai</p>
+										<div class="card shadow-sm border-0 h-100">
+											<div class="card-body row align-items-center">
+												<div class="col-auto me-3">
+													<i class="bi bi-calendar-event-fill fs-1 "></i>
+												</div>
+												<div class="col">
+													<span class="text fw-bold">Jumlah Event</span>
+													<h2 class="fw-bold mb-1"><?php echo number_format($stats['totalEvents']); ?></h2>
+													<p class="text-muted mb-0">Keseluruhan event tersenarai</p>
+												</div>
 											</div>
 										</div>
 									</div>
 									<!-- Second column data -->
 									<div class="col-md-4">
-										<div class="card shadow-sm border-0 h-100">	
-											<div class></div>
+										<div class="card shadow-sm border-0 h-100">
+											<div class="card-body row align-items-center">
+												<div class="col-auto me-3">
+													<i class="bi bi-calendar-event-fill fs-1 "></i>
+												</div>
+												<div class="col">
+													<span class="text fw-bold">Event Bulan Ini</span>
+													<h2 class="fw-bold mb-1"><?php echo number_format($stats['eventsThisMonth']); ?></h2>
+													<p class="text-muted mb-0">Jadual sepanjang bulan semasa</p>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- Third column data -->
+									<div class="col-md-4">
+										<div class="card shadow-sm border-0 h-100">
+											<div class="card-body row align-items-center">
+												<div class="col-auto me-3">
+													<i class="bi bi-calendar-event-fill fs-1 "></i>
+												</div>
+												<div class="col">
+													<span class="text fw-bold">Event Akan Datang</span>
+													<h2 class="fw-bold mb-1"><?php echo number_format($stats['upcomingEventsCount']); ?></h2>
+													<p class="text-muted mb-0">Event selepas tarikh hari ini</p>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="row g-5 g-xl-10 mb-5 mb-xl-10">
+									<div class="col-xl-5">
+										<div class="card shadow-sm border-0 h-100">
+											<div class="card-body d-flex flex-column justify-content-center">
+												<p class="text mb-2">Selamat Datang!</p>
+												<h2 class="fw-bold mb-4">Lihat maklumat events yang dikendalikan oleh pihak SIRIM</h2>
+												<p class="text-muted fs-6 mb-6">Jejak status pendaftaran dan lihat semua event yang bakal berlangsung secara pantas di sini.</p>
+												<a href="Part_EventList.php" class="btn btn-primary btn-sm align-self-start">Lihat Semua Event</a>
+											</div>
+										</div>
+									</div>
+									<div class="col-xl-7">
+										<div class="card shadow-sm border-0 h-100">
+											<div class="card-header border-0 pt-5">
+												<h3 class="card-title align-items-start flex-column">
+													<span class="card-label fw-bold fs-3 mb-1">Event Akan Datang</span>
+													<span class="text-muted fw-semibold fs-7">Senarai 5 event terdekat</span>
+												</h3>
+											</div>
+											<div class="card-body pt-3">
+												<?php if ($eventsError): ?>
+													<div class="alert alert-danger" role="alert">
+														<?php echo htmlspecialchars($eventsError);?>
+													</div>
+												<?php elseif (empty($upcomingEvents)): ?>
+													<div class="text-muted text-center py-5">
+														--Tiada event akan datang buat masa ini.--
+													</div>
+												<?php else: ?>
+													<div class="timeline">
+														<?php foreach ($upcomingEvents as $event): ?>
+															<div class="timeline-item align-items-center mb-6">
+																<div class="timeline-line w-20p"></div>
+																<div class="timeline-icon symbol symbol-40px me-4"> 
+																	<?php $eventDay = !empty($event['event_startDate']) ? date('d', strtotime($event['event_startDate'])) : '--'; ?>
+																	<span class="symbol-label bg-light-primary text-primary fw-bold">
+																		<?php echo htmlspecialchars($eventDay); ?>
+																	</span>
+																</div>
+															</div>
+															<div class="timeline-content d-flex justify-content-between flex-grow-1">
+																	<div class="me-5">
+																		<div class="fw-bold fs-5 text-dark"><?php echo htmlspecialchars($event['event_name']); ?></div>
+																		<div class="text-muted fs-7">
+																			<?php echo htmlspecialchars(formatEventDateRange($event['event_startDate'], $event['event_endDate'])); ?>
+																			<?php if (!empty($event['location_name'])): ?>
+																				· <?php echo htmlspecialchars($event['location_name']); ?>
+																			<?php endif; ?>
+																		</div>
+																	</div>
+																	<span class="badge badge-light-primary align-self-start"><?php echo htmlspecialchars($event['event_type_name'] ?? 'Event'); ?></span>
+																</div>
+															</div>
+														<?php endforeach; ?>
+													</div>
+												<?php endif; ?>
+											</div>
 										</div>
 									</div>
 								</div>
