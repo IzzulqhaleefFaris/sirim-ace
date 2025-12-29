@@ -2,7 +2,6 @@
 //include("auth.php"); //include auth.php file on all secure pages
 include "include/config.php";
 ini_set('max_execution_time', 300);
-error_reporting(0);
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -76,7 +75,7 @@ if ($userId && empty($userName)) {
                     <div class="d-flex align-items-stretch" id="kt_header_user_menu_toggle">
                         <!--begin::Menu wrapper-->
                         <div class="topbar-item cursor-pointer symbol px-3 px-lg-5 me-n3 me-lg-n5 symbol-30px symbol-md-35px" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
-                            <!--<img src="assets/media/avatars/blank.png" alt="metronic" />-->
+                            <!-- <img src="assets/media/avatars/blank.png" alt="metronic" /> -->
                             <i class="bi bi-person fs-4x"></i>
                             &nbsp;&nbsp;
                             <div class="d-flex flex-column">
@@ -208,9 +207,29 @@ if ($userId && empty($userName)) {
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">No. Pekerja </label>
+                            <label class="col-sm-3 col-form-label">No. Pekerja</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-sm" id="stafId" name="stafId" value="<?php echo $rowsp['stafId']; ?>" />
+                                <input
+                                    type="text"
+                                    class="form-control form-control-sm"
+                                    id="stafId"
+                                    name="stafId"
+                                    value="<?php echo $rowsp['stafId']; ?>" />
+                                <div class="form-text text-muted">
+                                    (For SIRIM staffs only)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label">E-mel </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control form-control-sm" id="email" name="email" placeholder="eg: contoh@mpsepang.gov.my" value="<?php echo $rowsp['email']; ?>" />
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label">No. Telefon</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control form-control-sm" id="telNo" name="telNo" value="<?php echo $rowsp['email']; ?>" />
                             </div>
                         </div>
                         <div class="mb-3 row">

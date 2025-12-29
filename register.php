@@ -89,8 +89,8 @@ if (isset($_SESSION['userId'])) {
                                         <div class="col-12">
                                             <label class="form-label">Jawatan<span class="text-danger">*</span></label><br>
                                             <select name="roleId" required>
-                                                <option value="1">Pentadbir (Organiser)</option>
-                                                <option value="2">Penguatkuasa (Participant)</option>
+                                                <option value="1">Pentadbir (Organiser) -- will update</option>
+                                                <option value="2">Penguatkuasa (Participant) -- will update</option>
                                             </select><br><br>
                                         </div>
                                         <div class="col-12">
