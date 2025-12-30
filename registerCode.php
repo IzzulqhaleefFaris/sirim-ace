@@ -9,7 +9,7 @@ try {
     $nama = $_POST['name'];
     $email = $_POST['email'];
     $password = md5($_POST['password']);
-    $roleId = $_POST['roleId'];
+    $roleId = (int) $_POST['roleId'];
     $status = $_POST['status'] ?? 'A';
 
     //Check duplicate email
@@ -73,6 +73,8 @@ try {
         'type' => 'info',
         'text' => "Pendaftaran berjaya! User ID anda: $userId"
     ];
+
+    $conn->commit();
 
     header("Location: index.php?register=success");
     exit;
