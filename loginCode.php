@@ -5,7 +5,7 @@
 
 session_start();
  
-// CSRF Token
+// CSRF Token check
 if (
     !isset($_POST['csrf_token']) ||
     !isset($_SESSION['csrf_token']) ||
@@ -24,20 +24,22 @@ require_once('include/aes7.php');
  
 if(isset($_POST['login']))
 {
-	if(!empty($_POST['user_name']) && !empty($_POST['user_pass']))
+	if(!empty($_POST['email']) && !empty($_POST['user_pass']))
 	{
-		$username = $_REQUEST["user_name"];
+		$email = $_REQUEST["email"];
 	    $password = $_REQUEST["user_pass"];
-		
 		$encryptPassword = md5($password);
 		
-        $sql = "SELECT * FROM user WHERE userId = '".$username."' AND password = '".$encryptPassword."'";
-		$rs = mysqli_query($conn,$sql);
-		$getNumRows = mysqli_num_rows($rs);
+		// Use prepared statement to avoid SQL injection
+		$stmt = $conn->prepare("SELECT * FROM user WHERE email = ? AND password = ?");
+        $stmt -> bind_param("ss", $email, $encryptPassword);
+		$stmt -> execute();
+		$rs = $stmt -> get_result();
+		$getNumRows = $rs -> num_rows;
 		
 		if($getNumRows == 1)
 		{
-			$row = mysqli_fetch_assoc($rs);
+			$row = $rs -> fetch_assoc();
 			
 			$_SESSION["userId"] = $row['userId'];
 			$_SESSION["password"] = $row['password'];
@@ -46,54 +48,54 @@ if(isset($_POST['login']))
 			$_SESSION["roleId"] = $row['roleId'];
 			$_SESSION["status"] = $row['status'];
 			$_SESSION["logged_in"] = true;
+
+			// Insert login timestamp
+            $queryInsert  = "INSERT INTO useraccess (userId, tarikhMasuk) VALUES (?, CURRENT_TIMESTAMP())";
+            $stmtInsert = $conn->prepare($queryInsert);
+            $stmtInsert->bind_param("s", $row['userId']);
+            $stmtInsert->execute();
 			
-			if($_SESSION["roleId"] == 1 && $_SESSION["status"] == 'A')
-			{
-                $queryInsert  = "INSERT INTO useraccess (userId, tarikhMasuk)VALUES('$username', CURRENT_TIMESTAMP())";
-		        $resultInsert = mysqli_query($conn, $queryInsert);
-				//header('location:dashboard.php?pg=ADM');
-				header('location:Org_Home.php?pg=OFCR');
-				exit;
-			}else if($_SESSION["roleId"] == 2 && $_SESSION["status"] == 'A')
-			{
-                $queryInsert  = "INSERT INTO useraccess (userId, tarikhMasuk)VALUES('$username', CURRENT_TIMESTAMP())";
-		        $resultInsert = mysqli_query($conn, $queryInsert);
-				header('location:Part_Home.php?pg=OFCR');
-				exit;
-			}else if($_SESSION["roleId"] == 3 && $_SESSION["status"] == 'A')
-			{
-                $queryInsert  = "INSERT INTO useraccess (userId, tarikhMasuk)VALUES('$username', CURRENT_TIMESTAMP())";
-		        $resultInsert = mysqli_query($conn, $queryInsert);
-				header('location:dashboard.php?pg=OPR');
-				exit;
-			}else{
-				header('location:loginError.php?ReturnId=2');
-				exit;
-			}
-		}else{
-			// login failed - set flash message and redirect to index
+			//Redirect based on role
+            if($_SESSION["roleId"] == 1 && $_SESSION["status"] == 'A') {
+                header('location:Org_Home.php?pg=OFCR');
+                exit;
+            } else if($_SESSION["roleId"] == 2 && $_SESSION["status"] == 'A') {
+                header('location:Part_Home.php?pg=OFCR');
+                exit;
+            } else if($_SESSION["roleId"] == 3 && $_SESSION["status"] == 'A') {
+                header('location:dashboard.php?pg=OPR');
+                exit;
+            } else {
+                header('location:loginError.php?ReturnId=2');
+                exit;
+            }
+        } else {
             $_SESSION['msg'] = [
                 'type' => 'danger',
-                'text' => 'Akaun tidak wujud atau kata laluan salah.'
+                'text' => 'Email atau kata laluan salah.'
             ];
             header('Location: index.php');
             exit;
-		}
-	}else{
-		header('location:login.php');
-		exit;
-	}
+        }
+    } else {
+        $_SESSION['msg'] = [
+            'type' => 'danger',
+            'text' => 'Sila masukkan email dan kata laluan.'
+        ];
+        header('location:index.php');
+        exit;
+    }
 }
 
 if(isset($_GET['logout']) && $_GET['logout'] == true)
 {
-	session_destroy();
-	header("location:index.php");
-	exit;
+    session_destroy();
+    header("location:index.php");
+    exit;
 }
- 
+
 if(isset($_GET['lmsg']) && $_GET['lmsg'] == true)
 {
-	$errorMsg = "Sign in required to access dashboard";
+    $errorMsg = "Sign in required to access dashboard";
 }
 ?>

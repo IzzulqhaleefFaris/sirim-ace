@@ -233,7 +233,7 @@ if ($userId && empty($userName)) {
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">E-mel </label>
+                            <label class="col-sm-3 col-form-label">Syarikat </label>
                             <div class="col-sm-8">
                                 <input type="text" class="form-control form-control-sm" id="email" name="email" placeholder="eg: contoh@mpsepang.gov.my" value="<?php echo $rowsp['email']; ?>" />
                             </div>

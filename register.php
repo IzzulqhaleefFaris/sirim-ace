@@ -74,10 +74,6 @@ if (isset($_SESSION['userId'])) {
                                             <input type="text" class="form-control" name="name" id="name" placeholder="Isikan Nama Penuh Anda" required>
                                         </div>
                                         <div class="col-12">
-                                            <label for="userId" class="form-label">User ID <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="userId" id="userId" placeholder="Isikan User ID Anda" required>
-                                        </div>
-                                        <div class="col-12">
                                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                                             <input type="email" class="form-control" name="email" id="email" placeholder="Isikan Email Anda" required>
                                         </div>

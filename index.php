@@ -1,15 +1,18 @@
 <?php
 session_start();
 
+// Generate CSRF token if not set
 if (empty($_SESSION['csrf_token'])) {
 	$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+// Redirect if already logged in
 if (isset($_SESSION['userId'])) {
 	header('Location: /attendance');
 	exit;
 }
 
+// Handle flash messages
 $msg = $_SESSION['msg'] ?? null;
 if ($msg) {
 	$msgType = is_array($msg) ? ($msg['type'] ?? 'info') : 'info';
@@ -41,33 +44,19 @@ header("Pragma: no-cache");
 	<!--end::Global Stylesheets Bundle-->
 	<script language="javascript">
 		function checkForm() {
-			var uname, upass;
-			with(window.document.loginForm) {
-				uname = user_name;
-				upass = user_pass;
-			}
+			var emailField = document.loginForm.email;
+			var passwordField = document.loginForm.user_pass;
 
-			if (trim(uname.value) == '') {
-				alert('Please enter your username.');
-				uname.focus();
+			if (emailField.value.trim() === '') {
+				alert('Sila masukkan email.');
+				emailField.focus();
 				return false;
-			} else if (trim(upass.value) == '') {
-				alert('Please enter your password.');
-				upass.focus();
+			} else if (passwordField.value.trim() === '') {
+				alert('Sila masukkan kata laluan.');
+				passwordField.focus();
 				return false;
-			} else {
-				uname.value = trim(uname.value);
-				upass.value = trim(upass.value);
-				return true;
 			}
-		}
-
-		function trim(str) {
-			return str.replace(/^\s+|\s+$/g, '');
-		}
-
-		function forgotPassword() {
-			window.location = 'f_lupa_kataLaluan.php'
+			return true;
 		}
 	</script>
 </head>
@@ -128,10 +117,10 @@ header("Pragma: no-cache");
 						<!--begin::Input group-->
 						<div class="fv-row mb-5">
 							<!--begin::Label-->
-							<label class="form-label fs-6 fw-bolder text-dark">ID Pengguna</label>
+							<label class="form-label fs-6 fw-bolder text-dark">Email</label>
 							<!--end::Label-->
 							<!--begin::Input-->
-							<input class="form-control form-control-lg form-control-solid" type="text" name="user_name" id="user_name" autocomplete="off" />
+							<input class="form-control form-control-lg form-control-solid" type="email" name="email" id="email" autocomplete="off" />
 							<!--end::Input-->
 						</div>
 						<!--end::Input group-->
@@ -202,25 +191,32 @@ header("Pragma: no-cache");
 		<script src="assets/plugins/global/plugins.bundle.js"></script>
 		<script src="assets/js/scripts.bundle.js"></script>
 		<!--end::Global Javascript Bundle-->
+
 		<!--begin::Page Custom Javascript(used by this page)-->
 		<script src="assets/js/custom/authentication/sign-in/general.js"></script>
 		<!--end::Page Custom Javascript-->
+
 		<script>
-			$(document).ready(function() {
-				$("#show_hide_password a").on('click', function(event) {
-					event.preventDefault();
-					if ($('#show_hide_password input').attr("type") == "text") {
-						$('#show_hide_password input').attr('type', 'password');
-						$('#show_hide_password i').addClass("fa-eye-slash");
-						$('#show_hide_password i').removeClass("fa-eye");
-					} else if ($('#show_hide_password input').attr("type") == "password") {
-						$('#show_hide_password input').attr('type', 'text');
-						$('#show_hide_password i').removeClass("fa-eye-slash");
-						$('#show_hide_password i').addClass("fa-eye");
+			document.addEventListener('DOMContentLoaded', function() {
+				const toggle = document.querySelector("#show_hide_password a");
+				const input = document.querySelector("#show_hide_password input");
+				const icon = document.querySelector("#show_hide_password i");
+
+				toggle.addEventListener('click', function(e) {
+					e.preventDefault();
+					if (input.type === "password") {
+						input.type = "text";
+						icon.classList.remove("fa-eye-slash");
+						icon.classList.add("fa-eye");
+					} else {
+						input.type = "password";
+						icon.classList.add("fa-eye-slash");
+						icon.classList.remove("fa-eye");
 					}
 				});
 			});
 		</script>
+
 		<?php if (isset($_GET['register']) && $_GET['register'] == 'success'): ?>
 			<script>
 				alert("Pendaftaran berjaya! Sila log masuk.");
