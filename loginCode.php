@@ -5,6 +5,20 @@
 
 session_start();
  
+// CSRF Token
+if (
+    !isset($_POST['csrf_token']) ||
+    !isset($_SESSION['csrf_token']) ||
+    !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
+) {
+    $_SESSION['msg'] = [
+        'type' => 'danger',
+        'text' => 'Permintaan tidak sah (CSRF).'
+    ];
+    header('Location: index.php');
+    exit;
+}
+
 require_once('include/config.php');
 require_once('include/aes7.php');
  

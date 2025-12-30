@@ -6,7 +6,7 @@ if (empty($_SESSION['csrf_token'])) {
 }
 
 if (isset($_SESSION['userId'])) {
-	header('Location: home.php');
+	header('Location: /attendance');
 	exit;
 }
 
@@ -16,6 +16,10 @@ if ($msg) {
 	$msgText = is_array($msg) ? ($msg['text'] ?? '') : $msg;
 	unset($_SESSION['msg']);
 }
+
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 ?>
 
 <!DOCTYPE html>
@@ -117,6 +121,9 @@ if ($msg) {
 				<div class="w-lg-500px bg-white rounded shadow-sm p-10 p-lg-10 mx-auto">
 					<!--begin::Form-->
 					<form class="form w-100" novalidate="novalidate" id="loginForm" action="loginCode.php" method="post" name="loginForm" runat="server" style="clear: both;">
+
+						<!-- CSRF token -->
+						<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
 						<!--begin::Input group-->
 						<div class="fv-row mb-5">
