@@ -117,7 +117,10 @@ $stmt->bind_param(
 );
 
 if ($stmt->execute()) {
-    $_SESSION['msg'] = ['type' => 'success', 'text' => 'Event updated successfully'];
+    $_SESSION['msg'] = [
+        'type' => 'success',
+        'text' => 'Event berjaya dikemaskini.'
+    ];
 } else {
     error_log("Execute failed: " . $stmt->error);
     $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Failed to update event: ' . $stmt->error];

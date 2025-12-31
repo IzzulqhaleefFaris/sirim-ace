@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Redirect to login if not logged in
 if (!isset($_SESSION['userId'])) {
@@ -15,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 include __DIR__ . '/config.php';
+include __DIR__ . '/updateEventStatuses.php';
 
 // Helper function
 function nextCode($conn, $table, $code_col, $prefix, $numDigits = 3)
@@ -116,18 +119,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $event_id = nextCode($conn, 'att_event', 'event_id', 'EV', 3);
         $event_description = trim($_POST['event_description'] ?? '');
+        $status = 'Draft';
 
         $stmtEv = $conn->prepare("
                             INSERT INTO att_event (event_id, event_name, event_description, event_type_id, location_id, state_id, 
-                            event_startDate, event_endDate, event_openRegistration, event_closeRegistration)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                            event_startDate, event_endDate, event_openRegistration, event_closeRegistration, event_status)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         if (!$stmtEv) {
             die("❌ SQL ERROR (att_event insert): " . $conn->error);
         }
 
         $stmtEv->bind_param(
-            "ssssssssss",
+            "sssssssssss",
             $event_id,
             $event_name,
             $event_description,
@@ -137,13 +141,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $event_startDate,
             $event_endDate,
             $event_openRegistration,
-            $event_closeRegistration
+            $event_closeRegistration,
+            $status
         );
 
         $stmtEv->execute();
         $stmtEv->close();
 
         $conn->commit();
+
+        updateEventStatuses($conn);
 
         $_SESSION['event_created'] = [
             'id' => $event_id,

@@ -6,6 +6,10 @@ if (!isset($_SESSION['userId'])) {
     header('Location: /attendance');
     exit;
 }
+
+include 'include/config.php';
+include 'include/updateEventStatus.php';
+updateEventStatuses($conn);
 ?>
 
 <!DOCTYPE html>
@@ -43,6 +47,21 @@ if (!isset($_SESSION['userId'])) {
 <!--begin::Body-->
 
 <body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed toolbar-tablet-and-mobile-fixed" style="--kt-toolbar-height:55px;--kt-toolbar-height-tablet-and-mobile:55px">
+
+    <?php
+    if (!empty($_SESSION['msg'])):
+        $msgType = $_SESSION['msg']['type'] ?? 'info';
+        $msgText = $_SESSION['msg']['text'] ?? '';
+    ?>
+        <div class="alert alert-<?= htmlspecialchars($msgType) ?> alert-dismissible fade show m-4" role="alert">
+            <?= $msgText ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php
+        unset($_SESSION['msg']); // clear message after display
+    endif;
+    ?>
+
     <!--begin::Main-->
     <!--begin::Root-->
     <div class="d-flex flex-column flex-root">
@@ -72,6 +91,13 @@ if (!isset($_SESSION['userId'])) {
                                     </div>
 
                                     <div class="card-body">
+                                        <?php if (!empty($_SESSION['msg'])): ?>
+                                            <div class="alert alert-<?= htmlspecialchars($_SESSION['msg']['type']) ?> alert-dismissible fade show mb-3" role="alert">
+                                                <?= htmlspecialchars($_SESSION['msg']['text']) ?>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                        <?php unset($_SESSION['msg']);
+                                        endif; ?>
                                         <div class="table-responsive">
                                             <table id="eventTable" class="table table-striped table-hover">
                                                 <thead class="table-light">
@@ -82,6 +108,7 @@ if (!isset($_SESSION['userId'])) {
                                                         <th>Jenis</th>
                                                         <th>Event Mula</th>
                                                         <th>Event Tamat</th>
+                                                        <th>Status</th>
                                                         <th>Tindakan</th>
                                                     </tr>
                                                 </thead>
@@ -93,6 +120,7 @@ if (!isset($_SESSION['userId'])) {
                                                                 e.event_name,
                                                                 e.event_startDate,
                                                                 e.event_endDate,
+                                                                e.event_status,
                                                                 t.event_type_name,
                                                                 l.location_name
                                                                 FROM att_event e
@@ -104,10 +132,22 @@ if (!isset($_SESSION['userId'])) {
 
                                                     //Error handling
                                                     if (!$res) {
-                                                        echo "<tr><td colspan= '7' class='text-danger'> Database Error: " . htmlspecialchars($conn->error) . "</td></tr>";
+                                                        echo "<tr><td colspan= '8' class='text-danger'> Database Error: " . htmlspecialchars($conn->error) . "</td></tr>";
                                                     } elseif ($res->num_rows == 0) {
-                                                        echo "<tr><td colspan='7' class='text-center text-muted py-3'>Tiada event ditemui.</td></tr>";
+                                                        echo "<tr><td colspan='8' class='text-center text-muted py-3'>Tiada event ditemui.</td></tr>";
                                                     } else {
+                                                        function getStatusBadge($status)
+                                                        {
+                                                            $colors = [
+                                                                'Draft' => '#6c757d',
+                                                                'Active' => '#28a745',
+                                                                'Inactive' => '#dc3545',
+                                                                'Completed' => '#007bff',
+                                                                'Cancelled' => '#dc3545'
+                                                            ];
+                                                            $color = $colors[$status] ?? '#6c757d';
+                                                            return "<span style='background-color: $color; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.875em;'>$status</span>";
+                                                        }
                                                         $i = 1;
                                                         while ($row = $res->fetch_assoc()) {
                                                             echo "
@@ -118,7 +158,7 @@ if (!isset($_SESSION['userId'])) {
                                                                     <td>" . htmlspecialchars($row['event_type_name']) . "</td>
                                                                     <td>" . htmlspecialchars($row['event_startDate']) . "</td>
                                                                     <td>" . htmlspecialchars($row['event_endDate']) . "</td>
-                                                                    
+                                                                    <td>" . getStatusBadge($row['event_status']) . "</td>
                                                                     <td>
                                                                         <a href='Org_EditEvent.php?id={$row['event_id']}' class='btn btn-warning btn-sm me-1'>Edit</a>
                                                                         <button class='btn btn-danger btn-sm btn-delete' data-id='{$row['event_id']}'>Delete</button>
@@ -154,6 +194,18 @@ if (!isset($_SESSION['userId'])) {
     <!--end::Page-->
 
     <!-- JS Script -->
+
+    <!--begin::Javascript-->
+    <!--begin::Global Javascript Bundle(used by all pages)-->
+    <script src="assets/plugins/global/plugins.bundle.js"></script>
+    <script src="assets/js/scripts.bundle.js"></script>
+    <!--end::Global Javascript Bundle-->
+    <!--begin::Page Custom Javascript(used by this page)-->
+    <script src="assets/js/custom/widgets.js"></script>
+    <script src="assets/js/custom/apps/chat/chat.js"></script>
+    <script src="assets/js/custom/modals/create-app.js"></script>
+    <script src="assets/js/custom/modals/upgrade-plan.js"></script>
+    <!--end::Page Custom Javascript-->
     <script>
         document.addEventListener('click',
             function(e) {
@@ -193,6 +245,26 @@ if (!isset($_SESSION['userId'])) {
                     });
             });
     </script>
+
+    <script>
+        <?php if (!empty($_SESSION['msg'])): ?>
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        <?php endif; ?>
+    </script>
+
+    <!-- <script>
+        // Auto-hide alert after 4 seconds
+        setTimeout(() => {
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                const bsAlert  = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }
+        }, 4000);
+    </script> -->
 
     <script>
         $('#eventTable').DataTable({

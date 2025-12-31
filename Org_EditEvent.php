@@ -123,6 +123,19 @@ $states = $conn->query("SELECT * FROM att_state");
                                                 </div>
                                             </div>
 
+                                            <div class="row mt-3">
+                                                <div class="col">
+                                                    <label>Pendaftaran Dibuka</label>
+                                                    <input type="date" name="event_openRegistration" class="form-control"
+                                                        value="<?= $event['event_openRegistration'] ?>">
+                                                </div>
+                                                <div class="col">
+                                                    <label>Pendaftaran Ditutup</label>
+                                                    <input type="date" name="event_closeRegistration" class="form-control"
+                                                        value="<?= $event['event_closeRegistration'] ?>">
+                                                </div>
+                                            </div>
+
                                             <hr>
 
                                             <h5>Lokasi</h5>
