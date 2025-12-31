@@ -24,7 +24,7 @@ $conn->begin_transaction();
 try{
     // Update User Table
     $stmt = $conn -> prepare(
-        "UPDATE USER SET nama = ?, stafId = ?, email = ? WHERE userId = ?"
+        "UPDATE user SET nama = ?, stafId = ?, email = ? WHERE userId = ?"
     );
 
     $stmt -> bind_param("ssss", $nama, $stafId, $email, $userId);
