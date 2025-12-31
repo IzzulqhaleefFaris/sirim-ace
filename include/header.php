@@ -328,7 +328,7 @@ if (isset($_SESSION['msg'])) {
     <!-- End: Show alert status profile update -->
 
     <!--begin::Change Password-->
-    <form class="form theme-form" method="post" name="cpForm" action="cpCode.php?userId=<?php echo $rowsp['userId']; ?>">
+    <form class="form theme-form" method="post" name="passowrdUpdate" action="include/passwordUpdate.php?userId=<?php echo $rowsp['userId']; ?>">
         <div class="modal fade" tabindex="-1" id="modalCp" role="dialog" aria-labelledby="modalCpLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

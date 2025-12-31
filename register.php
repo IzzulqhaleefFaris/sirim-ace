@@ -28,6 +28,24 @@ if (isset($_SESSION['userId'])) {
     <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <!--end::Global Stylesheets Bundle-->
+    <style>
+        .toggle-password-btn {
+            background: transparent;
+            /* Remove background */
+            border: none;
+            /* Remove border */
+            padding: 0;
+            /* Remove extra padding */
+        }
+
+        .toggle-password-btn:hover,
+        .toggle-password-btn:focus {
+            background: transparent;
+            /* Keep transparent on hover/focus */
+            box-shadow: none;
+            /* Remove outline shadow */
+        }
+    </style>
 </head>
 <!--end::Head-->
 
@@ -77,9 +95,12 @@ if (isset($_SESSION['userId'])) {
                                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                                             <input type="email" class="form-control" name="email" id="email" placeholder="Isikan Email Anda" required>
                                         </div>
-                                        <div class="col-12">
+                                        <div class="col-12 ">
                                             <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
                                             <input type="password" class="form-control" name="password" id="password" placeholder="Masukkan Password Anda" value="" required>
+                                            <button type="button" class="btn btn-sm toggle-password-btn position-absolute top-50 end-0 translate-middle-y me-2" onclick="toggleRegisterPassword()">
+                                                <i class="fa fa-eye-slash" id="togglePasswordIcon"></i>
+                                            </button>
                                         </div>
 
                                         <div class="col-12">
@@ -171,20 +192,20 @@ if (isset($_SESSION['userId'])) {
         <script src="assets/js/custom/authentication/sign-in/general.js"></script>
         <!--end::Page Custom Javascript-->
         <script>
-            $(document).ready(function() {
-                $("#show_hide_password a").on('click', function(event) {
-                    event.preventDefault();
-                    if ($('#show_hide_password input').attr("type") == "text") {
-                        $('#show_hide_password input').attr('type', 'password');
-                        $('#show_hide_password i').addClass("fa-eye-slash");
-                        $('#show_hide_password i').removeClass("fa-eye");
-                    } else if ($('#show_hide_password input').attr("type") == "password") {
-                        $('#show_hide_password input').attr('type', 'text');
-                        $('#show_hide_password i').removeClass("fa-eye-slash");
-                        $('#show_hide_password i').addClass("fa-eye");
-                    }
-                });
-            });
+            function toggleRegisterPassword() {
+                const password = document.getElementById("password");
+                const icon = document.getElementById("togglePasswordIcon");
+
+                if (password.type === "password") {
+                    password.type = "text";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                } else {
+                    password.type = "password";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+                }
+            }
         </script>
     </div>
     <!--end::Javascript-->
