@@ -43,6 +43,17 @@ if ($userId && empty($userName)) {
 }
 ?>
 
+<?php
+if (isset($_SESSION['msg'])) {
+    $msg = $_SESSION['msg'];
+    echo '<div class="alert alert-' . htmlspecialchars($msg['type']) . ' alert-dismissible fade show" role="alert">
+            ' . htmlspecialchars($msg['text']) . '
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>';
+    unset($_SESSION['msg']); // Clear message after showing
+}
+?>
+
 <!--begin::Header-->
 <div id="kt_header" class="header align-items-stretch">
     <!--begin::Container-->
@@ -168,12 +179,31 @@ if ($userId && empty($userName)) {
     <?php
     include 'include/config.php';
     $userId = $_SESSION["userId"];
-    $sqlp = "SELECT u.userId, u.password, u.stafId, u.nama, u.roleId, u.email, u.status, r.roleName FROM user AS u, role AS r WHERE u.userId = '$userId' AND u.roleId = r.roleId";
-    $queryp = mysqli_query($conn, $sqlp);
-    $rowsp = mysqli_fetch_array($queryp, MYSQLI_ASSOC);
+    $sqlp = "
+            SELECT 
+                u.userId,
+                u.password,
+                u.stafId,
+                u.nama,
+                u.roleId,
+                u.email,
+                u.status,
+                r.roleName,
+                p.participant_phone,
+                p.participant_company
+            FROM user u
+            JOIN role r ON u.roleId = r.roleId
+            LEFT JOIN att_participant p ON p.participant_id = u.userId
+            WHERE u.userId = ?
+            ";
+    $stmtp = $conn->prepare($sqlp);
+    $stmtp->bind_param("s", $userId);
+    $stmtp->execute();
+    $resultp = $stmtp->get_result();
+    $rowsp = $resultp->fetch_assoc();
     ?>
     <!--begin::My Profile-->
-    <form id="profileForm" class="form" method="post" name="profileForm" action="profileCode.php?userId=<?php echo $rowsp['userId']; ?>">
+    <form id="profileForm" class="form" method="post" name="profileForm" action="include/profileUpdate.php?userId=<?php echo $rowsp['userId']; ?>">
         <div class="modal fade" tabindex="-1" id="modalProfile" role="dialog" aria-labelledby="modalProfileLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -229,13 +259,21 @@ if ($userId && empty($userName)) {
                         <div class="mb-3 row">
                             <label class="col-sm-3 col-form-label">No. Telefon</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-sm" id="telNo" name="telNo" value="<?php echo $rowsp['email']; ?>" />
+                                <input type="text"
+                                    class="form-control form-control-sm"
+                                    id="participant_phone"
+                                    name="participant_phone"
+                                    value="<?php echo htmlspecialchars($rowsp['participant_phone'] ?? ''); ?>" />
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label class="col-sm-3 col-form-label">Syarikat </label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-sm" id="email" name="email" placeholder="eg: contoh@mpsepang.gov.my" value="<?php echo $rowsp['email']; ?>" />
+                                <input type="text"
+                                    class="form-control form-control-sm"
+                                    id="participant_company"
+                                    name="participant_company"
+                                    value="<?php echo htmlspecialchars($rowsp['participant_company'] ?? ''); ?>" />
                             </div>
                         </div>
                         <div class="mb-3 row">
@@ -273,6 +311,21 @@ if ($userId && empty($userName)) {
         </div>
     </form>
     <!--end::My Profile-->
+    
+    <!-- Begin: Show alert status profile update -->
+    <div>
+        <?php
+        if (isset($_SESSION['msg'])) {
+            $msg = $_SESSION['msg'];
+            echo '<div class="alert alert-' . htmlspecialchars($msg['type']) . ' alert-dismissible fade show" role="alert">
+                ' . htmlspecialchars($msg['text']) . '
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>';
+            unset($_SESSION['msg']);
+        }
+        ?>
+    </div>
+    <!-- End: Show alert status profile update -->
 
     <!--begin::Change Password-->
     <form class="form theme-form" method="post" name="cpForm" action="cpCode.php?userId=<?php echo $rowsp['userId']; ?>">
