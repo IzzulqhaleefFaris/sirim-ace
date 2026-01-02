@@ -16,8 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     error_log("Form submitted to eventCreation.php");
 }
 
-include __DIR__ . '/config.php';
-include __DIR__ . '/updateEventStatuses.php';
+include 'config.php';
+include 'updateEventStatus.php';
 
 // Helper function
 function nextCode($conn, $table, $code_col, $prefix, $numDigits = 3)
