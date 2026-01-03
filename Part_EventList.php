@@ -16,14 +16,24 @@ $sql = "SELECT
         e.event_endDate,
         e.event_status,
         t.event_type_name,
-        l.location_name
+        l.location_name,
+        s.state_name
         FROM att_event e
         LEFT JOIN att_event_type t ON e.event_type_id = t.event_type_id
         LEFT JOIN att_location l ON e.location_id = l.location_id
-        ORDER BY e.event_startDate DESC";
-
+        LEFT JOIN att_state s ON l.state_id = s.state_id
+        ORDER BY e.event_startDate ASC";
 $res = $conn->query($sql);
+
+//color for event status
+$colors = [
+    'Upcoming'  => '#6c757d',
+    'Completed' => '#28a745',
+    'Current'   => '#007bff',
+];
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -64,19 +74,56 @@ $res = $conn->query($sql);
                     <!--end::Toolbar-->
 
                     <!--begin::Post-->
-                    <div class="post d-flex flex-column-fluid" id="kt_post">
-                        <div class="container text-center">
-                            <div class="row">
-                                <div class="col">
-                                    Column
+                    <div class="container px-4 px-lg-5 mt-5">
+                        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-start">
+                            <?php if ($res && $res->num_rows > 0): ?>
+                                <?php while ($event = $res->fetch_assoc()): ?>
+                                    <div class="col mb-5">
+                                        <div class="card h-100" style="border-radius: 20px;">
+                                            <!-- Event image-->
+                                            <img class="card-img-top" src="images/custom/no_image.jpg" alt="Event Image" />
+                                            <!-- Event details-->
+                                            <div class="card-body p-4">
+                                                <div class="">
+                                                    <!-- Event name-->
+                                                    <h2 class="fw-bolder"><?= htmlspecialchars($event['event_name']) ?></h2>
+                                                    <!-- Event location-->
+                                                    <h6 class="fw-bolder"><?= htmlspecialchars($event['location_name']) ?> - <?= htmlspecialchars($event['state_name']) ?></h6>
+                                                    <!-- Event date -->
+                                                    <div class="small">
+                                                        <?= date('d M Y', strtotime($event['event_startDate'])) ?>
+                                                        –
+                                                        <?= date('d M Y', strtotime($event['event_endDate'])) ?>
+                                                    </div>
+                                                </div>
+                                                <!-- Event status badge -->
+                                                <div class="mt-2">
+                                                    <?php
+                                                        $status = $event['event_status'];
+                                                        $bgColor = $colors[$status] ?? '#343a40';
+                                                    ?>
+                                                    <span class="badge px-4 py-2"
+                                                        style="background-color: <?= $bgColor ?>; color: #fff;">
+                                                        <?= htmlspecialchars($status) ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <!-- Product actions-->
+                                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                                <div class="text-center">
+                                                    <a class="btn btn-light-dark mt-auto rounded-pill px-10" href="Part_EventView.php?id=<?= $event['event_id'] ?>">
+                                                        See Details
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <div class="col-12 text-center">
+                                    <p class="text-muted">No events available</p>
                                 </div>
-                                <div class="col">
-                                    Column
-                                </div>
-                                <div class="col">
-                                    Column
-                                </div>
-                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <!--end::Post-->
@@ -110,20 +157,7 @@ $res = $conn->query($sql);
         <script src="assets/js/custom/modals/upgrade-plan.js"></script>
         <!--end::Page Custom Javascript-->
         <script>
-            $(document).ready(function() {
-                $("#show_hide_password a").on('click', function(event) {
-                    event.preventDefault();
-                    if ($('#show_hide_password input').attr("type") == "text") {
-                        $('#show_hide_password input').attr('type', 'password');
-                        $('#show_hide_password i').addClass("fa-eye-slash");
-                        $('#show_hide_password i').removeClass("fa-eye");
-                    } else if ($('#show_hide_password input').attr("type") == "password") {
-                        $('#show_hide_password input').attr('type', 'text');
-                        $('#show_hide_password i').removeClass("fa-eye-slash");
-                        $('#show_hide_password i').addClass("fa-eye");
-                    }
-                });
-            });
+            
         </script>
     </div>
     <!--end::Javascript-->
