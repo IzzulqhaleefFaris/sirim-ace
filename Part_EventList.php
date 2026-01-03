@@ -8,6 +8,21 @@ if (!isset($_SESSION['userId'])) {
     exit;
 }
 
+//SQL Query
+$sql = "SELECT
+        e.event_id,
+        e.event_name,
+        e.event_startDate,
+        e.event_endDate,
+        e.event_status,
+        t.event_type_name,
+        l.location_name
+        FROM att_event e
+        LEFT JOIN att_event_type t ON e.event_type_id = t.event_type_id
+        LEFT JOIN att_location l ON e.location_id = l.location_id
+        ORDER BY e.event_startDate DESC";
+
+$res = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -50,7 +65,19 @@ if (!isset($_SESSION['userId'])) {
 
                     <!--begin::Post-->
                     <div class="post d-flex flex-column-fluid" id="kt_post">
-
+                        <div class="container text-center">
+                            <div class="row">
+                                <div class="col">
+                                    Column
+                                </div>
+                                <div class="col">
+                                    Column
+                                </div>
+                                <div class="col">
+                                    Column
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <!--end::Post-->
                 </div>

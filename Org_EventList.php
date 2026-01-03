@@ -8,8 +8,8 @@ if (!isset($_SESSION['userId'])) {
 }
 
 include 'include/config.php';
-include 'include/updateEventStatus.php';
-updateEventStatuses($conn);
+// include 'include/updateEventStatus.php';
+// updateEventStatuses($conn);
 ?>
 
 <!DOCTYPE html>
@@ -139,11 +139,9 @@ updateEventStatuses($conn);
                                                         function getStatusBadge($status)
                                                         {
                                                             $colors = [
-                                                                'Draft' => '#6c757d',
-                                                                'Active' => '#28a745',
-                                                                'Inactive' => '#dc3545',
-                                                                'Completed' => '#007bff',
-                                                                'Cancelled' => '#dc3545'
+                                                                'Upcoming' => '#6c757d',
+                                                                'Completed' => '#28a745',
+                                                                'Current' => '#007bff',
                                                             ];
                                                             $color = $colors[$status] ?? '#6c757d';
                                                             return "<span style='background-color: $color; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.875em;'>$status</span>";

@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 include 'config.php';
-include 'updateEventStatus.php';
+// include 'updateEventStatus.php';
 
 // Helper function
 function nextCode($conn, $table, $code_col, $prefix, $numDigits = 3)
@@ -119,7 +119,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $event_id = nextCode($conn, 'att_event', 'event_id', 'EV', 3);
         $event_description = trim($_POST['event_description'] ?? '');
-        $status = 'Draft';
+
+        $status = NULL;
+        $today = date('Y-m-d');
+
+        if ($today < $event_startDate) {
+            $status = 'Upcoming';
+        } elseif ($today >= $event_startDate && $today < $event_endDate) {
+            $status = 'Current';
+        } elseif ($today >= $event_endDate) {
+            $status = 'Completed';
+        } else {
+            $status = 'Invalid';
+        }
 
         $stmtEv = $conn->prepare("
                             INSERT INTO att_event (event_id, event_name, event_description, event_type_id, location_id, state_id, 
@@ -150,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $conn->commit();
 
-        updateEventStatuses($conn);
+        // updateEventStatuses($conn);
 
         $_SESSION['event_created'] = [
             'id' => $event_id,
