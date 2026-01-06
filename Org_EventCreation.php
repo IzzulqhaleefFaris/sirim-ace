@@ -1,4 +1,9 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -9,14 +14,11 @@ if (!isset($_SESSION['userId'])) {
     exit;
 }
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     error_log("Form submitted to eventCreation.php");
 }
 
-include 'config.php';
+include 'include/config.php';
 // include 'updateEventStatus.php';
 
 // Helper function
@@ -120,6 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $event_id = nextCode($conn, 'att_event', 'event_id', 'EV', 3);
         $event_description = trim($_POST['event_description'] ?? '');
 
+        // Default event image
+        $imagePathForDB = 'images/custom/no_image.jpg';
+
         $status = NULL;
         $today = date('Y-m-d');
 
@@ -159,6 +164,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmtEv->execute();
         $stmtEv->close();
+
+        //Image Upload PHP backend 
+        if (isset($_FILES['event_image']) && $_FILES['event_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . '/images/uploads/events/'; //physical path
+            $dbPath = '/images/uploads/events/';
+
+            //Check if folder exists
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $tmpName = $_FILES['event_image']['tmp_name'];
+            $fileSize = $_FILES['event_image']['size'];
+            $ext = strtolower(pathinfo($_FILES['event_image']['name'], PATHINFO_EXTENSION));
+
+            $allowed = ['jpg', 'jpeg', 'png'];
+
+            //Validate extension
+            if (!in_array($ext, $allowed)) {
+                throw new Exception("Invalid format. Only JPG & PNG allowed.");
+            }
+
+            //Validate size
+            if ($fileSize > 2 * 1024 * 1024) {
+                throw new Exception("Image size must not be exceed 2MB.");
+            }
+
+            //Validate real image
+            if (!getimagesize($tmpName)) {
+                throw new Exception("Uploaded file is not a valid image.");
+            }
+
+            //Rename using event ID
+            $fileName = $event_id . '.' . $ext;
+            $fullPath = $uploadDir . $fileName;
+
+            if (!move_uploaded_file($tmpName, $fullPath)) {
+                throw new Exception("Failed to upload event image.");
+            }
+
+            $imagePathForDB = $dbPath . $fileName;
+        }
+
+        $stmtImg = $conn->prepare("
+            UPDATE att_event 
+            SET event_image = ? 
+            WHERE event_id = ?
+        ");
+
+        $stmtImg->bind_param("ss", $imagePathForDB, $event_id);
+        $stmtImg->execute();
+        $stmtImg->close();
 
         $conn->commit();
 

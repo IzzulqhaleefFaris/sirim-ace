@@ -9,12 +9,13 @@ if (!isset($_SESSION['userId'])) {
 }
 
 //SQL Query
-$sql = "SELECT
+$sql = "SELECT DISTINCT
         e.event_id,
         e.event_name,
         e.event_startDate,
         e.event_endDate,
         e.event_status,
+        e.event_image,
         t.event_type_name,
         l.location_name,
         s.state_name
@@ -52,6 +53,15 @@ $colors = [
     <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <!--end::Global Stylesheets Bundle-->
+    <style>
+        .event-img {
+            width: 100%;
+            height: 180px; /* fixed height */
+            object-fit: cover; /* crop instead of stretch */
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+    </style>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -81,7 +91,12 @@ $colors = [
                                     <div class="col mb-5">
                                         <div class="card h-100" style="border-radius: 20px;">
                                             <!-- Event image-->
-                                            <img class="card-img-top" src="images/custom/no_image.jpg" alt="Event Image" />
+                                            <?php
+                                            $eventImage = "/attendance/" . $event['event_image'];
+                                            ?>
+                                            <img class="card-img-top event-img" src="<?= htmlspecialchars($eventImage) ?>"
+                                                alt="Event Image" />
+
                                             <!-- Event details-->
                                             <div class="card-body p-4">
                                                 <div class="">
@@ -99,8 +114,8 @@ $colors = [
                                                 <!-- Event status badge -->
                                                 <div class="mt-2">
                                                     <?php
-                                                        $status = $event['event_status'];
-                                                        $bgColor = $colors[$status] ?? '#343a40';
+                                                    $status = $event['event_status'];
+                                                    $bgColor = $colors[$status] ?? '#343a40';
                                                     ?>
                                                     <span class="badge px-4 py-2"
                                                         style="background-color: <?= $bgColor ?>; color: #fff;">
@@ -157,7 +172,7 @@ $colors = [
         <script src="assets/js/custom/modals/upgrade-plan.js"></script>
         <!--end::Page Custom Javascript-->
         <script>
-            
+
         </script>
     </div>
     <!--end::Javascript-->

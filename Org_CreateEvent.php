@@ -1,12 +1,34 @@
 <?php
+
+session_start();
+include "include/config.php";
+
+// Redirect to login if not logged in
+if (!isset($_SESSION['userId'])) {
+    header('Location: /attendance');
+    exit;
+}
+
+// ✅ Dropdown: Event Types
+$eventTypes = $conn->query("
+    SELECT event_type_id, event_type_name
+    FROM att_event_type
+    ORDER BY event_type_name
+");
+
+// ✅ Dropdown: States
+$states = $conn->query("
+    SELECT state_id, state_name
+    FROM att_state
+    ORDER BY state_name
+");
+
 if (session_status() === PHP_SESSION_NONE) session_start();
-include 'include/eventCreation.php';
 $eventCreated = $_SESSION['event_created'] ?? null;
 unset($_SESSION['event_created']);
-?>
 
-<?php
 if (session_status() === PHP_SESSION_NONE) session_start();
+
 if (!empty($_SESSION['msg'])):
 	$msgType = $_SESSION['msg']['type'] ?? 'info';
 	$msgText = $_SESSION['msg']['text'] ?? '';
@@ -66,7 +88,7 @@ endif;
 								<div class="col-md-8 col-lg-6">
 									<!--begin::Section-->
 									<div class="py-0">
-										<form id="eventForm" method="POST" action="Org_CreateEvent.php">
+										<form id="eventForm" method="POST" action="Org_EventCreation.php" enctype="multipart/form-data">
 											<div class="card shadow-sm">
 												<div class="card-header">
 													<h5 class="card-title fs-1" style="font-weight: 700">Pendaftaran Event</h5>
@@ -98,9 +120,17 @@ endif;
 																class="form-control form-control-sm w-60"
 																id="event_description"
 																name="event_description"
-																value="<?= htmlspecialchars($_POST['event_description'] ?? '') ?>"
 																placeholder="Isikan maklumat event berkenaan"
-																style="height: 100px;"></textarea>
+																style="height: 100px;"><?= htmlspecialchars($_POST['event_description'] ?? '') ?></textarea>
+														</div>
+
+														<div class="row g-2 py-2">
+															<label for="event_image" class="form-label form-label-sm mb-1">Event Image</label>
+															<input type="file"
+																class="form-control form-control-sm"
+																name="event_image"
+																id="event_image"
+																accept="image/*">
 														</div>
 
 														<div class="row g-2 py-2">
@@ -109,7 +139,8 @@ endif;
 																<option selected disabled>Pilih Jenis</option>
 																<?php if ($eventTypes): ?>
 																	<?php while ($r = $eventTypes->fetch_assoc()): ?>
-																		<option value="<?= htmlspecialchars($r['event_type_id']) ?>">
+																		<option value="<?= htmlspecialchars($r['event_type_id']) ?>"
+																			<?= (($_POST['event_type_id'] ?? '') == $r['event_type_id']) ? 'selected' : '' ?>>
 																			<?= htmlspecialchars($r['event_type_name']) ?>
 																		</option>
 																	<?php endwhile; ?>

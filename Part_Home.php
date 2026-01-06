@@ -199,7 +199,7 @@ if (!function_exists('formatEventDateRange')) {
 											<div class="card-body pt-3">
 												<?php if ($eventsError): ?>
 													<div class="alert alert-danger" role="alert">
-														<?php echo htmlspecialchars($eventsError);?>
+														<?php echo htmlspecialchars($eventsError); ?>
 													</div>
 												<?php elseif (empty($upcomingEvents)): ?>
 													<div class="text-muted text-center py-5">
@@ -209,8 +209,8 @@ if (!function_exists('formatEventDateRange')) {
 													<div class="timeline">
 														<?php foreach ($upcomingEvents as $event): ?>
 															<div class="timeline-item align-items-center mb-6">
-																<div class="timeline-line w-20p"></div>
-																<div class="timeline-icon symbol symbol-40px me-4"> 
+																<!-- <div class="timeline-line w-20p"></div> -->
+																<div class="timeline-icon symbol symbol-40px me-4">
 																	<?php $eventDay = !empty($event['event_startDate']) ? date('d', strtotime($event['event_startDate'])) : '--'; ?>
 																	<span class="symbol-label bg-light-primary text-primary fw-bold">
 																		<?php echo htmlspecialchars($eventDay); ?>
@@ -218,43 +218,43 @@ if (!function_exists('formatEventDateRange')) {
 																</div>
 															</div>
 															<div class="timeline-content d-flex justify-content-between flex-grow-1">
-																	<div class="me-5">
-																		<div class="fw-bold fs-5 text-dark"><?php echo htmlspecialchars($event['event_name']); ?></div>
-																		<div class="text-muted fs-7">
-																			<?php echo htmlspecialchars(formatEventDateRange($event['event_startDate'], $event['event_endDate'])); ?>
-																			<?php if (!empty($event['location_name'])): ?>
-																				· <?php echo htmlspecialchars($event['location_name']); ?>
-																			<?php endif; ?>
-																		</div>
+																<div class="me-5">
+																	<div class="fw-bold fs-5 text-dark"><?php echo htmlspecialchars($event['event_name']); ?></div>
+																	<div class="text-muted fs-7">
+																		<?php echo htmlspecialchars(formatEventDateRange($event['event_startDate'], $event['event_endDate'])); ?>
+																		<?php if (!empty($event['location_name'])): ?>
+																			· <?php echo htmlspecialchars($event['location_name']); ?>
+																		<?php endif; ?>
 																	</div>
-																	<span class="badge badge-light-primary align-self-start"><?php echo htmlspecialchars($event['event_type_name'] ?? 'Event'); ?></span>
 																</div>
+																<span class="badge badge-light-primary align-self-start"><?php echo htmlspecialchars($event['event_type_name'] ?? 'Event'); ?></span>
 															</div>
 														<?php endforeach; ?>
 													</div>
-												<?php endif; ?>
 											</div>
+										<?php endif; ?>
 										</div>
 									</div>
 								</div>
 							</div>
-							<!--end::Dashboard Section-->
 						</div>
-						<!--end::Container-->
+						<!--end::Dashboard Section-->
 					</div>
-					<!--end::Post-->
+					<!--end::Container-->
 				</div>
-				<!--end::Content-->
-
-				<!--begin::Footer-->
-				<?php include "include/footer.php"; ?>
-				<!--end::Footer-->
+				<!--end::Post-->
 			</div>
-			<!--end::Wrapper-->
+			<!--end::Content-->
 		</div>
-		<!--end::Page-->
+		<!--end::Wrapper-->
+	</div>
+	<!--end::Page-->
 	</div>
 	<!--end::Root-->
+
+	<!--begin::Footer-->
+	<?php include "include/footer.php"; ?>
+	<!--end::Footer-->
 
 	<!--begin::Scrolltop-->
 	<?php include "include/scrolltop.php"; ?>
