@@ -97,6 +97,7 @@ if (isset($_SESSION['msg'])) {
                         <!--begin::Menu wrapper-->
                         <div class="topbar-item cursor-pointer symbol px-3 px-lg-5 me-n3 me-lg-n5 symbol-30px symbol-md-35px" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
                             <!-- <img src="assets/media/avatars/blank.png" alt="metronic" /> -->
+                            <div id="clock" style="color: white;" class="clock"></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             <i class="bi bi-person fs-4x"></i>
                             &nbsp;&nbsp;
                             <div class="d-flex flex-column">
@@ -321,7 +322,7 @@ if (isset($_SESSION['msg'])) {
         </div>
     </form>
     <!--end::My Profile-->
-    
+
     <!-- Begin: Show alert status profile update -->
     <div>
         <?php
@@ -381,5 +382,40 @@ if (isset($_SESSION['msg'])) {
         </div>
     </form>
     <!--end::Change Password-->
+
+    <!-- Digital clock function -->
+    <script>
+        function digitalClock() {
+            const clock = document.getElementById("clock");
+            setInterval(() => {
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const seconds = now.getSeconds().toString().padStart(2, '0');
+
+                // Get Day of the Week (Sunday = 0)
+                const day = now.getDay();
+                const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day];
+
+                // Get Month (0-indexed)
+                const month = now.getMonth();
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const monthName = monthNames[month];
+
+                //Get Year
+                const year = now.getFullYear();
+
+                // Get Date (day of the month)
+                const date = now.getDate();
+
+                // Update time string with date before month
+                const timeString = `${date} ${monthName} ${year}<br>${dayOfWeek}, ${hours}:${minutes}:${seconds}`;
+                clock.innerHTML = timeString;
+            }, 1000); // Update every second
+        }
+
+        // Call the function to start the clock
+        digitalClock();
+    </script>
 </div>
 <!--end::Modal-->

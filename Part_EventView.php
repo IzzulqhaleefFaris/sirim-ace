@@ -94,6 +94,10 @@ $event = $res->fetch_assoc();
                     <!--begin::Post-->
                     <div class="card" style="width: 90%; align-self:center;">
                         <br>
+                        <!-- Back Button -->
+                        <a href="Part_EventList.php" class="btn btn-secondary">Back to Events</a>   
+
+                        <!-- Event Image -->
                         <img src="/attendance/<?= htmlspecialchars($event['event_image']) ?>"
                             class="event-img-detail" alt="Event Image">
                         <div class="card-body">
@@ -102,7 +106,7 @@ $event = $res->fetch_assoc();
                             <a href="#" class="btn btn-primary">Go somewhere</a>
                         </div>
                     </div>
-                    <!-- <a href="Part_EventList.php" class="btn btn-secondary">Back to Events</a> -->
+                    
 
 
 
