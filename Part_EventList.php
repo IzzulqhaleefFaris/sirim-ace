@@ -8,6 +8,8 @@ if (!isset($_SESSION['userId'])) {
     exit;
 }
 
+
+
 //SQL Query
 $sql = "SELECT DISTINCT
         e.event_id,
@@ -123,7 +125,7 @@ $colors = [
                                                     </span>
                                                 </div>
                                             </div>
-                                            <!-- Product actions-->
+                                            <!-- Event See Details Button -->
                                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                                 <div class="text-center">
                                                     <a class="btn btn-light-dark mt-auto rounded-pill px-10" href="Part_EventView.php?id=<?= $event['event_id'] ?>">

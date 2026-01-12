@@ -17,29 +17,29 @@ if (!$eventId) {
 
 // Fetch event details from the database
 $sql = "SELECT
-        e.event_id,
-        e.event_name,
-        e.event_startDate,
-        e.event_endDate,
-        e.event_status,
-        e.event_description,
+        e.*,
         t.event_type_name,
-        l.location_name
-        FROM att_event e
-        LEFT JOIN att_event_type t ON e.event_type_id = t.event_type_id
-        LEFT JOIN att_location l ON e.location_id = l.location_id
-        WHERE e.event_id = ?";
+        l.location_name,
+        l.building_name,
+        l.location_address,
+        s.state_name
+    FROM att_event e
+    LEFT JOIN att_event_type t ON e.event_type_id = t.event_type_id
+    LEFT JOIN att_location l ON e.location_id = l.location_id
+    LEFT JOIN att_state s ON l.state_id = s.state_id
+    WHERE e.event_id = ?
+    ";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $eventId);
+$stmt->bind_param("s", $eventId);
 $stmt->execute();
-$result = $stmt->get_result();
-$event = $result->fetch_assoc();
+$res = $stmt->get_result();
 
-if (!$event) {
-    echo "Event not found.";
-    exit;
+if ($res->num_rows === 0) {
+    die('Event not found.');
 }
+
+$event = $res->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -59,6 +59,17 @@ if (!$event) {
     <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <!--end::Global Stylesheets Bundle-->
+    <style>
+        .event-img-detail {
+			width: 100%;
+			max-width: 640px;
+			aspect-ratio: 16 / 9;
+			object-fit: cover;
+			border-radius: 15px;
+			display: block;
+			margin: 0 auto;
+		}
+    </style>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -81,7 +92,26 @@ if (!$event) {
                     <!--end::Toolbar-->
 
                     <!--begin::Post-->
-                        <a href="Part_EventList.php" class="btn btn-secondary">Back to Events</a>
+                    <div class="card" style="width: 90%; align-self:center;">
+                        <br>
+                        <img src="/attendance/<?= htmlspecialchars($event['event_image']) ?>"
+                            class="event-img-detail" alt="Event Image">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>
+                    <!-- <a href="Part_EventList.php" class="btn btn-secondary">Back to Events</a> -->
+
+
+
+
+
+
+
+
+
                     <!--end::Post-->
                 </div>
                 <!--end::Content-->

@@ -5,8 +5,8 @@ include "include/config.php";
 
 // Redirect to login if not logged in
 if (!isset($_SESSION['userId'])) {
-    header('Location: /attendance');
-    exit;
+	header('Location: /attendance');
+	exit;
 }
 
 // ✅ Dropdown: Event Types
@@ -60,6 +60,17 @@ endif;
 	<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="assets/css/custom.css" rel="stylesheet" type="text/css" />
 	<!--end::Global Stylesheets Bundle-->
+	<style>
+		.event-img-detail {
+			width: 100%;
+			max-width: 640px;
+			aspect-ratio: 16 / 9;
+			object-fit: cover;
+			border-radius: 15px;
+			display: block;
+			margin: 0 auto;
+		}
+	</style>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -126,6 +137,45 @@ endif;
 
 														<div class="row g-2 py-2">
 															<label for="event_image" class="form-label form-label-sm mb-1">Event Image</label>
+
+															<!-- Image Preview -->
+															<div class="mb-2 text-center">
+																<img id="eventImagePreview"
+																	src="<?= !empty($event['event_image']) ? '/attendance/' . htmlspecialchars($event['event_image']) : '/attendance/images/custom/no_image.jpg' ?>"
+																	alt="Event Image Preview"
+																	class="event-img-detail">
+															</div>
+
+															<div class="accordion accordion-flush" id="eventAccordion">
+																<div class="accordion-item">
+																	<h2 class="accordion-header" id="headingInfo">
+																		<button class="accordion-button collapsed px-0 py-2 fw-semibold"
+																			type="button"
+																			data-bs-toggle="collapse"
+																			data-bs-target="#collapseInfo"
+																			aria-expanded="false"
+																			aria-controls="collapseInfo">
+																			<i class="bi bi-info-circle me-2 text-primary"></i>
+																			Image Requirements
+																		</button>
+																	</h2>
+
+																	<div id="collapseInfo"
+																		class="accordion-collapse collapse"
+																		aria-labelledby="headingInfo"
+																		data-bs-parent="#eventAccordion">
+																		<div class="accordion-body px-3 py-3 bg-light rounded-2">
+																			<ul class="list-unstyled small mb-0">
+																				<li>• Aspect ratio: <strong>16:9</strong></li>
+																				<li>• Minimum size: <strong>1280 × 720 px</strong></li>
+																				<li>• Recommended size: <strong>1600 × 900 px</strong></li>
+																				<li>• Format: <strong>JPG / PNG</strong></li>
+																				<li>• Max file size: <strong>2–5 MB</strong></li>
+																			</ul>
+																		</div>
+																	</div>
+																</div>
+															</div>
 															<input type="file"
 																class="form-control form-control-sm"
 																name="event_image"
@@ -551,6 +601,26 @@ endif;
 				document.getElementById('formattedDate').textContent = `${day}/${month}/${year}`;
 			});
 		</script>
+
+		<!-- Live preview of image -->
+		<script>
+			const eventInput = document.getElementById('event_image');
+			const previewImg = document.getElementById('eventImagePreview');
+
+			eventInput.addEventListener('change', function() {
+				const file = this.files[0];
+				if (file) {
+					const reader = new FileReader();
+					reader.onload = function(e) {
+						previewImg.src = e.target.result; // show selected image
+					}
+					reader.readAsDataURL(file);
+				} else {
+					previewImg.src = '/attendance/assets/img/no-image.png'; // fallback
+				}
+			});
+		</script>
+
 	</div>
 	<!--end::Javascript-->
 </body>
