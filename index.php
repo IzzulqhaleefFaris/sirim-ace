@@ -41,6 +41,8 @@ header("Pragma: no-cache");
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
 	<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 	<!--end::Global Stylesheets Bundle-->
 	<script language="javascript">
 		function checkForm() {
@@ -100,14 +102,14 @@ header("Pragma: no-cache");
 			<!--begin::Content-->
 			<div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
 				<!--begin::Logo-->
-				<a href="index.html" class="mb-12">
+				<div class="mb-12">
 					<img alt="Logo" src="assets/media/logos/atendance.png" class="h-150px" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img alt="Logo" src="assets/media/logos/sirim.png" class="h-150px" />
-				</a>
-				<h1 class="text-dark mb-5">ATTENDANCE | Advanced Event and Attendance Coordination Engine</h1>
+				</div>
+				<h1 class="text-dark mb-4 fs-2">ATTENDANCE | Advanced Event and Attendance Coordination Engine</h1>
 				<!--end::Logo-->
 
 				<!--begin::Wrapper-->
-				<div class="w-lg-500px bg-white rounded shadow-sm p-10 p-lg-10 mx-auto">
+				<div class="w-lg-500px bg-white rounded shadow p-10 p-lg-10 mx-auto">
 					<!--begin::Form-->
 					<form class="form w-100" novalidate="novalidate" id="loginForm" action="loginCode.php" method="post" name="loginForm" runat="server" style="clear: both;">
 

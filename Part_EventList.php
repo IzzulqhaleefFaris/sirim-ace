@@ -54,12 +54,16 @@ $colors = [
     <!--begin::Global Stylesheets Bundle(used by all pages)-->
     <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <!--end::Global Stylesheets Bundle-->
     <style>
         .event-img {
             width: 100%;
-            height: 180px; /* fixed height */
-            object-fit: cover; /* crop instead of stretch */
+            height: 180px;
+            /* fixed height */
+            object-fit: cover;
+            /* crop instead of stretch */
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
         }

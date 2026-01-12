@@ -27,6 +27,9 @@ if (isset($_SESSION['userId'])) {
     <!--begin::Global Stylesheets Bundle(used by all pages)-->
     <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
     <!--end::Global Stylesheets Bundle-->
     <style>
         .toggle-password-btn {
@@ -59,19 +62,24 @@ if (isset($_SESSION['userId'])) {
             <div class="container">
                 <div class="card border-light-subtle shadow-sm">
                     <div class="row g-0 py-2">
-                        <div class="col-12 col-md-6 text-bg-primary">
+                        <div class="col-12 col-md-6 text-bg">
                             <div class="d-flex align-items-center justify-content-center h-100">
                                 <div class="col-10 col-xl-8 py-3">
                                     <div class="text-center">
-                                        <a href="index.html" class="mb-12 text-center">
-                                            <img alt="Logo" src="assets/media/logos/atendance.png" class="h-150px me-4" />
-                                            <img alt="Logo" src="assets/media/logos/sirim.png" class="h-150px" />
+                                        <a href="index.php" class="d-inline-flex align-items-center justify-content-center">
+                                            <img alt="Logo Attendance"
+                                                src="assets/media/logos/atendance.png"
+                                                class="h-150px me-4" />
+
+                                            <img alt="Logo SIRIM"
+                                                src="assets/media/logos/sirim.png"
+                                                class="h-150px" />
                                         </a>
                                     </div>
                                     <hr class="border-primary-subtle mb-4">
-                                    <h1 class="text-dark mb-5 text-center">
+                                    <h2 class="text-dark mb-5 text-center">
                                         ATTENDANCE | Advanced Event and Attendance Coordination Engine
-                                    </h1><br>
+                                    </h2><br>
                                     <!-- <p class="lead m-0">We write words, take photos, make videos, and interact with artificial intelligence.</p> -->
                                 </div>
                             </div>

@@ -227,7 +227,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     } catch (Exception $e) {
         $conn->rollback();
-        $_SESSION['msg'] = "❌ Error: " . $e->getMessage();
+        $_SESSION['msg'] = [
+            'type' => 'danger',
+            'text' => '❌ Error: ' . $e->getMessage()
+        ];
     }
 
     redirectBack();

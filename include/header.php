@@ -95,34 +95,33 @@ if (isset($_SESSION['msg'])) {
                     <!--begin::User-->
                     <div class="d-flex align-items-stretch" id="kt_header_user_menu_toggle">
                         <!--begin::Menu wrapper-->
+                        <div id="clock" style="color: white; display: flex; align-items: center;" class="clock"></div>&nbsp;&nbsp;&nbsp;
                         <div class="topbar-item cursor-pointer symbol px-3 px-lg-5 me-n3 me-lg-n5 symbol-30px symbol-md-35px" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
                             <!-- <img src="assets/media/avatars/blank.png" alt="metronic" /> -->
-                            <div id="clock" style="color: white;" class="clock"></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             <i class="bi bi-person fs-4x"></i>
-                            &nbsp;&nbsp;
                             <div class="d-flex flex-column">
                                 <div class="fw-bolder text-light d-flex align-items-center fs-5"><?php echo htmlspecialchars($userName); ?></div>
                                 <?php if ($_SESSION["roleId"] == '1') { ?>
-                                    <a href="#" class="fw-bold text-muted fs-7">
+                                    <a href="#" class="fw-bold text-light fs-7">
                                         <?php echo htmlspecialchars($email); ?>
                                     </a>
                                 <?php } else if ($_SESSION["roleId"] == '2') { ?>
-                                    <a href="#" class="fw-bold text-muted fs-7">
+                                    <a href="#" class="fw-bold text-light fs-7">
                                         <?php echo htmlspecialchars($email); ?>
                                     </a>
                                 <?php } else { ?>
-                                    <a href="#" class="fw-bold text-muted fs-7">Operator</a>
+                                    <a href="#" class="fw-bold text-light fs-7">Operator</a>
                                 <?php } ?>
                             </div>
                         </div>
                         <!--end::Menu wrapper-->
 
                         <!--begin::Menu-->
-                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold py-4 fs-6 w-225px" data-kt-menu="true">
+                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold py-2 fs-6 w-225px" data-kt-menu="true">
 
                             <!--begin::Menu item-->
-                            <div class="menu-item px-5">
-                                <a type="button" class="menu-link px-5" data-bs-toggle="modal" data-bs-target="#modalProfile">
+                            <div class="menu-item px-1">
+                                <a type="button" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#modalProfile">
                                     <span class="menu-icon"><i class="bi bi-person-fill fs-3"></i></span>
                                     <span class="menu-title">Profil Saya</span>
                                 </a>
@@ -130,8 +129,8 @@ if (isset($_SESSION['msg'])) {
 
                             <!--end::Menu item-->
                             <!--begin::Menu item-->
-                            <div class="menu-item px-5">
-                                <a type="button" class="menu-link px-5" data-bs-toggle="modal" data-bs-target="#modalCp">
+                            <div class="menu-item px-1">
+                                <a type="button" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#modalCp">
                                     <span class="menu-icon"><i class="bi bi-shield-lock-fill fs-3"></i></span>
                                     <span class="menu-title">Tukar Kata Laluan</span>
                                 </a>
@@ -158,7 +157,7 @@ if (isset($_SESSION['msg'])) {
                                 <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
                                 <form method="POST" action="/attendance/include/logout.php" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
-                                    <button type="submit" class="btn btn-light-dark px-10"><i class="bi bi-box-arrow-right fs-1"></i>&nbsp;Log Keluar</button>
+                                    <button type="submit" class="btn btn-light-dark px-2"><i class="bi bi-box-arrow-right fs-1"></i>&nbsp;Log Keluar</button>
                                 </form>
                             </div>
                             <!--end::Menu item-->
