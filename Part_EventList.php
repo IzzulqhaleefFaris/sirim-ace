@@ -91,7 +91,7 @@ $colors = [
 
                     <!--begin::Post-->
                     <div class="container px-4 px-lg-5 mt-5">
-                        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-start">
+                        <div class="row gx-4 gx-lg-4 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-start">
                             <?php if ($res && $res->num_rows > 0): ?>
                                 <?php while ($event = $res->fetch_assoc()): ?>
                                     <div class="col mb-5">

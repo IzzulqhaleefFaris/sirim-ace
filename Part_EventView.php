@@ -69,7 +69,8 @@ $event = $res->fetch_assoc();
             object-fit: cover;
             border-radius: 15px;
             display: block;
-            margin: 0 auto;
+            margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -94,53 +95,117 @@ $event = $res->fetch_assoc();
                     <!--end::Toolbar-->
 
                     <!--begin::Post-->
-                    <div class="card" style="width: 90%; align-self:center;">
+                    <div class="card shadow-sm mx-auto my-5" style="max-width: 1000px;">
                         <br>
                         <!-- Back Button -->
-                        <a href="Part_EventList.php" class="btn btn-primary btn-sm ms-6" style="width: 70px;">
-                            Back
-                        </a>
+                        <a href="Part_EventList.php" class="btn btn-primary btn-sm ms-6" style="width: 80px;">
+                            ← Back
+                        </a><br>
 
                         <!-- Event Image -->
                         <img src="/attendance/<?= htmlspecialchars($event['event_image']) ?>"
-                            class="event-img-detail" alt="Event Image">
+                            class="event-img-detail border border-1 border-secondary rounded"
+                            alt="Event Image">
                         <div class="card-body">
-                            <div class="container text-center">
-                                <div class="row">
-                                    <div class="col">
-                                        <h5 class="card-title">Card title</h5>
-                                    </div>
-                                    <div class="col">
-                                        2 of 2
+
+                            <!-- Event Title -->
+                            <h2 class="fw-bold text-center mb-2">
+                                <?= htmlspecialchars($event['event_name']) ?>
+                            </h2>
+                            <p class="text-center fs-5 text-muted mb-4">
+                                <?= htmlspecialchars($event['event_startDate']) ?>
+                                &nbsp;–&nbsp;
+                                <?= htmlspecialchars($event['event_endDate']) ?>
+                            </p>
+
+                            <!-- Event Details -->
+                            <div class="row g-4">
+
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <strong>📍 Lokasi</strong>
+                                        <div class="text-muted">
+                                            <?= htmlspecialchars($event['location_name']) ?>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col">
-                                        1 of 3
+
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <strong>🏢 Alamat</strong>
+                                        <div class="text-muted">
+                                            <?= htmlspecialchars($event['location_address']) ?>
+                                        </div>
                                     </div>
-                                    <div class="col">
-                                        2 of 3
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <strong>📝 Pendaftaran Dibuka</strong>
+                                        <div class="text-muted">
+                                            <?= htmlspecialchars($event['event_openRegistration']) ?>
+                                        </div>
                                     </div>
-                                    <div class="col">
-                                        3 of 3
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <strong>⛔ Pendaftaran Ditutup</strong>
+                                        <div class="text-muted">
+                                            <?= htmlspecialchars($event['event_closeRegistration']) ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="border rounded p-3">
+                                        <strong>📄 Keterangan Event</strong>
+                                        <div class="text-muted mt-2">
+                                            <?= nl2br(htmlspecialchars($event['event_description'])) ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="d-flex justify-content-center align-items-center mt-5">
+                                <div class="d-flex gap-2 ">
+                                    <a href="Part_EventList.php" class="btn btn-light border">
+                                        <i class="bi bi-arrow-left me-1"></i> Kembali
+                                    </a>
+                                    <button type="button"
+                                        class="btn btn-primary btn-lg rounded px-5 fw-bold"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmRegisterModal">
+                                        <i class="bi bi-check-circle me-2"></i> Daftar
+                                    </button>
+                                    <!-- Registration Confirmation Modal -->
+                                    <div class="modal fade" id="confirmRegisterModal" tabindex="-1" aria-labelledby="confirmRegisterModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="confirmRegisterModalLabel">Confirm Registration</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    Adakah anda ingin berdaftar untuk event "<strong><?= htmlspecialchars($event['event_name']) ?></strong>"?
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                    <a href="Part_Register.php?id=<?= $event['event_id'] ?>" class="btn btn-primary">Ya, Daftar</a>
+                                                </div>
+
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
                         </div>
                     </div>
-
-
-
-
-
-
-
-
-
-
                     <!--end::Post-->
                 </div>
                 <!--end::Content-->

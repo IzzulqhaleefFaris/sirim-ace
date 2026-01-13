@@ -56,6 +56,8 @@ $states = $conn->query("SELECT * FROM att_state");
     <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <!--end::Global Stylesheets Bundle-->
 </head>
 <!--end::Head-->
@@ -93,13 +95,13 @@ $states = $conn->query("SELECT * FROM att_state");
                                             <input type="hidden" name="location_id" value="<?= htmlspecialchars($event['location_id']) ?>">
 
                                             <div class="mb-3">
-                                                <label>Nama Event</label>
+                                                <label class="fw-bolder">Nama Event</label>
                                                 <input type="text" name="event_name" class="form-control"
                                                     value="<?= htmlspecialchars($event['event_name']) ?>" required>
                                             </div>
 
                                             <div class="mb-3">
-                                                <label>Jenis Event</label>
+                                                <label class="fw-bolder">Jenis Event</label>
                                                 <select name="event_type_id" class="form-control" required>
                                                     <?php while ($t = $types->fetch_assoc()): ?>
                                                         <option value="<?= $t['event_type_id'] ?>"
@@ -112,12 +114,12 @@ $states = $conn->query("SELECT * FROM att_state");
 
                                             <div class="row">
                                                 <div class="col">
-                                                    <label>Event Mula</label>
+                                                    <label class="fw-bolder">Event Mula</label>
                                                     <input type="date" name="event_startDate" class="form-control"
                                                         value="<?= $event['event_startDate'] ?>" required>
                                                 </div>
                                                 <div class="col">
-                                                    <label>Event Tamat</label>
+                                                    <label class="fw-bolder">Event Tamat</label>
                                                     <input type="date" name="event_endDate" class="form-control"
                                                         value="<?= $event['event_endDate'] ?>" required>
                                                 </div>
@@ -125,12 +127,12 @@ $states = $conn->query("SELECT * FROM att_state");
 
                                             <div class="row mt-3">
                                                 <div class="col">
-                                                    <label>Pendaftaran Dibuka</label>
+                                                    <label class="fw-bolder">Pendaftaran Dibuka</label>
                                                     <input type="date" name="event_openRegistration" class="form-control"
                                                         value="<?= $event['event_openRegistration'] ?>">
                                                 </div>
                                                 <div class="col">
-                                                    <label>Pendaftaran Ditutup</label>
+                                                    <label class="fw-bolder">Pendaftaran Ditutup</label>
                                                     <input type="date" name="event_closeRegistration" class="form-control"
                                                         value="<?= $event['event_closeRegistration'] ?>">
                                                 </div>
@@ -138,29 +140,29 @@ $states = $conn->query("SELECT * FROM att_state");
 
                                             <hr>
 
-                                            <h5>Lokasi</h5>
+                                            <h4 class="my-3">Lokasi</h4>
 
                                             <div class="mb-3">
-                                                <label>Nama Lokasi</label>
+                                                <label class="fw-bolder">Nama Lokasi</label>
                                                 <input type="text" name="location_name" class="form-control"
                                                     value="<?= htmlspecialchars($event['location_name']) ?>" required>
                                             </div>
 
                                             <div class="mb-3">
-                                                <label>Bangunan</label>
+                                                <label class="fw-bolder">Bangunan</label>
                                                 <input type="text" name="building_name" class="form-control"
                                                     value="<?= htmlspecialchars($event['building_name']) ?>">
                                             </div>
 
                                             <div class="mb-3">
-                                                <label>Alamat</label>
+                                                <label class="fw-bolder">Alamat</label>
                                                 <input type="text" name="location_address" class="form-control"
                                                     value="<?= htmlspecialchars($event['location_address']) ?>">
 
                                             </div>
 
                                             <div class="mb-3">
-                                                <label>Negeri</label>
+                                                <label class="fw-bolder">Negeri</label>
                                                 <select name="state_id" class="form-control" required>
                                                     <?php while ($s = $states->fetch_assoc()): ?>
                                                         <option value="<?= $s['state_id'] ?>"
@@ -171,7 +173,7 @@ $states = $conn->query("SELECT * FROM att_state");
                                                 </select>
                                             </div>
 
-                                            <button class="btn btn-primary mt-3">Update Event</button>
+                                            <button class="btn btn-primary mt-3 ">Update Event</button> &nbsp;&nbsp;&nbsp;
                                             <a href="Org_EventList.php" class="btn btn-secondary mt-3">Cancel</a>
 
                                         </form>

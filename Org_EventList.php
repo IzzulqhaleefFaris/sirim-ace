@@ -86,7 +86,7 @@ include 'include/config.php';
                             <div class="row justify-content-center">
                                 <div class="card shadow-sm">
                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title fs-1" style="font-weight: 700">Senarai Event</h5>
+                                        <h5 class="card-title fs-1" style="font-weight: 800">Pendaftaran Event</h5>
                                         <a href="Org_CreateEvent.php" class="btn btn-sm btn-primary d-flex align-items-center">
                                             <i class="bi bi-plus-square-fill me-1"></i> Tambah Event
                                         </a>
@@ -103,7 +103,7 @@ include 'include/config.php';
                                         <div class="table-responsive">
                                             <table id="eventTable" class="table table-striped table-hover">
                                                 <thead class="table-light">
-                                                    <tr>
+                                                    <tr class="fw-bolder">
                                                         <th>No</th>
                                                         <th>Nama Event</th>
                                                         <th>Lokasi</th>

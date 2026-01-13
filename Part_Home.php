@@ -229,7 +229,10 @@ if (!function_exists('formatEventDateRange')) {
 																		<?php endif; ?>
 																	</div>
 																</div>
-																<span class="badge badge-light-primary align-self-start"><?php echo htmlspecialchars($event['event_type_name'] ?? 'Event'); ?></span>
+																<span class="badge badge-light-primary align-self-start fs-6 text-muted">
+																	<?php echo htmlspecialchars($event['event_type_name'] ?? 'Event'); ?>
+																</span>
+
 															</div>
 														<?php endforeach; ?>
 													</div>

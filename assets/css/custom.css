@@ -46,3 +46,7 @@
 .carousel-control-next {
     right: 10px;
 }
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
