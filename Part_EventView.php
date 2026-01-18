@@ -40,6 +40,19 @@ if ($res->num_rows === 0) {
 }
 
 $event = $res->fetch_assoc();
+
+//Disable Daftar button if registered
+$isRegistered = false;
+$chk = $conn->prepare("
+    SELECT registration_id 
+    FROM att_registration 
+    WHERE event_id = ? AND participant_id = ?
+");
+$chk->bind_param("ss", $event['event_id'], $_SESSION['userId']);
+$chk->execute();
+$chk->store_result();
+$isRegistered = $chk->num_rows > 0;
+$chk->close();
 ?>
 
 <!DOCTYPE html>
@@ -174,12 +187,19 @@ $event = $res->fetch_assoc();
                                     <a href="Part_EventList.php" class="btn btn-light border">
                                         <i class="bi bi-arrow-left me-1"></i> Kembali
                                     </a>
-                                    <button type="button"
-                                        class="btn btn-primary btn-lg rounded px-5 fw-bold"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#confirmRegisterModal">
-                                        <i class="bi bi-check-circle me-2"></i> Daftar
-                                    </button>
+                                    <?php if ($isRegistered): ?>
+                                        <button class="btn btn-secondary btn-lg px-5" disabled>
+                                            Telah Berdaftar
+                                        </button>
+                                    <?php else: ?>
+                                        <button type="button"
+                                            class="btn btn-primary btn-lg rounded px-5 fw-bold"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#confirmRegisterModal">
+                                            <i class="bi bi-check-circle me-2"></i> Daftar
+                                        </button>
+                                    <?php endif; ?>
+
                                     <!-- Registration Confirmation Modal -->
                                     <div class="modal fade" id="confirmRegisterModal" tabindex="-1" aria-labelledby="confirmRegisterModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">
@@ -196,9 +216,8 @@ $event = $res->fetch_assoc();
 
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                    <a href="Part_Register.php?id=<?= $event['event_id'] ?>" class="btn btn-primary">Ya, Daftar</a>
+                                                    <a href="Part_EventRegister.php?id=<?= $event['event_id'] ?>" class="btn btn-primary">Ya, Daftar</a>
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>
