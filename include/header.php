@@ -95,7 +95,13 @@ if (isset($_SESSION['msg'])) {
                     <!--begin::User-->
                     <div class="d-flex align-items-stretch" id="kt_header_user_menu_toggle">
                         <!--begin::Menu wrapper-->
-                        <div id="clock" style="color: white; display: flex; align-items: center;" class="clock"></div>&nbsp;&nbsp;&nbsp;
+                        
+                        <!-- Digital Clock -->
+                        <div id="clock" style="color: white; display: flex; align-items: center;" class="clock"></div>
+
+                        <!-- Gap -->
+                        &nbsp;&nbsp;&nbsp;
+                        
                         <div class="topbar-item cursor-pointer symbol px-3 px-lg-5 me-n3 me-lg-n5 symbol-30px symbol-md-35px" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
                             <!-- <img src="assets/media/avatars/blank.png" alt="metronic" /> -->
                             <i class="bi bi-person fs-4x"></i>

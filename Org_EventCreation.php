@@ -1,18 +1,20 @@
 <?php
-
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+?>
+
+<?php
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 // Redirect to login if not logged in
-if (!isset($_SESSION['userId'])) {
-    header('Location: /attendance');
-    exit;
-}
+// if (!isset($_SESSION['userId'])) {
+//     header('Location: /attendance');
+//     exit;
+// }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     error_log("Form submitted to eventCreation.php");

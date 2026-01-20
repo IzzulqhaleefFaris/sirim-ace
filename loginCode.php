@@ -1,7 +1,4 @@
 <?php
-//DATE PROGRAMMED : 19/02/24
-//PROGRAMMER : NOR SHUHADA CHE AHMAD
-//VERSION : 3
 
 session_start();
  

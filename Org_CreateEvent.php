@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 include "include/config.php";
 include "include/updateEventStatus.php";
@@ -31,19 +35,12 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 $eventCreated = $_SESSION['event_created'] ?? null;
 unset($_SESSION['event_created']);
 
-if (session_status() === PHP_SESSION_NONE) session_start();
-
+$alertMessage = null;
 if (!empty($_SESSION['msg'])):
-	$msgType = $_SESSION['msg']['type'] ?? 'info';
-	$msgText = $_SESSION['msg']['text'] ?? '';
-?>
-	<div class="alert alert-<?= htmlspecialchars($msgType) ?> alert-dismissible fade show m-4" role="alert">
-		<?= $msgText ?>
-		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-	</div>
-<?php
-	unset($_SESSION['msg']); // clear message after display
+	$alertMessage = $_SESSION['msg'];
+	unset($_SESSION['msg']);
 endif;
+
 ?>
 
 <!DOCTYPE html>
@@ -80,12 +77,50 @@ endif;
 			display: block;
 			margin: 0 auto;
 		}
+
+		/* Make alerts more prominent */
+		.alert {
+			position: fixed !important;
+			/* fix it to the top of viewport */
+			top: 60px;
+			/* adjust to below header height */
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 11000 !important;
+			/* higher than header */
+			width: auto;
+			/* or 90% if you want */
+		}
+
+		.alert-danger {
+			background-color: #f8d7da;
+			border-color: #f5c6cb;
+			color: #721c24;
+		}
+
+		.alert-warning {
+			background-color: #fff3cd;
+			border-color: #ffeeba;
+			color: #856404;
+		}
+
+		.alert-success {
+			background-color: #d4edda;
+			border-color: #c3e6cb;
+			color: #155724;
+		}
 	</style>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
 
 <body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed toolbar-tablet-and-mobile-fixed" style="--kt-toolbar-height:55px;--kt-toolbar-height-tablet-and-mobile:55px">
+	<?php if ($alertMessage): ?>
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+			<?= htmlspecialchars($alertMessage['text']) ?>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	<?php endif; ?>
 	<!--begin::Main-->
 	<!--begin::Root-->
 	<div class="d-flex flex-column flex-root">
@@ -482,14 +517,20 @@ endif;
 		<script src="assets/js/custom/modals/upgrade-plan.js"></script>
 		<!--end::Page Custom Javascript-->
 		<script>
-			// Auto-hide alert after 4 seconds
-			setTimeout(() => {
-				const alert = document.querySelector('.alert');
-				if (alert) {
-					const bsAlert = new bootstrap.Alert(alert);
-					bsAlert.close();
+			// Log any alerts to console for debugging
+			const alert = document.querySelector('.alert');
+			if (alert) {
+				const alertText = alert.textContent;
+				console.log('🔴 ALERT MESSAGE:', alertText);
+
+				// Only auto-hide SUCCESS alerts, keep ERROR/WARNING visible
+				if (alert.classList.contains('alert-success')) {
+					setTimeout(() => {
+						const bsAlert = new bootstrap.Alert(alert);
+						bsAlert.close();
+					});
 				}
-			}, 4000);
+			}
 
 			$(document).ready(function() {
 				$("#show_hide_password a").on('click', function(event) {
@@ -553,11 +594,56 @@ endif;
 				const room = document.querySelector('[name="location_room"]').value;
 				const level = document.querySelector('[name="location_level"]').value;
 
+				// Debug log
+				console.log('Form validation check:', {
+					eventName,
+					startDate,
+					endDate,
+					openRegistration,
+					closeRegistration,
+					state,
+					locationName
+				});
+
 				// ✅ Validation check before showing modal
 				if (!eventName || !startDate || !endDate || !state || !locationName) {
-					alert('Please fill all required fields before confirming.');
+					const errorMsg = 'Please fill all required fields before confirming.';
+					console.error('❌ VALIDATION FAILED:', errorMsg);
+					alert('❌ ' + errorMsg);
 					return;
 				}
+
+				// Additional client-side date validation
+				const startTS = new Date(startDate).getTime();
+				const endTS = new Date(endDate).getTime();
+				const openRegTS = new Date(openRegistration).getTime();
+				const closeRegTS = new Date(closeRegistration).getTime();
+
+				if (endTS < startTS) {
+					console.error('❌ End date before start date');
+					alert('❌ Event end date cannot be earlier than start date.');
+					return;
+				}
+
+				if (closeRegTS < openRegTS) {
+					console.error('❌ Close registration before open registration');
+					alert('❌ Registration closing date cannot be earlier than opening date.');
+					return;
+				}
+
+				if (openRegTS > startTS) {
+					console.error('❌ Registration opens after event starts');
+					alert('❌ Registration cannot open after event starts.');
+					return;
+				}
+
+				if (closeRegTS > endTS) {
+					console.error('❌ Registration closes after event ends');
+					alert('❌ Registration cannot close after event ends.');
+					return;
+				}
+
+				console.log('✅ All validations passed, showing confirmation modal');
 
 				// Fill modal content
 				document.getElementById('confirmEventName').textContent = eventName;
