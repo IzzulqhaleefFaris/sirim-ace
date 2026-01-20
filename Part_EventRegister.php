@@ -49,12 +49,10 @@ $result = $conn->prepare($checkSQL2);
 $result->execute();
 $resultSet = $result->get_result();
 
-if($resultSet && $row = $resultSet->fetch_assoc()){
-    $lastNumber = (int)substr($row['registration_id'], 3);
-    $newCode = 'REG' . str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-}
-
-else{
+if ($resultSet && $row = $resultSet->fetch_assoc()) {
+    $lastNumber = (int) substr($row['registration_id'], 3);
+    $newCode    = 'REG' . str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+} else {
     $newCode = 'REG0001';
 }
 
@@ -69,9 +67,11 @@ $insertStmt = $conn->prepare($insertSql);
 $insertStmt->bind_param("sss", $newCode, $eventId, $participantId);
 
 if ($insertStmt->execute()) {
-    $_SESSION['msg'] = [
+    // cache latest registration id for QR display
+    $_SESSION['latest_registration_id'] = $newCode;
+    $_SESSION['msg']                    = [
         'type' => 'success',
-        'text' => 'Pendaftaran berjaya!'
+        'text' => 'Pendaftaran berjaya! QR anda sedia di halaman My Events.'
     ];
 } else {
     $_SESSION['msg'] = [

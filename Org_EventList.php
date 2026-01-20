@@ -8,8 +8,34 @@ if (!isset($_SESSION['userId'])) {
 }
 
 include 'include/config.php';
-// include 'include/updateEventStatus.php';
-// updateEventStatuses($conn);
+include 'include/updateEventStatus.php';
+
+// Update event statuses based on current date
+updateEventStatuses($conn);
+
+// Get statistics
+$stats = [
+    'total' => 0,
+    'current' => 0,
+    'upcoming' => 0,
+    'completed' => 0
+];
+
+$statsSql = "SELECT 
+    COUNT(*) as total,
+    SUM(CASE WHEN event_status = 'Current' THEN 1 ELSE 0 END) as current,
+    SUM(CASE WHEN event_status = 'Upcoming' THEN 1 ELSE 0 END) as upcoming,
+    SUM(CASE WHEN event_status = 'Completed' THEN 1 ELSE 0 END) as completed
+    FROM att_event";
+$statsRes = $conn->query($statsSql);
+if ($statsRes && $row = $statsRes->fetch_assoc()) {
+    $stats = [
+        'total' => (int)$row['total'],
+        'current' => (int)$row['current'],
+        'upcoming' => (int)$row['upcoming'],
+        'completed' => (int)$row['completed']
+    ];
+}
 ?>
 
 <!DOCTYPE html>
@@ -38,10 +64,35 @@ include 'include/config.php';
     <!--end::Global Stylesheets Bundle-->
 
     <style>
-        .table thead th,
+        .table thead th {
+            /* text-align: center !important;
+            vertical-align: middle !important; */
+            white-space: nowrap;
+        }
         .table tbody td {
-            text-align: center !important;
             vertical-align: middle !important;
+        }
+        .stat-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+        }
+        .event-name {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .badge-custom {
+            padding: 6px 12px;
+            font-weight: 500;
+            font-size: 0.85em;
+        }
+        .action-buttons {
+            white-space: nowrap;
+        }
+        .action-buttons .btn {
+            margin: 2px;
         }
     </style>
 </head>
@@ -82,38 +133,110 @@ include 'include/config.php';
 
                     <!--begin::Content-->
                     <div class="post d-flex flex-column-fluid" id="kt_post">
-                        <div id="kt_content_container" class="container-fluid">
-                            <div class="row justify-content-center">
-                                <div class="card shadow-sm">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title fs-1" style="font-weight: 800">Pendaftaran Event</h5>
-                                        <a href="Org_CreateEvent.php" class="btn btn-sm btn-primary d-flex align-items-center">
-                                            <i class="bi bi-plus-square-fill me-1"></i> Tambah Event
-                                        </a>
+                        <div id="kt_content_container" class="container-fluid py-5">
+                            <!-- Statistics Cards -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-3">
+                                    <div class="card stat-card shadow-sm border-0 h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1">
+                                                    <div class="text-muted small mb-1">Jumlah Event</div>
+                                                    <div class="h3 fw-bold mb-0"><?= number_format($stats['total']) ?></div>
+                                                </div>
+                                                <div class="fs-1 text-primary opacity-75">
+                                                    <i class="bi bi-calendar-event"></i>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card stat-card shadow-sm border-0 h-100 border-start border-3 border-primary">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1">
+                                                    <div class="text-muted small mb-1">Current</div>
+                                                    <div class="h3 fw-bold mb-0 text-primary"><?= number_format($stats['current']) ?></div>
+                                                </div>
+                                                <div class="fs-1 text-primary opacity-75">
+                                                    <i class="bi bi-play-circle"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card stat-card shadow-sm border-0 h-100 border-start border-3 border-secondary">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1">
+                                                    <div class="text-muted small mb-1">Upcoming</div>
+                                                    <div class="h3 fw-bold mb-0 text-secondary"><?= number_format($stats['upcoming']) ?></div>
+                                                </div>
+                                                <div class="fs-1 text-secondary opacity-75">
+                                                    <i class="bi bi-clock-history"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card stat-card shadow-sm border-0 h-100 border-start border-3 border-success">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1">
+                                                    <div class="text-muted small mb-1">Completed</div>
+                                                    <div class="h3 fw-bold mb-0 text-success"><?= number_format($stats['completed']) ?></div>
+                                                </div>
+                                                <div class="fs-1 text-success opacity-75">
+                                                    <i class="bi bi-check-circle"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Card -->
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                                    <div>
+                                        <h5 class="card-title mb-0 fw-bold">
+                                            <i class="bi bi-calendar3 me-2 text-primary"></i>Senarai Event
+                                        </h5>
+                                        <small class="text-muted">Urus dan pantau semua event anda</small>
+                                    </div>
+                                    <a href="Org_CreateEvent.php" class="btn btn-primary d-flex align-items-center">
+                                        <i class="bi bi-plus-circle me-2"></i> Tambah Event
+                                    </a>
+                                </div>
 
                                     <div class="card-body">
-                                        <?php if (!empty($_SESSION['msg'])): ?>
-                                            <div class="alert alert-<?= htmlspecialchars($_SESSION['msg']['type']) ?> alert-dismissible fade show mb-3" role="alert">
-                                                <?= htmlspecialchars($_SESSION['msg']['text']) ?>
-                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                            </div>
-                                        <?php unset($_SESSION['msg']);
-                                        endif; ?>
-                                        <div class="table-responsive">
-                                            <table id="eventTable" class="table table-striped table-hover">
-                                                <thead class="table-light">
-                                                    <tr class="fw-bolder">
-                                                        <th>No</th>
-                                                        <th>Nama Event</th>
-                                                        <th>Lokasi</th>
-                                                        <th>Jenis</th>
-                                                        <th>Event Mula</th>
-                                                        <th>Event Tamat</th>
-                                                        <th>Status</th>
-                                                        <th>Tindakan</th>
-                                                    </tr>
-                                                </thead>
+                                        <div class="card-body">
+                                            <?php if (!empty($_SESSION['msg'])): ?>
+                                                <div class="alert alert-<?= htmlspecialchars($_SESSION['msg']['type']) ?> alert-dismissible fade show mb-3" role="alert">
+                                                    <i class="bi bi-<?= $_SESSION['msg']['type'] === 'success' ? 'check-circle' : ($_SESSION['msg']['type'] === 'danger' ? 'exclamation-triangle' : 'info-circle') ?> me-2"></i>
+                                                    <?= htmlspecialchars($_SESSION['msg']['text']) ?>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                                </div>
+                                                <?php unset($_SESSION['msg']); ?>
+                                            <?php endif; ?>
+                                            
+                                            <div class="table-responsive">
+                                                <table id="eventTable" class="table table-hover ">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th style="width: 50px;">No</th>
+                                                            <th><i class="bi bi-calendar-event me-1"></i>Nama Event</th>
+                                                            <th><i class="bi bi-geo-alt me-1"></i>Lokasi</th>
+                                                            <th><i class="bi bi-tag me-1"></i>Jenis</th>
+                                                            <th><i class="bi bi-calendar-check me-1"></i>Mula</th>
+                                                            <th><i class="bi bi-calendar-x me-1"></i>Tamat</th>
+                                                            <th style="width: 100px;"><i class="bi bi-info-circle me-1"></i>Status</th>
+                                                            <th style="width: 200px;" class="text-center"><i class="bi bi-gear me-1"></i>Tindakan</th>
+                                                        </tr>
+                                                    </thead>
 
                                                 <tbody>
                                                     <?php
@@ -138,33 +261,61 @@ include 'include/config.php';
                                                     } elseif ($res->num_rows == 0) {
                                                         echo "<tr><td colspan='8' class='text-center text-muted py-3'>Tiada event ditemui.</td></tr>";
                                                     } else {
-                                                        function getStatusBadge($status)
-                                                        {
-                                                            $colors = [
-                                                                'Upcoming' => '#6c757d',
-                                                                'Completed' => '#28a745',
-                                                                'Current' => '#007bff',
+                                                        function getStatusBadge($status) {
+                                                            $badges = [
+                                                                'Upcoming' => '<span class="badge bg-secondary badge-custom">Upcoming</span>',
+                                                                'Completed' => '<span class="badge bg-success badge-custom">Completed</span>',
+                                                                'Current' => '<span class="badge bg-primary badge-custom">Current</span>',
                                                             ];
-                                                            $color = $colors[$status] ?? '#6c757d';
-                                                            return "<span style='background-color: $color; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.875em;'>$status</span>";
+                                                            return $badges[$status] ?? '<span class="badge bg-secondary badge-custom">' . htmlspecialchars($status) . '</span>';
                                                         }
+                                                        
+                                                        function formatDate($dateStr) {
+                                                            if (empty($dateStr)) return '-';
+                                                            $date = DateTime::createFromFormat('Y-m-d', $dateStr);
+                                                            return $date ? $date->format('d M Y') : $dateStr;
+                                                        }
+                                                        
                                                         $i = 1;
                                                         while ($row = $res->fetch_assoc()) {
+                                                            $eventName = htmlspecialchars($row['event_name']);
+                                                            $locationName = htmlspecialchars($row['location_name'] ?? '-');
+                                                            $eventType = htmlspecialchars($row['event_type_name'] ?? '-');
+                                                            $startDate = formatDate($row['event_startDate']);
+                                                            $endDate = formatDate($row['event_endDate']);
+                                                            $eventId = htmlspecialchars($row['event_id']);
+                                                            
                                                             echo "
                                                                 <tr>
-                                                                    <td>{$i}</td>
-                                                                    <td>" . htmlspecialchars($row['event_name']) . "</td>
-                                                                    <td>" . htmlspecialchars($row['location_name']) . "</td>
-                                                                    <td>" . htmlspecialchars($row['event_type_name']) . "</td>
-                                                                    <td>" . htmlspecialchars($row['event_startDate']) . "</td>
-                                                                    <td>" . htmlspecialchars($row['event_endDate']) . "</td>
-                                                                    <td>" . getStatusBadge($row['event_status']) . "</td>
+                                                                    <td class='text-center'>{$i}</td>
                                                                     <td>
-                                                                        <a href='Org_EditEvent.php?id={$row['event_id']}' class='btn btn-warning btn-sm me-1'>Edit</a>
-                                                                        <button class='btn btn-danger btn-sm btn-delete' data-id='{$row['event_id']}'>Delete</button>
+                                                                        <div class='event-name'>{$eventName}</div>
+                                                                    </td>
+                                                                    <td>{$locationName}</td>
+                                                                    <td>{$eventType}</td>
+                                                                    <td class='text-nowrap'>{$startDate}</td>
+                                                                    <td class='text-nowrap'>{$endDate}</td>
+                                                                    <td class='text-center'>" . getStatusBadge($row['event_status']) . "</td>
+                                                                    <td class='text-center action-buttons'>
+                                                                        <a href='Org_EventRegistrations.php?id={$eventId}'
+                                                                           class='btn btn-info btn-sm'
+                                                                           title='View Registrations'>
+                                                                            <i class='bi bi-people'></i>
+                                                                        </a>
+                                                                        <a href='Org_EditEvent.php?id={$eventId}' 
+                                                                           class='btn btn-warning btn-sm' 
+                                                                           title='Edit Event'>
+                                                                            <i class='bi bi-pencil'></i>
+                                                                        </a>
+                                                                        <button class='btn btn-danger btn-sm btn-delete' 
+                                                                                data-id='{$eventId}'
+                                                                                data-name='{$eventName}'
+                                                                                title='Delete Event'>
+                                                                            <i class='bi bi-trash'></i>
+                                                                        </button>
                                                                     </td>
                                                                 </tr>
-                                                                ";
+                                                            ";
                                                             $i++;
                                                         }
                                                     }
@@ -214,14 +365,18 @@ include 'include/config.php';
 
                 const idAttr = btn.dataset.id ?? btn.getAttribute('data-id');
                 const id = String(idAttr ?? '').trim();
-                console.log('delete idAttr:', idAttr, 'parsed id: ', id);
+                const eventName = btn.dataset.name || 'event ini';
 
                 if (!id || !/^[A-Za-z0-9_-]+$/.test(id)) {
-                    alert('Error: missing or invalid event ID');
+                    alert('Ralat: ID event tidak sah');
                     return;
                 }
 
-                if (!confirm('Adakah anda pasti mahu memadam event ini?')) return;
+                if (!confirm(`Adakah anda pasti mahu memadam event "${eventName}"?\n\nTindakan ini tidak boleh dibuat asal semula.`)) return;
+                
+                // Disable button to prevent double-click
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
 
                 fetch('Org_DeleteEvent.php', {
                         method: 'POST',
@@ -234,14 +389,29 @@ include 'include/config.php';
                     .then(res => res.text())
                     .then(text => {
                         if (text.trim() === 'success') {
-                            location.reload();
+                            // Show success message
+                            const alertDiv = document.createElement('div');
+                            alertDiv.className = 'alert alert-success alert-dismissible fade show m-3';
+                            alertDiv.innerHTML = `
+                                <i class="bi bi-check-circle me-2"></i>
+                                Event berjaya dipadam.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            `;
+                            document.body.insertBefore(alertDiv, document.body.firstChild);
+                            
+                            // Reload after short delay
+                            setTimeout(() => location.reload(), 500);
                         } else {
                             alert('Gagal memadam event: ' + text);
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="bi bi-trash"></i>';
                         }
                     })
                     .catch(err => {
                         console.error(err);
                         alert('Ralat rangkaian. Sila cuba semula.');
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="bi bi-trash"></i>';
                     });
             });
     </script>
@@ -267,21 +437,29 @@ include 'include/config.php';
     </script> -->
 
     <script>
-        $('#eventTable').DataTable({
-            language: {
-                search: "Cari:",
-                lengthMenu: "Papar _MENU_ rekod",
-                info: "Rekod _START_ - _END_ daripada _TOTAL_ jumlah rekod",
-                infoEmpty: "Tiada rekod",
-                infoFiltered: "(Tapis dari _MAX_ rekod)",
-                zeroRecords: "Tiada padanan",
-                paginate: {
-                    first: "Awal",
-                    last: "Akhir",
-                    next: "▶",
-                    previous: "◀"
-                }
-            }
+        $(document).ready(function() {
+            $('#eventTable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: 25,
+                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+                language: {
+                    search: "Cari:",
+                    lengthMenu: "Papar _MENU_ rekod",
+                    info: "Menunjukkan _START_ hingga _END_ daripada _TOTAL_ rekod",
+                    infoEmpty: "Menunjukkan 0 hingga 0 daripada 0 rekod",
+                    infoFiltered: "(ditapis daripada _MAX_ jumlah rekod)",
+                    zeroRecords: "Tiada rekod ditemui",
+                    emptyTable: "Tiada data dalam jadual",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Akhir",
+                        next: "Seterusnya",
+                        previous: "Sebelumnya"
+                    }
+                },
+                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                responsive: true
+            });
         });
     </script>
 </body>

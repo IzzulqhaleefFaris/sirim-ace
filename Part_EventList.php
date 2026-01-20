@@ -1,6 +1,10 @@
 <?php
 session_start();
 include "include/config.php";
+include "include/updateEventStatus.php";
+
+// Update event statuses based on current date
+updateEventStatuses($conn);
 
 // Redirect to login if not logged in
 if (!isset($_SESSION['userId'])) {

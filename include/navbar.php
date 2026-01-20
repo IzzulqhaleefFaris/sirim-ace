@@ -23,8 +23,8 @@ if ($_SESSION["roleId"] == '2') { ?>
         </div>
         <!--end::Home-->
 
-        <!--begin::Laporan-->
-        <div data-kt-menu-trigger="hover" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1"><!--tukar hover-->
+        <!--begin::Event-->
+        <div data-kt-menu-trigger="hover" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
             <span class="menu-link py-3">
                 <span class="menu-icon"><i class="bi bi-journals fs-3"></i></span>
                 <span class="menu-title">Event</span>
@@ -32,26 +32,20 @@ if ($_SESSION["roleId"] == '2') { ?>
             </span>
             <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown menu-rounded-0 py-lg-4 w-lg-225px">
                 <div class="menu-item">
-                    <a class="menu-link py-3" href="rondaReport.php">
-                        <span class="menu-icon"><i class="bi bi-journal fs-3"></i></span>
-                        <span class="menu-title">Event</span><!--CHANGED: Event-->
+                    <a class="menu-link py-3" href="Part_EventList.php">
+                        <span class="menu-icon"><i class="bi bi-list-task fs-3"></i></span>
+                        <span class="menu-title">Senarai Event</span>
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a class="menu-link py-3" href="rondaDailyMap.php">
-                        <span class="menu-icon"><i class="bi bi-journal-text fs-3"></i></span>
-                        <span class="menu-title">Peta Rondaan</span>
+                    <a class="menu-link py-3" href="Part_MyEvents.php">
+                        <span class="menu-icon"><i class="bi bi-qr-code fs-3"></i></span>
+                        <span class="menu-title">My Events & QR</span>
                     </a>
                 </div>
-                <!--<div class="menu-item">
-                        <a class="menu-link py-3" href="pbt_laporanPelekatPremis.php">
-                            <span class="menu-icon"><i class="bi bi-journal-album fs-3"></i></span>
-                            <span class="menu-title">Laporan Pelekat Premis</span>
-                        </a>
-                    </div>-->
             </div>
         </div>
-        <!--end::Laporan-->
+        <!--end::Event-->
     </div>
     <!--end::Menu-->
 <?php } elseif ($_SESSION["roleId"] == '1') { ?>
@@ -86,7 +80,7 @@ if ($_SESSION["roleId"] == '2') { ?>
 
         <!--begin::Pengguna-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="rondaDailyMap.php">
+            <a class="menu-link py-3" href="Org_Scanner.php">
                 <span class="menu-icon"><i class="bi bi-upc-scan"></i></span>
                 <span class="menu-title">Kehadiran</span><!--CHANGED: Kehadiran-->
             </a>

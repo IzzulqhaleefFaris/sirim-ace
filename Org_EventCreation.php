@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 include 'include/config.php';
-// include 'updateEventStatus.php';
+include 'include/updateEventStatus.php';
 
 // Helper function
 function nextCode($conn, $table, $code_col, $prefix, $numDigits = 3)
@@ -219,7 +219,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $conn->commit();
 
-        // updateEventStatuses($conn);
+        // Update event statuses after successful creation
+        updateEventStatuses($conn);
 
         $_SESSION['event_created'] = [
             'id' => $event_id,

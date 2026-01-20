@@ -1,6 +1,7 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 include __DIR__ . '/include/config.php';
+include __DIR__ . '/include/updateEventStatus.php';
 
 // verify DB connection exists
 if (!isset($conn) || !$conn) {
@@ -63,69 +64,107 @@ if ($closeTS !== null && $closeTS > $endTS) {
     exit;
 }
 
-if ($locationId !== '') {
-    $sqlLoc = "UPDATE att_location
-               SET location_name = ?, building_name = ?, location_address = ?, state_id = ?
-               WHERE location_id = ?";
-    $stmtLoc = $conn->prepare($sqlLoc);
-    if ($stmtLoc === false) {
-        error_log("Prepare failed (loc): " . $conn->error);
-        $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Ralat pangkalan data (location).'];
-        header("Location: Org_EditEvent.php?id=" . urlencode($eventId));
-        exit;
-    }
-    $stmtLoc->bind_param("sssss", $location_name, $building_name, $location_address, $state_id, $locationId);
-    if (!$stmtLoc->execute()) {
-        error_log("Execute failed (loc): " . $stmtLoc->error);
-        $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Gagal mengemaskini lokasi: ' . $stmtLoc->error];
-        $stmtLoc->close();
-        header("Location: Org_EditEvent.php?id=" . urlencode($eventId));
-        exit;
-    }
-    $stmtLoc->close();
-}
+// Start transaction for data integrity
+$conn->begin_transaction();
 
-// Prepare update and check prepare success
-$sql = "
-    UPDATE att_event 
-    SET event_name = ?, event_type_id = ?, event_startDate = ?, event_endDate = ?, 
-        event_openRegistration = ?, event_closeRegistration = ?, location_id = ?
-    WHERE event_id = ?
-";
-$stmt = $conn->prepare($sql);
-if ($stmt === false) {
-    error_log("Prepare failed: " . $conn->error . " | SQL: " . $sql);
-    $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Ralat pangkalan data: ' . $conn->error];
+try {
+    $errorOccurred = false;
+    $errorMessage = '';
+
+    // Update location if location_id exists
+    if ($locationId !== '' && $location_name !== '') {
+        $sqlLoc = "UPDATE att_location
+                   SET location_name = ?, building_name = ?, location_address = ?, state_id = ?
+                   WHERE location_id = ?";
+        $stmtLoc = $conn->prepare($sqlLoc);
+        
+        if ($stmtLoc === false) {
+            throw new Exception("Ralat menyediakan query lokasi: " . $conn->error);
+        }
+        
+        // Convert empty strings to null for optional fields
+        $building_name = $building_name === '' ? null : $building_name;
+        $location_address = $location_address === '' ? null : $location_address;
+        
+        $stmtLoc->bind_param("sssss", $location_name, $building_name, $location_address, $state_id, $locationId);
+        
+        if (!$stmtLoc->execute()) {
+            throw new Exception("Gagal mengemaskini lokasi: " . $stmtLoc->error);
+        }
+        
+        $stmtLoc->close();
+    }
+
+    // Prepare event update query
+    $sql = "UPDATE att_event 
+            SET event_name = ?, 
+                event_type_id = ?, 
+                event_startDate = ?, 
+                event_endDate = ?, 
+                event_openRegistration = ?, 
+                event_closeRegistration = ?, 
+                location_id = ?
+            WHERE event_id = ?";
+    
+    $stmt = $conn->prepare($sql);
+    
+    if ($stmt === false) {
+        throw new Exception("Ralat menyediakan query event: " . $conn->error);
+    }
+
+    // Convert empty strings to null for optional fields
+    $openReg = ($openReg === '') ? null : $openReg;
+    $closeReg = ($closeReg === '') ? null : $closeReg;
+    $locationId = ($locationId === '') ? null : $locationId;
+
+    // Bind parameters - 8 parameters total
+    $stmt->bind_param(
+        "ssssssss",
+        $name,
+        $event_type_id,
+        $start,
+        $end,
+        $openReg,
+        $closeReg,
+        $locationId,
+        $eventId
+    );
+
+    if (!$stmt->execute()) {
+        throw new Exception("Gagal mengemaskini event: " . $stmt->error);
+    }
+
+    // Check if any rows were affected
+    if ($stmt->affected_rows === 0) {
+        throw new Exception("Tiada perubahan dibuat. Event mungkin tidak wujud atau tiada data berubah.");
+    }
+
+    $stmt->close();
+
+    // Commit transaction if everything succeeded
+    $conn->commit();
+    
+    // Update event statuses after successful update
+    updateEventStatuses($conn);
+    
+    $_SESSION['msg'] = [
+        'type' => 'success',
+        'text' => 'Event berjaya dikemaskini. Status event telah dikemaskini berdasarkan tarikh semasa.'
+    ];
+    
+    header("Location: Org_EventList.php");
+    exit;
+
+} catch (Exception $e) {
+    // Rollback transaction on error
+    $conn->rollback();
+    
+    error_log("Update event error: " . $e->getMessage());
+    $_SESSION['msg'] = [
+        'type' => 'danger',
+        'text' => $e->getMessage()
+    ];
+    
     header("Location: Org_EditEvent.php?id=" . urlencode($eventId));
     exit;
 }
-
-$openReg = $openReg ?: null;
-$closeReg = $closeReg ?: null;
-
-// Bind all as strings (IDs are alphanumeric)
-$stmt->bind_param(
-    "ssssssss",
-    $name,
-    $event_type_id,
-    $start,
-    $end,
-    $openReg,
-    $closeReg,
-    $locationId,
-    $eventId
-);
-
-if ($stmt->execute()) {
-    $_SESSION['msg'] = [
-        'type' => 'success',
-        'text' => 'Event berjaya dikemaskini.'
-    ];
-} else {
-    error_log("Execute failed: " . $stmt->error);
-    $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Failed to update event: ' . $stmt->error];
-}
-
-$stmt->close();
-header("Location: Org_EventList.php");
-exit;
