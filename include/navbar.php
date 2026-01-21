@@ -62,7 +62,7 @@ if ($_SESSION["roleId"] == '2') { ?>
 
         <!--begin::Pengguna-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="home.php">
+            <a class="menu-link py-3" href="Org_EventList.php">
                 <span class="menu-icon"><i class="bi bi-people fs-3"></i></span>
                 <span class="menu-title">Event</span><!--CHANGED: Event-->
             </a>

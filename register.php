@@ -48,13 +48,21 @@ if (isset($_SESSION['userId'])) {
             box-shadow: none;
             /* Remove outline shadow */
         }
+
+        /* Background Image */
+        .main-bg {
+            background-image: url("images/custom/Blue_Gold3.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
     </style>
 </head>
 <!--end::Head-->
 
 <!--begin::Body-->
 
-<body class="d-flex flex-column min-vh-100 bg-white py-2">
+<body class="d-flex flex-column min-vh-100 bg-white py-2 main-bg">
     <!--begin::Main content-->
     <main class="flex-grow-1 d-flex flex-column justify-content-center align-items-center p-10">
         <!--begin::Logo-->
@@ -170,21 +178,13 @@ if (isset($_SESSION['userId'])) {
                 </div>
             </div>
         </section>
-
+        <!--begin::Footer-->
+        <footer>
+            <?php include "include/footer.php"; ?>
+        </footer>
+        <!--end::Footer-->
     </main>
-    <!--begin::Footer-->
-    <footer class="d-flex flex-center mt-auto p-4">
-        <!--begin::Links-->
-        <div class="d-flex flex-center flex-column-auto p-10 mt-auto">
-            <!--begin::Links-->
-            <div class="d-flex align-items-center fw-bold fs-6">
-                <a class="text-muted text-hover-primary px-2">&copy;2024 - <?php echo date("Y"); ?>, ATTENDANCE. Hakcipta Terpelihara. Dibangun dan diselenggarakan oleh SIRIM Berhad. | Version 1.0</a>
-            </div>
-            <!--end::Links-->
-        </div>
-        <!--end::Links-->
-    </footer>
-    <!--end::Footer-->
+
     </div>
     <!--end::Authentication - Sign-in-->
     </div>

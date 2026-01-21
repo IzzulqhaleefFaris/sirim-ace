@@ -61,6 +61,15 @@ header("Pragma: no-cache");
 			return true;
 		}
 	</script>
+	<style>
+		/* Background Image */
+		#kt_body {
+			background-image: url("images/custom/Blue_Gold3.jpg");
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+	</style>
 </head>
 <!--end::Head-->
 
@@ -100,12 +109,12 @@ header("Pragma: no-cache");
 		<!--begin::Authentication - Sign-in -->
 		<div class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed">
 			<!--begin::Content-->
-			<div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
+			<div class="d-flex flex-center flex-column flex-column-fluid p-5 pb-lg-20">
 				<!--begin::Logo-->
 				<div class="mb-12">
-					<img alt="Logo" src="assets/media/logos/atendance.png" class="h-150px" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img alt="Logo" src="assets/media/logos/sirim.png" class="h-150px" />
+					<img alt="Logo" src="assets/media/logos/atendance.png" class="h-150px" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img alt="Logo" src="assets/media/logos/sirim.jpg" class="h-150px" />
 				</div>
-				<h1 class="text-dark mb-4 fs-2">ATTENDANCE | Advanced Event and Attendance Coordination Engine</h1>
+				<h1 class="text-light mb-4 fs-2">ATTENDANCE | Advanced Event and Attendance Coordination Engine</h1>
 				<!--end::Logo-->
 
 				<!--begin::Wrapper-->
@@ -174,13 +183,7 @@ header("Pragma: no-cache");
 			<!--end::Content-->
 
 			<!--begin::Footer-->
-			<div class="d-flex flex-center flex-column-auto p-10">
-				<!--begin::Links-->
-				<div class="d-flex align-items-center fw-bold fs-6">
-					<a class="text-muted text-hover-primary px-2">&copy;2024 - <?php echo date("Y"); ?>, ATTENDANCE. Hakcipta Terpelihara. Dibangun dan diselenggarakan oleh SIRIM Berhad. | Version 1.0</a>
-				</div>
-				<!--end::Links-->
-			</div>
+			<?php include "include/footer.php"; ?>
 			<!--end::Footer-->
 		</div>
 		<!--end::Authentication - Sign-in-->

@@ -214,7 +214,7 @@ endif;
 																				<li>• Minimum size: <strong>1280 × 720 px</strong></li>
 																				<li>• Recommended size: <strong>1600 × 900 px</strong></li>
 																				<li>• Format: <strong>JPG / PNG</strong></li>
-																				<li>• Max file size: <strong>2–5 MB</strong></li>
+																				<li>• Max file size: <strong>2 MB</strong></li>
 																			</ul>
 																		</div>
 																	</div>
@@ -300,7 +300,9 @@ endif;
 																	id="startTime"
 																	class="form-control"
 																	type="time"
-																	name="event_startTime" />
+																	name="event_startTime"
+																	value="<?= htmlspecialchars($_POST['event_startTime'] ?? '09:00') ?>"
+																	required />
 															</div>
 														</div>
 
@@ -324,7 +326,9 @@ endif;
 																	id="endTime"
 																	class="form-control"
 																	type="time"
-																	name="event_endTime" />
+																	name="event_endTime"
+																	value="<?= htmlspecialchars($_POST['event_endTime'] ?? '17:00') ?>"
+																	required />
 															</div>
 														</div><br><br>
 
