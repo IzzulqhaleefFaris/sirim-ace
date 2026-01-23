@@ -133,19 +133,19 @@ if ($statsRes && $row = $statsRes->fetch_assoc()) {
 
                     <!--begin::Content-->
                     <div class="post d-flex flex-column-fluid" id="kt_post">
-                        <div id="kt_content_container" class="container-fluid py-5">
+                        <div id="kt_content_container" class="container-fluid">
                             <!-- Statistics Cards -->
-                            <div class="row g-3 mb-4">
+                            <div class="row g-3 mb-4 px-20">
                                 <div class="col-md-3">
-                                    <div class="card stat-card shadow-sm border-0 h-100">
+                                    <div class="card stat-card shadow-sm border-0 h-100 border-start border-3 border-dark">
                                         <div class="card-body">
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1">
-                                                    <div class="text-muted small mb-1">Jumlah Event</div>
+                                                    <div class="text-muted small mb-1 fs-5">Jumlah Event</div>
                                                     <div class="h3 fw-bold mb-0"><?= number_format($stats['total']) ?></div>
                                                 </div>
-                                                <div class="fs-1 text-primary opacity-75">
-                                                    <i class="bi bi-calendar-event"></i>
+                                                <div class="fs-1 opacity-75">
+                                                    <i class="bi bi-calendar-event " style="font-size: 2rem; color: #212529;"></i>
                                                 </div>
                                             </div>
                                         </div>
@@ -156,11 +156,11 @@ if ($statsRes && $row = $statsRes->fetch_assoc()) {
                                         <div class="card-body">
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1">
-                                                    <div class="text-muted small mb-1">Current</div>
+                                                    <div class="text-muted small mb-1 fs-5">Current</div>
                                                     <div class="h3 fw-bold mb-0 text-primary"><?= number_format($stats['current']) ?></div>
                                                 </div>
                                                 <div class="fs-1 text-primary opacity-75">
-                                                    <i class="bi bi-play-circle"></i>
+                                                    <i class="bi bi-play-circle" style="font-size: 2rem; color: #0d6efd;"></i>
                                                 </div>
                                             </div>
                                         </div>
@@ -171,11 +171,11 @@ if ($statsRes && $row = $statsRes->fetch_assoc()) {
                                         <div class="card-body">
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1">
-                                                    <div class="text-muted small mb-1">Upcoming</div>
+                                                    <div class="text-muted small mb-1 fs-5">Upcoming</div>
                                                     <div class="h3 fw-bold mb-0 text-secondary"><?= number_format($stats['upcoming']) ?></div>
                                                 </div>
                                                 <div class="fs-1 text-secondary opacity-75">
-                                                    <i class="bi bi-clock-history"></i>
+                                                    <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
                                                 </div>
                                             </div>
                                         </div>
@@ -186,11 +186,11 @@ if ($statsRes && $row = $statsRes->fetch_assoc()) {
                                         <div class="card-body">
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1">
-                                                    <div class="text-muted small mb-1">Completed</div>
+                                                    <div class="text-muted small mb-1 fs-5">Completed</div>
                                                     <div class="h3 fw-bold mb-0 text-success"><?= number_format($stats['completed']) ?></div>
                                                 </div>
                                                 <div class="fs-1 text-success opacity-75">
-                                                    <i class="bi bi-check-circle"></i>
+                                                    <i class="bi bi-check-circle" style="font-size: 2rem; color: #198754;"></i>
                                                 </div>
                                             </div>
                                         </div>

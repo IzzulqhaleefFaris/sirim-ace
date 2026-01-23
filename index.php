@@ -69,6 +69,14 @@ header("Pragma: no-cache");
 			background-position: center;
 			background-repeat: no-repeat;
 		}
+
+		.blur-bg {
+			background-color: #07072d;
+			/* 60% dark */
+			padding: 0.5rem 1rem;
+			border-radius: 0.5rem;
+			display: inline-block;
+		}
 	</style>
 </head>
 <!--end::Head-->
@@ -109,12 +117,14 @@ header("Pragma: no-cache");
 		<!--begin::Authentication - Sign-in -->
 		<div class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed">
 			<!--begin::Content-->
-			<div class="d-flex flex-center flex-column flex-column-fluid p-5 pb-lg-20">
+			<div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
 				<!--begin::Logo-->
 				<div class="mb-12">
 					<img alt="Logo" src="assets/media/logos/atendance.png" class="h-150px" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img alt="Logo" src="assets/media/logos/sirim.jpg" class="h-150px" />
 				</div>
-				<h1 class="text-light mb-4 fs-2">ATTENDANCE | Advanced Event and Attendance Coordination Engine</h1>
+				<h1 class="text-light mb-4 fs-2 blur-bg">
+					ATTENDANCE | Advanced Event and Attendance Coordination Engine
+				</h1>
 				<!--end::Logo-->
 
 				<!--begin::Wrapper-->
@@ -179,12 +189,13 @@ header("Pragma: no-cache");
 					<!-- End:: Register text -->
 				</div>
 				<!--end::Wrapper-->
+				<footer class="pt-15">
+					<!--begin::Footer-->
+					<?php include "include/footer.php"; ?>
+					<!--end::Footer-->
+				</footer>
 			</div>
 			<!--end::Content-->
-
-			<!--begin::Footer-->
-			<?php include "include/footer.php"; ?>
-			<!--end::Footer-->
 		</div>
 		<!--end::Authentication - Sign-in-->
 	</div>

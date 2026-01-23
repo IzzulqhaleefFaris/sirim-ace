@@ -95,13 +95,13 @@ if (isset($_SESSION['msg'])) {
                     <!--begin::User-->
                     <div class="d-flex align-items-stretch" id="kt_header_user_menu_toggle">
                         <!--begin::Menu wrapper-->
-                        
+
                         <!-- Digital Clock -->
-                        <div id="clock" style="color: white; display: flex; align-items: center;" class="clock"></div>
+                        <span id="clock" class="px-3" style="color: white; display: flex; align-items: center;"></span>
 
                         <!-- Gap -->
-                        &nbsp;&nbsp;&nbsp;
-                        
+
+
                         <div class="topbar-item cursor-pointer symbol px-3 px-lg-5 me-n3 me-lg-n5 symbol-30px symbol-md-35px" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
                             <!-- <img src="assets/media/avatars/blank.png" alt="metronic" /> -->
                             <i class="bi bi-person fs-4x"></i>
@@ -390,37 +390,31 @@ if (isset($_SESSION['msg'])) {
 
     <!-- Digital clock function -->
     <script>
-        function digitalClock() {
-            const clock = document.getElementById("clock");
-            setInterval(() => {
-                const now = new Date();
-                const hours = now.getHours().toString().padStart(2, '0');
-                const minutes = now.getMinutes().toString().padStart(2, '0');
-                const seconds = now.getSeconds().toString().padStart(2, '0');
+        const clockElement = document.getElementById('clock');
 
-                // Get Day of the Week (Sunday = 0)
-                const day = now.getDay();
-                const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day];
+        function clock() {
+            const now = new Date();
 
-                // Get Month (0-indexed)
-                const month = now.getMonth();
-                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                const monthName = monthNames[month];
+            const datePart = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Kuala_Lumpur',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            }).format(now);
 
-                //Get Year
-                const year = now.getFullYear();
+            const timePart = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Kuala_Lumpur',
+                weekday: 'long',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).format(now);
 
-                // Get Date (day of the month)
-                const date = now.getDate();
-
-                // Update time string with date before month
-                const timeString = `${date} ${monthName} ${year}<br>${dayOfWeek}, ${hours}:${minutes}:${seconds}`;
-                clock.innerHTML = timeString;
-            }, 1000); // Update every second
+            clockElement.textContent = `${datePart} | ${timePart}`;
         }
 
-        // Call the function to start the clock
-        digitalClock();
+        clock();
+        setInterval(clock, 1000);
     </script>
 </div>
 <!--end::Modal-->

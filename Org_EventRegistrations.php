@@ -135,7 +135,7 @@ $stmt->close();
                     <?php include "include/toolbar.php"; ?>
 
                     <div class="post d-flex flex-column-fluid" id="kt_post">
-                        <div id="kt_content_container" class="container-fluid py-5">
+                        <div id="kt_content_container" class="container-fluid py-2">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
                                     <h2 class="fw-bold mb-1"><?= htmlspecialchars($event['event_name']) ?></h2>
