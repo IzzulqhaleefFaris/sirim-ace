@@ -6,7 +6,7 @@ use SendGrid\Mail\Mail;
 $email = new Mail();
 $email->setFrom("izzulqhaleef@sirim.my", "SIRIM Attendance");
 $email->setSubject("Email Testing");
-$email->addTo("izzulqhaleef001@gmail.com", "Test User");
+$email->addTo("sirimorg1@yopmail.com", "Test User");
 //Email organiser: sirimorg1@yopmail.com
 
 $textContent = "This is a test email from SIRIM Attendance System.
@@ -23,7 +23,18 @@ $htmlContent = "
 $email->addContent("text/plain", $textContent);
 $email->addContent("text/html", $htmlContent);
 
-$sendgrid = new \SendGrid($_ENV['SENDGRID_API_KEY']);
+$apiKey = getenv('SENDGRID_API_KEY');
+if ($apiKey === false || $apiKey === '') {
+    $envKey = $_ENV['SENDGRID_API_KEY'] ?? '';
+    $apiKey = $envKey !== '' ? $envKey : null;
+}
+
+if (!$apiKey) {
+    echo "Error: SENDGRID_API_KEY is not set.";
+    exit;
+}
+
+$sendgrid = new \SendGrid($apiKey);
 
 try {
     $response = $sendgrid->send($email);
