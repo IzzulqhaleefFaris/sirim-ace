@@ -1,3 +1,10 @@
+<!-- 
+ 
+Bypass the Modal Confirm Popup:
+new bootstrap.Modal(document.getElementById('confirmModal')).show(); 
+
+-->
+
 <?php
 
 ini_set('display_errors', 1);
@@ -255,8 +262,8 @@ endif;
 														</div>
 
 
-														<div class="row py-2 align-items-center">
-															<label for="organiserInput" class="form-label form-label-sm required mb-0">Nama Pengurus :</label>
+														<div class="row g-2 py-2">
+															<label for="organiserInput" class="form-label form-label-sm mb-0">Nama Pengurus :</label>
 															<div class="col-auto">
 																<select class="form-select form-select-sm w-auto" id="organiserInput" name="organiser" required>
 																	<option value="" selected disabled>Pilih Nama Pengurus</option>
@@ -419,57 +426,67 @@ endif;
 															<h5 class="modal-title" id="confirmModalLabel">Confirm Event Details</h5>
 															<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
 														</div>
-														<div class="modal-body">
-															<table class="table table-bordered">
+														<div class="modal-body my-2">
+															<div class="bg-light rounded-3 p-3 mb-3 border">
+																<div class="d-flex justify-content-between align-items-center">
+																	<div>
+																		<div class="text-muted small">Semak butiran</div>
+																		<div class="fw-semibold">Sila pastikan semua maklumat adalah betul</div>
+																	</div>
+																	<span class="badge bg-dark">Confirm</span>
+																</div>
+															</div>
+															<table class="table table-sm table-hover align-middle mb-0">
 																<tbody>
 																	<tr>
-																		<th>Nama Event</th>
-																		<td id="confirmEventName"></td>
+																		<th class="text-muted w-25">Nama Event</th>
+																		<td id="confirmEventName" class="fw-semibold"></td>
 																	</tr>
 																	<tr>
-																		<th>Jenis Event</th>
+																		<th class="text-muted">Jenis Event</th>
 																		<td id="confirmEventType"></td>
 																	</tr>
 																	<tr>
-																		<th>Tarikh Mula</th>
+																		<th class="text-muted">Tarikh Mula</th>
 																		<td id="confirmStartDate"></td>
 																	</tr>
 																	<tr>
-																		<th>Tarikh Tamat</th>
+																		<th class="text-muted">Tarikh Tamat</th>
 																		<td id="confirmEndDate"></td>
 																	</tr>
 																	<tr>
-																		<th>Tarikh Buka Pendaftaran</th>
+																		<th class="text-muted">Buka Pendaftaran</th>
 																		<td id="confirmOpenRegistration"></td>
 																	</tr>
 																	<tr>
-																		<th>Tarikh Tutup Pendaftaran</th>
+																		<th class="text-muted">Tutup Pendaftaran</th>
 																		<td id="confirmCloseRegistration"></td>
 																	</tr>
 																	<tr>
-																		<th>Negeri</th>
+																		<th class="text-muted">Negeri</th>
 																		<td id="confirmState"></td>
 																	</tr>
 																	<tr>
-																		<th>Nama Lokasi</th>
+																		<th class="text-muted">Nama Lokasi</th>
 																		<td id="confirmLocationName"></td>
 																	</tr>
 																	<tr>
-																		<th>Alamat Event</th>
+																		<th class="text-muted">Alamat Event</th>
 																		<td id="confirmAddress"></td>
 																	</tr>
 																	<tr>
-																		<th>Bangunan</th>
+																		<th class="text-muted">Bangunan</th>
 																		<td id="confirmBuilding"></td>
 																	</tr>
 																	<tr>
-																		<th>Bilik</th>
+																		<th class="text-muted">Bilik</th>
 																		<td id="confirmRoom"></td>
 																	</tr>
 																	<tr>
-																		<th>Aras</th>
+																		<th class="text-muted">Aras</th>
 																		<td id="confirmLevel"></td>
 																	</tr>
+																	<tr></tr>
 																</tbody>
 															</table>
 														</div>
