@@ -1,6 +1,6 @@
 <?php
 //include("auth.php"); //include auth.php file on all secure pages
-include "include/config.php";
+include __DIR__ . "/config.php";
 ini_set('max_execution_time', 300);
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -12,7 +12,7 @@ $nama = $_SESSION['nama'] ?? null;
 ?>
 
 <?php
-include 'include/config.php';
+include __DIR__ . '/config.php';
 $userId = $_SESSION["userId"];
 $sql = "SELECT * FROM user WHERE userId = '$userId'";
 $query = mysqli_query($conn, $sql);
@@ -71,7 +71,7 @@ if (isset($_SESSION['msg'])) {
 
         <!--begin::Logo-->
         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0 me-lg-10">
-            <a><img alt="Logo" src="assets/media/logos/atendance.png" class="h-55px" /></a>
+            <a><img alt="Logo" src="/attendance/assets/media/logos/attendance.png" class="h-55px" /></a>
         </div>
         <!--end::Logo-->
 
@@ -82,7 +82,7 @@ if (isset($_SESSION['msg'])) {
                 <!--begin::Menu wrapper-->
                 <div class="header-menu align-items-stretch" data-kt-drawer="true" data-kt-drawer-name="header-menu" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'200px', '300px': '250px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_header_menu_mobile_toggle" data-kt-place="true" data-kt-place-mode="prepend" data-kt-place-parent="{default: '#kt_body', lg: '#kt_header_nav'}">
                     <!--<div class="fw-bolder text-light d-flex align-items-center fs-2">SOLJAR | Security Operations Logistical Journey and Reporting</div>-->
-                    <?php include 'include/navbar.php'; ?> <!--Tukar Navbar-->
+                    <?php include __DIR__ . '/navbar.php'; ?> <!--Tukar Navbar-->
                 </div>
                 <!--end::Menu wrapper-->
             </div>
@@ -93,7 +93,7 @@ if (isset($_SESSION['msg'])) {
                 <!--begin::Toolbar wrapper-->
                 <div class="topbar d-flex align-items-stretch flex-shrink-0">
                     <!--begin::User-->
-                    <div class="d-flex align-items-stretch" id="kt_header_user_menu_toggle">
+                    <div class="d-flex align-items-stretch position-relative" id="kt_header_user_menu_toggle">
                         <!--begin::Menu wrapper-->
 
                         <!-- Digital Clock -->
@@ -101,33 +101,33 @@ if (isset($_SESSION['msg'])) {
 
                         <!-- Gap -->
 
-
                         <div class="topbar-item cursor-pointer symbol px-3 px-lg-5 me-n3 me-lg-n5 symbol-30px symbol-md-35px" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
-                            <!-- <img src="assets/media/avatars/blank.png" alt="metronic" /> -->
                             <i class="bi bi-person fs-4x"></i>
                             <div class="d-flex flex-column">
                                 <div class="fw-bolder text-light d-flex align-items-center fs-5"><?php echo htmlspecialchars($userName); ?></div>
                                 <?php if ($_SESSION["roleId"] == '1') { ?>
-                                    <a href="#" class="fw-bold text-light fs-7">
+                                    <a href="#" class="fw-bold text-light fs-7" style="text-decoration: none;">
                                         <?php echo htmlspecialchars($email); ?>
                                     </a>
                                 <?php } else if ($_SESSION["roleId"] == '2') { ?>
-                                    <a href="#" class="fw-bold text-light fs-7">
+                                    <a href="#" class="fw-bold text-light fs-7" style="text-decoration: none;">
                                         <?php echo htmlspecialchars($email); ?>
                                     </a>
                                 <?php } else { ?>
-                                    <a href="#" class="fw-bold text-light fs-7">Operator</a>
+                                    <a href="#" class="fw-bold text-light fs-7" style="text-decoration: none;">
+                                        <?php echo htmlspecialchars($email); ?>
+                                    </a>
                                 <?php } ?>
                             </div>
                         </div>
                         <!--end::Menu wrapper-->
 
                         <!--begin::Menu-->
-                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold py-2 fs-6 w-225px" data-kt-menu="true">
+                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold py-2 fs-6 w-225px profile-menu-dropdown" data-kt-menu="true">
 
                             <!--begin::Menu item-->
                             <div class="menu-item px-1">
-                                <a type="button" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#modalProfile">
+                                <a type="button" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#modalProfile" style="text-decoration: none;">
                                     <span class="menu-icon"><i class="bi bi-person-fill fs-3"></i></span>
                                     <span class="menu-title">Profil Saya</span>
                                 </a>
@@ -136,7 +136,7 @@ if (isset($_SESSION['msg'])) {
                             <!--end::Menu item-->
                             <!--begin::Menu item-->
                             <div class="menu-item px-1">
-                                <a type="button" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#modalCp">
+                                <a type="button" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#modalCp" style="text-decoration: none;">
                                     <span class="menu-icon"><i class="bi bi-shield-lock-fill fs-3"></i></span>
                                     <span class="menu-title">Tukar Kata Laluan</span>
                                 </a>
@@ -151,7 +151,7 @@ if (isset($_SESSION['msg'])) {
                             <!--begin::Menu item-->
                             <div class="menu-item px-5 text-center">
                                 <?php
-                                include 'include/config.php';
+                                include __DIR__ . 'config.php';
                                 $sql = "SELECT * FROM useraccess WHERE userId = '$user' AND tarikhKeluar IS NULL ORDER BY tarikhMasuk DESC LIMIT 1;";
                                 $query = mysqli_query($conn, $sql);
                                 $rows = mysqli_fetch_array($query, MYSQLI_ASSOC);
@@ -190,10 +190,41 @@ if (isset($_SESSION['msg'])) {
 </div>
 <!--end::Header-->
 
+<style>
+    .profile-menu-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        z-index: 1000;
+        min-width: 240px;
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .profile-menu-dropdown .menu-link {
+        padding: 10px 16px;
+    }
+
+    .profile-menu-dropdown .menu-item + .menu-item {
+        border-top: 1px solid #f1f1f1;
+    }
+
+    .profile-menu-dropdown .separator {
+        margin: 6px 0;
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.25;
+    }
+</style>
+
 <!--begin::Modal-->
 <div>
     <?php
-    include 'include/config.php';
+    include __DIR__ . "/config.php";
     $userId = $_SESSION["userId"];
     $sqlp = "
             SELECT 
@@ -219,7 +250,8 @@ if (isset($_SESSION['msg'])) {
     $rowsp = $resultp->fetch_assoc();
     ?>
     <!--begin::My Profile-->
-    <form id="profileForm" class="form" method="post" name="profileForm" action="include/profileUpdate.php?userId=<?php echo $rowsp['userId']; ?>">
+    <form id="profileForm" class="form" method="post" name="profileForm"
+        action="<?php echo '/attendance/include/profileUpdate.php?userId=' . $rowsp['userId']; ?>">
         <div class="modal fade" tabindex="-1" id="modalProfile" role="dialog" aria-labelledby="modalProfileLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -232,6 +264,8 @@ if (isset($_SESSION['msg'])) {
                         </div>
                         <!--end::Close-->
                     </div>
+
+                    <div id="profileAlertContainer"></div>
 
                     <div class="modal-body">
                         <div class="mb-3 row">
@@ -344,7 +378,8 @@ if (isset($_SESSION['msg'])) {
     <!-- End: Show alert status profile update -->
 
     <!--begin::Change Password-->
-    <form class="form theme-form" method="post" name="passowrdUpdate" action="include/passwordUpdate.php?userId=<?php echo $rowsp['userId']; ?>">
+    <form class="form theme-form" method="post" name="passwordUpdate"
+        action="/attendance/include/passwordUpdate.php?userId=<?php echo $rowsp['userId']; ?>">
         <div class="modal fade" tabindex="-1" id="modalCp" role="dialog" aria-labelledby="modalCpLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -415,6 +450,83 @@ if (isset($_SESSION['msg'])) {
 
         clock();
         setInterval(clock, 1000);
+
+        // Ensure profile dropdown opens even if KTMenu is not initialized
+        (function() {
+            const toggle = document.getElementById('kt_header_user_menu_toggle');
+            if (!toggle) return;
+
+            const trigger = toggle.querySelector('[data-kt-menu-trigger="click"]');
+            const menu = toggle.querySelector('.menu-sub-dropdown, .menu');
+            if (!trigger || !menu) return;
+
+            function isVisible(el) {
+                return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+            }
+
+            function showMenu() {
+                menu.classList.add('show');
+                menu.style.display = 'block';
+            }
+
+            function hideMenu() {
+                menu.classList.remove('show');
+                menu.style.display = '';
+            }
+
+            trigger.addEventListener('click', function(e) {
+                if (e.target.closest('.menu')) return;
+
+                // If KTMenu doesn't open it, toggle manually
+                setTimeout(() => {
+                    if (!isVisible(menu)) {
+                        if (menu.classList.contains('show')) {
+                            hideMenu();
+                        } else {
+                            showMenu();
+                        }
+                    }
+                }, 0);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!toggle.contains(e.target)) {
+                    hideMenu();
+                }
+            });
+        })();
+
+        // Handle profile form submission via AJAX
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const alertContainer = document.getElementById('profileAlertContainer');
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alertContainer.innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert"><i class="bi bi-check-circle"></i>&nbsp;' + data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+                    // Optionally reload page after 2 seconds to refresh the username
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    alertContainer.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert"><i class="bi bi-exclamation-circle"></i>&nbsp;' + data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alertContainer.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert"><i class="bi bi-exclamation-circle"></i>&nbsp;Ralat dalam kemaskini profil.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+            });
+        });
     </script>
 </div>
 <!--end::Modal-->

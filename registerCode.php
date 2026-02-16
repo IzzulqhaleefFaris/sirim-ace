@@ -9,7 +9,7 @@ try {
     $nama = $_POST['name'];
     $email = $_POST['email'];
     $password = md5($_POST['password']);
-    $roleId = (int) $_POST['roleId'];
+    $roleId = 2;
     $status = $_POST['status'] ?? 'A';
 
     //Check duplicate email

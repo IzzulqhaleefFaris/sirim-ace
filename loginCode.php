@@ -54,13 +54,13 @@ if(isset($_POST['login']))
 			
 			//Redirect based on role
             if($_SESSION["roleId"] == 1 && $_SESSION["status"] == 'A') {
-                header('location:Org_Home.php?pg=OFCR');
+                header('location: main/role/organiser/home.php?pg=OFCR');
                 exit;
             } else if($_SESSION["roleId"] == 2 && $_SESSION["status"] == 'A') {
-                header('location:Part_Home.php?pg=OFCR');
+                header('location: main/role/participant/home.php?pg=OFCR');
                 exit;
             } else if($_SESSION["roleId"] == 3 && $_SESSION["status"] == 'A') {
-                header('location:dashboard.php?pg=OPR');
+                header('location: main/role/admin/home.php?pg=ADMIN');
                 exit;
             } else {
                 header('location:loginError.php?ReturnId=2');

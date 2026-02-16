@@ -73,6 +73,16 @@ try{
     // Update session cache
     $_SESSION['nama'] = $nama;
 
+    // Check if this is an AJAX request
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'message' => 'Profil berjaya dikemaskini.'
+        ]);
+        exit;
+    }
+
     $_SESSION['msg'] = [
         'type' => 'success',
         'text' => 'Profil berjaya dikemaskini.'
@@ -82,6 +92,18 @@ try{
     exit;
 } catch (Exception $e){
     $conn -> rollback();
+    
+    // Check if this is an AJAX request
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+        exit;
+    }
+    
     $_SESSION['msg'] = [
         'type' => 'danger',
         'text' => $e->getMessage()

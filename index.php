@@ -6,10 +6,20 @@ if (empty($_SESSION['csrf_token'])) {
 	$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Redirect if already logged in
+// Redirect if already logged in — send to role-specific dashboard
 if (isset($_SESSION['userId'])) {
-	header('Location: /attendance');
-	exit;
+	$roleId = $_SESSION['roleId'] ?? null;
+	if ($roleId == 1) {
+		header('Location: /attendance/main/role/organiser/home.php?pg=OFCR');
+		exit;
+	} elseif ($roleId == 2) {
+		header('Location: /attendance/main/role/participant/home.php?pg=OFCR');
+		exit;
+	} elseif ($roleId == 3) {
+		header('Location: /attendance/main/role/admin/home.php?pg=ADMIN');
+		exit;
+	}
+	// For unknown roles or no role, show login page
 }
 
 // Handle flash messages
@@ -62,12 +72,23 @@ header("Pragma: no-cache");
 		}
 	</script>
 	<style>
+		html,
+		body {
+			height: 100%;
+			margin: 0;
+		}
+
 		/* Background Image */
 		#kt_body {
+			min-height: 100vh;
+			/* full screen height */
 			background-image: url("images/custom/Blue_Gold3.jpg");
 			background-size: cover;
+			/* scale image */
 			background-position: center;
+			/* center image */
 			background-repeat: no-repeat;
+			/* no tiling */
 		}
 
 		.blur-bg {
@@ -76,6 +97,12 @@ header("Pragma: no-cache");
 			padding: 0.5rem 1rem;
 			border-radius: 0.5rem;
 			display: inline-block;
+		}
+
+		.btn-hover-dark:hover {
+			background-color: #212529;
+			border-color: #212529;
+			color: #fff;
 		}
 	</style>
 </head>
@@ -128,7 +155,7 @@ header("Pragma: no-cache");
 				<!--end::Logo-->
 
 				<!--begin::Wrapper-->
-				<div class="w-lg-500px bg-white rounded shadow p-10 p-lg-10 mx-auto">
+				<div class="w-lg-500px bg-white rounded shadow p-5 p-lg-10 mx-auto">
 					<!--begin::Form-->
 					<form class="form w-100" novalidate="novalidate" id="loginForm" action="loginCode.php" method="post" name="loginForm" runat="server" style="clear: both;">
 
@@ -169,18 +196,23 @@ header("Pragma: no-cache");
 						<!--end::Input group-->
 
 						<!--begin::Actions-->
-						<div class="text-center">
-							<!--begin::Submit button-->
-							<!--<input class="btn btn-lg btn-info w-100 mb-5" name="login" type="submit" value="Log Masuk" />-->
-							<button class="btn btn-lg btn-info w-100 mb-5" type="submit" name="login"><i class="bi bi-box-arrow-in-right fs-1"></i>&nbsp;Log Masuk</button>
+						<div class="text-center mb-3">
+							<button class="btn btn-lg btn-dark w-75 mb-3" type="submit" name="login"><i class="bi bi-box-arrow-in-right fs-1"></i>&nbsp;Log Masuk</button>
 							<!--end::Submit button-->
 						</div>
 						<!--end::Actions-->
 					</form>
+
+					<div class="text-center">
+						<button class="btn btn-lg btn-light w-75 mb-3 border" type="submit" name="login">
+							<img src="assets\media\logos\microsoft.svg" alt="Microsoft" width="24" height="24">
+							&nbsp;Use Microsoft Account
+						</button>
+					</div>
 					<!--end::Form-->
 
 					<!-- Start:: Register text -->
-					<div class="text-end mt-3">
+					<div class="text-end mt-2">
 						<small class="text-muted">
 							Belum ada akaun?
 							<a href="register.php" class="link-primary">Daftar Sini!</a>
@@ -189,7 +221,7 @@ header("Pragma: no-cache");
 					<!-- End:: Register text -->
 				</div>
 				<!--end::Wrapper-->
-				<footer class="pt-15">
+				<footer class="pt-4">
 					<!--begin::Footer-->
 					<?php include "include/footer.php"; ?>
 					<!--end::Footer-->

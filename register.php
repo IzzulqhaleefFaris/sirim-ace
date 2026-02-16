@@ -34,19 +34,30 @@ if (isset($_SESSION['userId'])) {
     <style>
         .toggle-password-btn {
             background: transparent;
-            /* Remove background */
             border: none;
-            /* Remove border */
             padding: 0;
-            /* Remove extra padding */
         }
 
         .toggle-password-btn:hover,
         .toggle-password-btn:focus {
             background: transparent;
-            /* Keep transparent on hover/focus */
             box-shadow: none;
-            /* Remove outline shadow */
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-field input {
+            padding-right: 42px;
+        }
+
+        .password-field .toggle-password-btn {
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
         }
 
         /* Background Image */
@@ -80,7 +91,7 @@ if (isset($_SESSION['userId'])) {
                                                 class="h-150px me-4" />
 
                                             <img alt="Logo SIRIM"
-                                                src="assets/media/logos/sirim.png"
+                                                src="assets/media/logos/sirim2.png"
                                                 class="h-150px" />
                                         </a>
                                     </div>
@@ -111,21 +122,17 @@ if (isset($_SESSION['userId'])) {
                                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                                             <input type="email" class="form-control" name="email" id="email" placeholder="Isikan Email Anda" required>
                                         </div>
-                                        <div class="col-12 ">
+                                        <div class="col-12">
                                             <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                                            <input type="password" class="form-control" name="password" id="password" placeholder="Masukkan Password Anda" value="" required>
-                                            <button type="button" class="btn btn-sm toggle-password-btn position-absolute top-50 end-0 translate-middle-y me-2" onclick="toggleRegisterPassword()">
-                                                <i class="fa fa-eye-slash" id="togglePasswordIcon"></i>
-                                            </button>
+                                            <div class="password-field">
+                                                <input type="password" class="form-control" name="password" id="password" placeholder="Masukkan Password Anda" value="" required>
+                                                <button type="button" class="btn btn-sm toggle-password-btn" onclick="toggleRegisterPassword()" aria-label="Toggle password visibility">
+                                                    <i class="fa fa-eye-slash" id="togglePasswordIcon"></i>
+                                                </button>
+                                            </div>
                                         </div>
 
-                                        <div class="col-12">
-                                            <label class="form-label">Jawatan<span class="text-danger">*</span></label><br>
-                                            <select name="roleId" required>
-                                                <option value="1">Pentadbir (Organiser) -- will update</option>
-                                                <option value="2">Penguatkuasa (Participant) -- will update</option>
-                                            </select><br><br>
-                                        </div>
+                                        <input type="hidden" name="roleId" value="2">
                                         <div class="col-12">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" value="" name="iAgree" id="iAgree" required>

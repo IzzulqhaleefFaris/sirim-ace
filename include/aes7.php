@@ -11,15 +11,15 @@ class AES {
     /**
      * Available OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING
      *
-     * @var type $options
+    * @var int $options
      */
     protected $options = 0;
     /**
      * 
-     * @param type $data
-     * @param type $key
-     * @param type $blockSize
-     * @param type $mode
+    * @param mixed $data
+    * @param mixed $key
+    * @param int|null $blockSize
+    * @param string $mode
      */
     function __construct($data = null, $key = null, $blockSize = null, $mode = 'CBC') {
         $this->setData($data);
@@ -28,14 +28,14 @@ class AES {
     }
     /**
      * 
-     * @param type $data
+    * @param mixed $data
      */
     public function setData($data) {
         $this->data = $data;
     }
     /**
      * 
-     * @param type $key
+    * @param mixed $key
      */
     public function setKey($key) {
         $this->key = $key;
@@ -51,8 +51,8 @@ class AES {
       ECB 128 192 256
       OFB 128 192 256
       XTS 128 256
-     * @param type $blockSize
-     * @param type $mode
+    * @param int $blockSize
+    * @param string $mode
      */
     public function setMethode($blockSize, $mode = 'CBC') {
         if($blockSize==192 && in_array('', array('CBC-HMAC-SHA1','CBC-HMAC-SHA256','XTS'))){
@@ -80,7 +80,7 @@ class AES {
          return openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->method));
      }
     /**
-     * @return type
+    * @return string
      * @throws Exception
      */
     public function encrypt() {
@@ -92,7 +92,7 @@ class AES {
     }
     /**
      * 
-     * @return type
+    * @return string
      * @throws Exception
      */
     public function decrypt() {

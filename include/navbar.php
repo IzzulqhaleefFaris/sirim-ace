@@ -1,6 +1,6 @@
 <?php
 //include("auth.php"); //include auth.php file on all secure pages
-include "include/config.php";
+include __DIR__ . "/config.php";
 ini_set('max_execution_time', 300);
 error_reporting(0);
 if (!isset($_SESSION)) {
@@ -11,58 +11,70 @@ if (!isset($_SESSION)) {
 ?>
 
 <?php $role = $_SESSION["roleId"];
+
 if ($_SESSION["roleId"] == '2') { ?>
-    <!--begin::Menu-->
+    <!-- ======== Participant ======== -->
     <div class="menu menu-lg-rounded menu-column menu-lg-row menu-state-bg menu-title-gray-700 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-400 fw-bold my-5 my-lg-0 align-items-stretch" id="" data-kt-menu="true">
         <!--begin::Home-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="Part_Home.php">
+            <a class="menu-link py-3" href="/attendance/main/role/participant/home.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-house fs-3"></i></span>
                 <span class="menu-title">Utama</span>
             </a>
         </div>
         <!--end::Home-->
 
-        <!--begin::Event-->
-        <div data-kt-menu-trigger="hover" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
-            <span class="menu-link py-3">
-                <span class="menu-icon"><i class="bi bi-journals fs-3"></i></span>
-                <span class="menu-title">Event</span>
-                <span class="menu-arrow d-lg"></span>
-            </span>
-            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown menu-rounded-0 py-lg-4 w-lg-225px">
-                <div class="menu-item">
-                    <a class="menu-link py-3" href="Part_EventList.php">
-                        <span class="menu-icon"><i class="bi bi-list-task fs-3"></i></span>
-                        <span class="menu-title">Senarai Event</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a class="menu-link py-3" href="Part_MyEvents.php">
-                        <span class="menu-icon"><i class="bi bi-qr-code fs-3"></i></span>
-                        <span class="menu-title">My Events & QR</span>
-                    </a>
-                </div>
-            </div>
+        <!--begin::Senarai Event-->
+        <div class="menu-item me-lg-1">
+            <a class="menu-link py-3" href="/attendance/main/role/participant/event-list.php" style="text-decoration: none;">
+                <span class="menu-icon"><i class="bi bi-list-task fs-3"></i></span>
+                <span class="menu-title">Senarai Event</span>
+            </a>
         </div>
-        <!--end::Event-->
+        <!--end::Senarai Event-->
+
+        <!--begin::My Events & QR-->
+        <div class="menu-item me-lg-1">
+            <a class="menu-link py-3" href="/attendance/main/role/participant/my-events.php" style="text-decoration: none;">
+                <span class="menu-icon"><i class="bi bi-calendar-check fs-3"></i></span>
+                <span class="menu-title">My Events & QR</span>
+            </a>
+        </div>
+        <!--end::My Events & QR-->
     </div>
-    <!--end::Menu-->
 <?php } elseif ($_SESSION["roleId"] == '1') { ?>
-    <!--begin::Menu-->
+    <!-- ======== Organiser ======== -->
     <div class="menu menu-lg-rounded menu-column menu-lg-row menu-state-bg menu-title-gray-700 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-400 fw-bold my-5 my-lg-0 align-items-stretch" id="" data-kt-menu="true">
         <!--begin::Home-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="Org_Home.php">
-                <span class="menu-icon"><i class="bi bi-calendar-event"></i></span>
+            <a class="menu-link py-3" href="/attendance/main/role/organiser/home.php">
+                <span class="menu-icon"><i class="bi bi-calendar-event fs-3"></i></span>
                 <span class="menu-title">Utama</span>
             </a>
         </div>
         <!--end::Home-->
 
+        <!--begin::Senarai Event (Participant)-->
+        <div class="menu-item me-lg-1">
+            <a class="menu-link py-3" href="/attendance/main/role/participant/event-list.php" style="text-decoration: none;">
+                <span class="menu-icon"><i class="bi bi-list-task fs-3"></i></span>
+                <span class="menu-title">Senarai Event</span>
+            </a>
+        </div>
+        <!--end::Senarai Event (Participant)-->
+
+        <!--begin::My Events & QR (Participant)-->
+        <div class="menu-item me-lg-1">
+            <a class="menu-link py-3" href="/attendance/main/role/participant/my-events.php" style="text-decoration: none;">
+                <span class="menu-icon"><i class="bi bi-calendar-check fs-3"></i></span>
+                <span class="menu-title">My Events & QR</span>
+            </a>
+        </div>
+        <!--end::My Events & QR (Participant)-->
+
         <!--begin::Pengguna-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="Org_EventList.php">
+            <a class="menu-link py-3" href="/attendance/main/role/organiser/event-list.php">
                 <span class="menu-icon"><i class="bi bi-people fs-3"></i></span>
                 <span class="menu-title">Event</span><!--CHANGED: Event-->
             </a>
@@ -71,8 +83,8 @@ if ($_SESSION["roleId"] == '2') { ?>
 
         <!--begin::Pengguna-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="rondaDailyMap.php">
-                <span class="menu-icon"><i class="bi bi-newspaper"></i></span>
+            <a class="menu-link py-3" href="/attendance/main/role/organiser/dashboard.php" style="text-decoration: none;">
+                <span class="menu-icon"><i class="bi bi-newspaper fs-3"></i></span>
                 <span class="menu-title">Dashboard</span><!--CHANGED: Dashboard-->
             </a>
         </div>
@@ -80,100 +92,42 @@ if ($_SESSION["roleId"] == '2') { ?>
 
         <!--begin::Pengguna-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="Org_Scanner.php">
-                <span class="menu-icon"><i class="bi bi-upc-scan"></i></span>
-                <span class="menu-title">Kehadiran</span><!--CHANGED: Kehadiran-->
+            <a class="menu-link py-3" href="/attendance/main/role/organiser/scanner.php" style="text-decoration: none;">
+                <span class="menu-icon"><i class="bi bi-upc-scan fs-3"></i></span>
+                <span class="menu-title">Scanner</span><!--CHANGED: Kehadiran-->
             </a>
         </div>
         <!--end::Pengguna-->
     </div>
     <!--end::Menu-->
 <?php } else { ?>
-    <!--begin::Menu-->
+    <!-- ======== ADMIN ======== -->
     <div class="menu menu-lg-rounded menu-column menu-lg-row menu-state-bg menu-title-gray-700 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-400 fw-bold my-5 my-lg-0 align-items-stretch" id="kt_header_menu" data-kt-menu="true">
-        <div>
-
-        </div>
         <!--begin::Home-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="dashboard.php">
+            <a class="menu-link py-3" href="/attendance/main/role/admin/home.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-house fs-3"></i></span>
                 <span class="menu-title">Utama</span>
             </a>
         </div>
         <!--end::Home-->
 
-        <!--begin::Sistem Maklumat-->
-        <div data-kt-menu-trigger="hover" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1"> <!--tukar hover-->
-            <span class="menu-link py-3">
-                <span class="menu-icon"><i class="bi bi-archive fs-3"></i></span>
-                <span class="menu-title">Event</span>
-                <span class="menu-arrow d-lg"></span>
-            </span>
-            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown menu-rounded-0 py-lg-4 w-lg-295px">
-                <div class="menu-item">
-                    <a class="menu-link py-3" href="pbt_kemaskininosiri.php">
-                        <span class="menu-icon"><i class="bi bi-file-earmark-text fs-3"></i></span>
-                        <span class="menu-title">Kemaskini No. Siri Iklan</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a class="menu-link py-3" href="pbt_padamnosiri.php">
-                        <span class="menu-icon"><i class="bi bi-file-earmark-excel fs-3"></i></span>
-                        <span class="menu-title">Padam No. Siri Iklan</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a class="menu-link py-3" href="pbt_kemaskininosiri_premis_carian.php">
-                        <span class="menu-icon"><i class="bi bi-file-earmark-binary fs-3"></i></span>
-                        <span class="menu-title">Kemaskini No. Siri Premis - Carian</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a class="menu-link py-3" href="pbt_kemaskininosiri_premis.php">
-                        <span class="menu-icon"><i class="bi bi-file-earmark-binary-fill fs-3"></i></span>
-                        <span class="menu-title">Kemaskini No. Siri Premis - Pilihan</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a class="menu-link py-3" href="pbt_padamnosiri_premis.php">
-                        <span class="menu-icon"><i class="bi bi-file-earmark-excel-fill fs-3"></i></span>
-                        <span class="menu-title">Padam No. Siri Premis</span>
-                    </a>
-                </div>
-            </div>
+        <!--begin::Event Management-->
+        <div class="menu-item me-lg-1">
+            <a class="menu-link py-3" href="/attendance/main/role/admin/event-list.php" style="text-decoration: none;">
+                <span class="menu-icon"><i class="bi bi-calendar-event fs-3"></i></span>
+                <span class="menu-title">Urus Event</span>
+            </a>
         </div>
-        <!--end::Sistem Maklumat-->
+        <!--end::Event Management-->
 
-        <!--begin::Laporan-->
-        <div data-kt-menu-trigger="hover" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1"> <!--tukar hover-->
-            <span class="menu-link py-3">
-                <span class="menu-icon"><i class="bi bi-journals fs-3"></i></span>
-                <span class="menu-title">Laporan</span>
-                <span class="menu-arrow d-lg"></span>
-            </span>
-            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown menu-rounded-0 py-lg-4 w-lg-225px">
-                <div class="menu-item">
-                    <a class="menu-link py-3" href="pbt_laporanMonitoring.php">
-                        <span class="menu-icon"><i class="bi bi-journal fs-3"></i></span>
-                        <span class="menu-title">Laporan Pemantauan Iklan</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a class="menu-link py-3" href="pbt_laporanMonitoringPremis.php">
-                        <span class="menu-icon"><i class="bi bi-journal-text fs-3"></i></span>
-                        <span class="menu-title">Laporan Pemantauan Permis</span>
-                    </a>
-                </div>
-                <!--<div class="menu-item">
-                        <a class="menu-link py-3" href="pbt_laporanPelekatPremis.php">
-                            <span class="menu-icon"><i class="bi bi-journal-album fs-3"></i></span>
-                            <span class="menu-title">Laporan Pelekat Premis</span>
-                        </a>
-                    </div>-->
-            </div>
+        <!--begin::User Management-->
+        <div class="menu-item me-lg-1">
+            <a class="menu-link py-3" href="/attendance/main/role/admin/users.php" style="text-decoration: none;">
+                <span class="menu-icon"><i class="bi bi-people fs-3"></i></span>
+                <span class="menu-title">Urus Pengguna</span>
+            </a>
         </div>
-        <!--end::Laporan-->
+        <!--end::User Management-->
     </div>
-    <!--end::Menu-->
 <?php } ?>
