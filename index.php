@@ -147,7 +147,7 @@ header("Pragma: no-cache");
 			<div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
 				<!--begin::Logo-->
 				<div class="mb-12">
-					<img alt="Logo" src="assets/media/logos/atendance.png" class="h-150px" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img alt="Logo" src="assets/media/logos/sirim.jpg" class="h-150px" />
+					<img alt="Logo" src="assets/media/logos/attendance.png" class="h-150px" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img alt="Logo" src="assets/media/logos/sirim.jpg" class="h-150px" />
 				</div>
 				<h1 class="text-light mb-4 fs-2 blur-bg">
 					ATTENDANCE | Advanced Event and Attendance Coordination Engine

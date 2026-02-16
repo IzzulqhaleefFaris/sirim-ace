@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 include '../../../include/config.php';
 include '../../../include/updateEventStatus.php';
+require_once __DIR__ . '/email/created-event.php';
 
 // Helper function
 function nextCode($conn, $table, $code_col, $prefix, $numDigits = 3)
@@ -250,6 +251,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Update event statuses after successful creation
         updateEventStatuses($conn);
+
+        sendEventCreatedEmail(
+            $conn,
+            $eventOwnerId,
+            $event_id,
+            $event_name,
+            $event_startDate,
+            $event_endDate
+        );
 
         $_SESSION['event_created'] = [
             'id' => $event_id,

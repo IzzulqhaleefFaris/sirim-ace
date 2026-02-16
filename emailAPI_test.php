@@ -5,7 +5,7 @@ use SendGrid\Mail\Mail;
 
 $email = new Mail();
 $email->setFrom("izzulqhaleef@sirim.my", "SIRIM Attendance");
-$email->setSubject("Email Testing");
+$email->setSubject("Email Testing - V2");
 $email->addTo("sirimorg1@yopmail.com", "Test User");
 //Email organiser: sirimorg1@yopmail.com
 
