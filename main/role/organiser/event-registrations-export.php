@@ -40,10 +40,11 @@ $sql = "
     SELECT
         r.registration_id,
         r.participant_id,
-        u.nama AS participant_name,
-        u.email AS participant_email,
-        p.participant_phone,
-        p.participant_company,
+        IFNULL(NULLIF(r.registration_source, ''), 'account') AS registration_source,
+        COALESCE(NULLIF(u.nama, ''), NULLIF(r.walkin_name, ''), '-') AS participant_name,
+        COALESCE(NULLIF(u.email, ''), NULLIF(r.walkin_email, ''), '-') AS participant_email,
+        COALESCE(NULLIF(p.participant_phone, ''), NULLIF(r.walkin_phone, ''), '-') AS participant_phone,
+        COALESCE(NULLIF(p.participant_company, ''), NULLIF(r.walkin_company, ''), '-') AS participant_company,
         a.attendance_id,
         a.check_in_time
     FROM att_registration r
@@ -51,7 +52,7 @@ $sql = "
     LEFT JOIN att_participant p ON p.participant_id = r.participant_id
     LEFT JOIN att_attendance a ON a.registration_id = r.registration_id
     WHERE r.event_id = ?
-    ORDER BY u.nama ASC, r.registration_id ASC
+    ORDER BY participant_name ASC, r.registration_id ASC
 ";
 
 $stmt = $conn->prepare($sql);
@@ -76,6 +77,7 @@ $out = fopen('php://output', 'w');
 fputcsv($out, [
     'Registration ID',
     'Participant ID',
+    'Source',
     'Name',
     'Email',
     'Phone',
@@ -98,6 +100,7 @@ if ($res) {
         // Normalize null values
         $registrationId = $row['registration_id'] ?? '';
         $participantId  = $row['participant_id'] ?? '';
+        $source         = (($row['registration_source'] ?? 'account') === 'walk_in') ? 'Walk-in' : 'Account';
         $name           = $row['participant_name'] ?? '';
         $email          = $row['participant_email'] ?? '';
         $phone          = $row['participant_phone'] ?? '';
@@ -119,6 +122,7 @@ if ($res) {
         fputcsv($out, [
             $registrationId,
             $participantId,
+            $source,
             $name,
             $email,
             $phone,

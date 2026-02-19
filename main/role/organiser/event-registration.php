@@ -40,10 +40,11 @@ $sql = "
     SELECT
         r.registration_id,
         r.participant_id,
-        u.nama AS participant_name,
-        u.email AS participant_email,
-        p.participant_phone,
-        p.participant_company,
+        IFNULL(NULLIF(r.registration_source, ''), 'account') AS registration_source,
+        COALESCE(NULLIF(u.nama, ''), NULLIF(r.walkin_name, ''), '-') AS participant_name,
+        COALESCE(NULLIF(u.email, ''), NULLIF(r.walkin_email, ''), '-') AS participant_email,
+        COALESCE(NULLIF(p.participant_phone, ''), NULLIF(r.walkin_phone, ''), '-') AS participant_phone,
+        COALESCE(NULLIF(p.participant_company, ''), NULLIF(r.walkin_company, ''), '-') AS participant_company,
         a.attendance_id,
         a.check_in_time,
         e.event_status
@@ -53,7 +54,7 @@ $sql = "
     LEFT JOIN att_participant p ON p.participant_id = r.participant_id
     LEFT JOIN att_attendance a ON a.registration_id = r.registration_id
     WHERE r.event_id = ?
-    ORDER BY u.nama ASC, r.registration_id ASC
+    ORDER BY participant_name ASC, r.registration_id ASC
 ";
 
 $stmt = $conn->prepare($sql);
@@ -150,6 +151,14 @@ $stmt->close();
                                     <a href="event-list.php" class="btn btn-light border">
                                         <i class="bi bi-arrow-left me-1"></i>Back
                                     </a>
+                                    <?php
+                                    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+                                    $walkInUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/attendance/walkin-register.php?event=' . urlencode($eventId);
+                                    $walkInQr = 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=' . urlencode($walkInUrl);
+                                    ?>
+                                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#walkInQrModal">
+                                        <i class="bi bi-qr-code me-1"></i>Walk-in QR
+                                    </button>
                                     <a class="btn btn-success"
                                         href="event-registrations-export.php?id=<?= urlencode($eventId) ?>">
                                         <i class="bi bi-download me-1"></i>Export CSV (Excel)
@@ -206,6 +215,7 @@ $stmt->close();
                                                         <th>No</th>
                                                         <th>Registration ID</th>
                                                         <th>Participant ID</th>
+                                                        <th>Source</th>
                                                         <th>Name</th>
                                                         <th>Email</th>
                                                         <th>Phone</th>
@@ -221,6 +231,12 @@ $stmt->close();
                                                             <td class="text-center"><?= $i++ ?></td>
                                                             <td><?= htmlspecialchars($r['registration_id']) ?></td>
                                                             <td><?= htmlspecialchars($r['participant_id']) ?></td>
+                                                            <td>
+                                                                <?php $source = strtolower($r['registration_source'] ?? 'account'); ?>
+                                                                <span class="badge <?= $source === 'walk_in' ? 'bg-info' : 'bg-dark' ?>">
+                                                                    <?= $source === 'walk_in' ? 'Walk-in' : 'Account' ?>
+                                                                </span>
+                                                            </td>
                                                             <td><?= htmlspecialchars($r['participant_name'] ?? '-') ?></td>
                                                             <td><?= htmlspecialchars($r['participant_email'] ?? '-') ?></td>
                                                             <td><?= htmlspecialchars($r['participant_phone'] ?? '-') ?></td>
@@ -243,6 +259,22 @@ $stmt->close();
                                     <?php else: ?>
                                         <div class="alert alert-light border text-center mb-0">No registrations found for this event</div>
                                     <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <div class="modal fade" id="walkInQrModal" tabindex="-1" aria-labelledby="walkInQrModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="walkInQrModalLabel">Walk-in Registration QR</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <img src="<?= htmlspecialchars($walkInQr) ?>" alt="Walk-in QR" class="img-fluid border rounded p-2 bg-white" style="max-width: 280px;">
+                                            <p class="text-muted small mt-3 mb-2">Scan to open public walk-in registration page.</p>
+                                            <a href="<?= htmlspecialchars($walkInUrl) ?>" target="_blank" class="btn btn-sm btn-light-primary">Open Link</a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

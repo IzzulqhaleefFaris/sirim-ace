@@ -219,6 +219,18 @@ if (isset($_SESSION['msg'])) {
     .modal-backdrop.show {
         opacity: 0.25;
     }
+
+    .events-dropdown-wrapper {
+        position: relative;
+    }
+
+    .events-dropdown-wrapper .events-dropdown-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: auto;
+        transform: none !important;
+    }
 </style>
 
 <!--begin::Modal-->
@@ -491,6 +503,42 @@ if (isset($_SESSION['msg'])) {
 
             document.addEventListener('click', function(e) {
                 if (!toggle.contains(e.target)) {
+                    hideMenu();
+                }
+            });
+        })();
+
+        // Ensure organiser Events dropdown works even if Bootstrap/KT hooks fail on some pages
+        (function() {
+            const wrapper = document.querySelector('.events-dropdown-wrapper');
+            const trigger = document.querySelector('.events-dropdown-trigger');
+            const menu = document.querySelector('.events-dropdown-menu');
+            if (!wrapper || !trigger || !menu) return;
+
+            function showMenu() {
+                menu.classList.add('show');
+                menu.style.display = 'block';
+                trigger.setAttribute('aria-expanded', 'true');
+            }
+
+            function hideMenu() {
+                menu.classList.remove('show');
+                menu.style.display = '';
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+
+            trigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (menu.classList.contains('show')) {
+                    hideMenu();
+                } else {
+                    showMenu();
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!wrapper.contains(e.target)) {
                     hideMenu();
                 }
             });

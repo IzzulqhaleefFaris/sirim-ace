@@ -28,7 +28,7 @@ if ($_SESSION["roleId"] == '2') { ?>
         <div class="menu-item me-lg-1">
             <a class="menu-link py-3" href="/attendance/main/role/participant/event-list.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-list-task fs-3"></i></span>
-                <span class="menu-title">Senarai Event</span>
+                <span class="menu-title">Browse Events</span>
             </a>
         </div>
         <!--end::Senarai Event-->
@@ -47,39 +47,44 @@ if ($_SESSION["roleId"] == '2') { ?>
     <div class="menu menu-lg-rounded menu-column menu-lg-row menu-state-bg menu-title-gray-700 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-400 fw-bold my-5 my-lg-0 align-items-stretch" id="" data-kt-menu="true">
         <!--begin::Home-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/organiser/home.php">
+            <a class="menu-link py-3" href="/attendance/main/role/organiser/home.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-calendar-event fs-3"></i></span>
                 <span class="menu-title">Utama</span>
             </a>
         </div>
         <!--end::Home-->
 
-        <!--begin::Senarai Event (Participant)-->
-        <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/participant/event-list.php" style="text-decoration: none;">
+        <!--begin::Events Dropdown-->
+        <div class="menu-item me-lg-1 dropdown events-dropdown-wrapper">
+            <a class="menu-link py-3 dropdown-toggle events-dropdown-trigger" href="javascript:void(0);" role="button" aria-expanded="false" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-list-task fs-3"></i></span>
-                <span class="menu-title">Senarai Event</span>
+                <span class="menu-title">Events</span>
             </a>
+            <ul class="dropdown-menu shadow-sm border-0 events-dropdown-menu" style="min-width: 240px; z-index: 3000;">
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/attendance/main/role/organiser/browse-event-list.php" style="text-decoration: none;">
+                        <span class="menu-icon"><i class="bi bi-search fs-3"></i></span>
+                        <span class="menu-title">Browse Event</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/attendance/main/role/organiser/event-list.php" style="text-decoration: none;">
+                        <span class="menu-icon"><i class="bi bi-gear fs-3"></i></span>
+                        <span class="menu-title">Manage Events</span>
+                    </a>
+                </li>
+            </ul>
         </div>
-        <!--end::Senarai Event (Participant)-->
+        <!--end::Events Dropdown-->
 
         <!--begin::My Events & QR (Participant)-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/participant/my-events.php" style="text-decoration: none;">
+            <a class="menu-link py-3" href="/attendance/main/role/organiser/my-events.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-calendar-check fs-3"></i></span>
                 <span class="menu-title">My Events & QR</span>
             </a>
         </div>
         <!--end::My Events & QR (Participant)-->
-
-        <!--begin::Pengguna-->
-        <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/organiser/event-list.php">
-                <span class="menu-icon"><i class="bi bi-people fs-3"></i></span>
-                <span class="menu-title">Event</span><!--CHANGED: Event-->
-            </a>
-        </div>
-        <!--end::Pengguna-->
 
         <!--begin::Pengguna-->
         <div class="menu-item me-lg-1">

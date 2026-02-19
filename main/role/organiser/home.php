@@ -39,6 +39,31 @@ require_manage_events();
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 	<!--end::Global Stylesheets Bundle-->
+
+	<style>
+		.home-hero {
+			border-radius: 1rem;
+		}
+
+		.quick-action {
+			border-radius: 1rem;
+			transition: transform .2s ease, box-shadow .2s ease;
+		}
+
+		.quick-action:hover {
+			transform: translateY(-3px);
+			box-shadow: var(--kt-card-box-shadow);
+		}
+
+		.action-icon {
+			width: 48px;
+			height: 48px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 50%;
+		}
+	</style>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -62,45 +87,93 @@ require_manage_events();
 
 					<!--begin::Post-->
 					<div class="post d-flex flex-column-fluid" id="kt_post">
-						<!-- begin::ADDED-->
-						<!-- <div id="kt_content_container" class="container">
-							<div class="py-0">
-								<div class="card shadow-sm">
-									<div class="card-body"></div>
-								</div>
-							</div>
-						</div> -->
-
-						<!--END OF ADDED -->
 						<div id="kt_content_container" class="container">
 							<!--begin::Section-->
 							<div class="py-0">
-								<div class="card shadow-sm">
-									<div class="card-body">
-										<br>
-										<!--<a><img alt="Logo" src="assets/media/logos/sepang2.png" class="h-100px" /></a>-->
-										<div class="d-grid gap-2">
-											<a href="create-event.php" type="button" class="btn btn-lg btn-info" style="font-size: 20px;"><i class="bi bi-calendar-event"></i>&nbsp;Daftar Event</a>
-											<a href="event-list.php" type="button" class="btn btn-lg btn-primary" style="font-size: 20px;"><i class="bi bi-card-list"></i>&nbsp;Senarai Event</a>
-											<a href="scanner.php" type="button" class="btn btn-lg btn-info" style="font-size: 20px;"><i class="bi bi-upc-scan fs-2"></i>&nbsp;Imbas Kedatangan</a>
-
-											<div class="position-relative">
-												<!--<a href="attendanceReport.php" type="button" class="btn btn-lg btn-primary" style="font-size: 20px;"><i class="bi bi-upc-scan fs-2"></i>&nbsp;Laporan Kedatangan</a>-->
-												<button class="btn btn-lg btn-primary dropdown-toggle w-100" style="font-size: 20px;" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false" aria-haspopup="true">
-													<i class="bi bi-journals fs-2"></i>&nbsp;Laporan Kedatangan
-												</button>
-												<ul class="dropdown-menu dropdown-menu-end w-100" style="z-index: 1000;">
-													<li><a class="dropdown-item" style="font-size: 16px;" href="attendanceReport.php?eventId=STUES2"><i class="bi bi-journal fs-3"></i>&emsp;STU Engagement Series 2 (Penang)</a></li>
-													<li><a class="dropdown-item" style="font-size: 16px;" href="attendanceReport.php?eventId=STUES3"><i class="bi bi-journal fs-3"></i>&emsp;STU Engagement Series 3 (Pahang)</a></li>
-													<li><a class="dropdown-item" style="font-size: 16px;" href="attendanceReport.php?eventId=STUES4"><i class="bi bi-journal fs-3"></i>&emsp;STU Engagement Series 4 (Shah Alam)</a></li>
-													<li><a class="dropdown-item" style="font-size: 16px;" href="attendanceReport.php?eventId=STUES5"><i class="bi bi-journal fs-3"></i>&emsp;STU Engagement Series 5 (FI)</a></li>
-													<li><a class="dropdown-item" style="font-size: 16px;" href="attendanceReport.php?eventId=STUES6"><i class="bi bi-journal fs-3"></i>&emsp;STU Engagement Series 6 (Johor)</a></li>
-													<li><a class="dropdown-item" style="font-size: 16px;" href="attendanceReport.php?eventId=STUES7"><i class="bi bi-journal fs-3"></i>&emsp;STU Engagement Series 7 (MITI)</a></li>
-													<!--<li><a class="dropdown-item" style="font-size: 16px;" href="rondaDailyMap.php"><i class="bi bi-journal-text fs-3"></i>&emsp;Peta Rondaan</a></li>-->
-												</ul>
+								<div class="card shadow-sm mb-5 home-hero">
+									<div class="card-body py-6 px-6">
+										<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+											<div>
+												<h2 class="fw-bolder mb-1">Organizer Dashboard</h2>
+												<div class="text-muted">Urus event, semak senarai pendaftaran, dan imbas kehadiran dengan lebih pantas.</div>
 											</div>
 										</div>
-										<br>
+									</div>
+								</div>
+
+								<div class="row g-4">
+									<div class="col-md-6 col-xl-3">
+										<a href="create-event.php" class="card quick-action h-100 text-decoration-none text-dark shadow-sm">
+											<div class="card-body d-flex flex-column gap-3">
+												<span class="action-icon bg-light-info"><i class="bi bi-calendar-event fs-2 text-info"></i></span>
+												<div class="fw-bolder fs-5">Daftar Event</div>
+												<div class="text-muted small">Cipta event baru dan tetapkan maklumat pendaftaran.</div>
+											</div>
+										</a>
+									</div>
+
+									<div class="col-md-6 col-xl-3">
+										<a href="browse-event-list.php" class="card quick-action h-100 text-decoration-none text-dark shadow-sm">
+											<div class="card-body d-flex flex-column gap-3">
+												<span class="action-icon bg-light-primary"><i class="bi bi-search fs-2 text-primary"></i></span>
+												<div class="fw-bolder fs-5">Browse Events</div>
+												<div class="text-muted small">Lihat senarai event untuk pendaftaran dan semakan.</div>
+											</div>
+										</a>
+									</div>
+
+									<div class="col-md-6 col-xl-3">
+										<a href="event-list.php" class="card quick-action h-100 text-decoration-none text-dark shadow-sm">
+											<div class="card-body d-flex flex-column gap-3">
+												<span class="action-icon bg-light-warning"><i class="bi bi-gear fs-2 text-warning"></i></span>
+												<div class="fw-bolder fs-5">Manage Events</div>
+												<div class="text-muted small">Urus, kemaskini dan pantau event penganjur.</div>
+											</div>
+										</a>
+									</div>
+
+									<div class="col-md-6 col-xl-3">
+										<a href="my-events.php" class="card quick-action h-100 text-decoration-none text-dark shadow-sm">
+											<div class="card-body d-flex flex-column gap-3">
+												<span class="action-icon bg-light-dark"><i class="bi bi-calendar-check fs-2 text-dark"></i></span>
+												<div class="fw-bolder fs-5">My Events & QR</div>
+												<div class="text-muted small">Lihat event yang didaftarkan dan QR pendaftaran anda.</div>
+											</div>
+										</a>
+									</div>
+
+									<div class="col-md-6 col-xl-3">
+										<a href="scanner.php" class="card quick-action h-100 text-decoration-none text-dark shadow-sm">
+											<div class="card-body d-flex flex-column gap-3">
+												<span class="action-icon bg-light-success"><i class="bi bi-upc-scan fs-2 text-success"></i></span>
+												<div class="fw-bolder fs-5">Imbas Kedatangan</div>
+												<div class="text-muted small">Imbas QR peserta untuk rekod kehadiran semasa event.</div>
+											</div>
+										</a>
+									</div>
+
+									<div class="col-md-6 col-xl-3">
+										<div class="card quick-action h-100 shadow-sm">
+											<div class="card-body d-flex flex-column gap-3">
+												<span class="action-icon bg-light-warning"><i class="bi bi-journals fs-2 text-warning"></i></span>
+												<div class="fw-bolder fs-5">Laporan Kedatangan (2025)</div>
+												<div class="dropdown w-100 mt-auto">
+													<button class="btn btn-light-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false" aria-haspopup="true">
+														Pilih Event
+													</button>
+													<ul class="dropdown-menu w-100">
+														<li><a class="dropdown-item" href="attendanceReport.php?eventId=STUES2">STU Engagement Series 2 (Penang)</a></li>
+														<li><a class="dropdown-item" href="attendanceReport.php?eventId=STUES3">STU Engagement Series 3 (Pahang)</a></li>
+														<li><a class="dropdown-item" href="attendanceReport.php?eventId=STUES4">STU Engagement Series 4 (Shah Alam)</a></li>
+														<li><a class="dropdown-item" href="attendanceReport.php?eventId=STUES5">STU Engagement Series 5 (FI)</a></li>
+														<li><a class="dropdown-item" href="attendanceReport.php?eventId=STUES6">STU Engagement Series 6 (Johor)</a></li>
+														<li><a class="dropdown-item" href="attendanceReport.php?eventId=STUES7">STU Engagement Series 7 (MITI)</a></li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
 									</div>
 								</div>
 							</div>
@@ -128,24 +201,7 @@ require_manage_events();
 	<!--end::Main-->
 
 	<!--begin::Javascript-->
-	<div>
-		<script>
-			$(document).ready(function() {
-				$("#show_hide_password a").on('click', function(event) {
-					event.preventDefault();
-					if ($('#show_hide_password input').attr("type") == "text") {
-						$('#show_hide_password input').attr('type', 'password');
-						$('#show_hide_password i').addClass("fa-eye-slash");
-						$('#show_hide_password i').removeClass("fa-eye");
-					} else if ($('#show_hide_password input').attr("type") == "password") {
-						$('#show_hide_password input').attr('type', 'text');
-						$('#show_hide_password i').removeClass("fa-eye-slash");
-						$('#show_hide_password i').addClass("fa-eye");
-					}
-				});
-			});
-		</script>
-	</div>
+	<div></div>
 	<!--end::Javascript-->
 </body>
 <!--end::Body-->
