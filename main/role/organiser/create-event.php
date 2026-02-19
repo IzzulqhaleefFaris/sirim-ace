@@ -60,7 +60,7 @@ endif;
 <head>
 	<base href="">
 	<meta charset="utf-8" />
-	<title>ATTENDANCE SYSTEM</title>
+	<title>Create Event | ATTENDANCE SYSTEM</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link rel="shortcut icon" href="../../../assets/media/logos/soljar_ico.ico" />
 

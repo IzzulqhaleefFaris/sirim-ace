@@ -59,6 +59,11 @@ $stmt->bind_param("s", $eventId);
 $stmt->execute();
 $res = $stmt->get_result();
 
+// Ensure no previous output corrupts CSV (blank rows / BOM shown as text)
+while (ob_get_level() > 0) {
+    ob_end_clean();
+}
+
 // CSV headers (Excel-friendly)
 $filename = 'event_' . preg_replace('/[^A-Za-z0-9_-]/', '_', $eventId) . '_registrations.csv';
 header('Content-Type: text/csv; charset=utf-8');
@@ -81,6 +86,7 @@ fputcsv($out, [
 
 if ($res) {
     while ($row = $res->fetch_assoc()) {
+
         $isPresent = !empty($row['attendance_id']);
         $isAbsent = (!$isPresent && ($event['event_status'] ?? '') === 'Completed');
         $status = $isPresent ? 'Present' : ($isAbsent ? 'Absent' : 'Registered');
@@ -89,15 +95,36 @@ if ($res) {
             continue;
         }
 
+        // Normalize null values
+        $registrationId = $row['registration_id'] ?? '';
+        $participantId  = $row['participant_id'] ?? '';
+        $name           = $row['participant_name'] ?? '';
+        $email          = $row['participant_email'] ?? '';
+        $phone          = $row['participant_phone'] ?? '';
+        $company        = $row['participant_company'] ?? '';
+        $checkIn        = $row['check_in_time'] ?? '';
+
+        // Prevent Excel formula injection
+        foreach ([$registrationId, $participantId, $name, $email, $phone, $company] as &$field) {
+            if (preg_match('/^[=\-+@]/', $field)) {
+                $field = "'" . $field;
+            }
+        }
+
+        // Format datetime for Excel
+        if (!empty($checkIn)) {
+            $checkIn = date('Y-m-d H:i:s', strtotime($checkIn));
+        }
+
         fputcsv($out, [
-            $row['registration_id'],
-            $row['participant_id'],
-            $row['participant_name'],
-            $row['participant_email'],
-            $row['participant_phone'],
-            $row['participant_company'],
+            $registrationId,
+            $participantId,
+            $name,
+            $email,
+            $phone,
+            $company,
             $status,
-            $row['check_in_time'],
+            $checkIn
         ]);
     }
 }
@@ -105,4 +132,3 @@ if ($res) {
 fclose($out);
 $stmt->close();
 exit;
-
