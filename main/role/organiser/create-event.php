@@ -265,7 +265,7 @@ endif;
 														<div class="row g-2 py-2">
 															<label for="organiserInput" class="form-label form-label-sm mb-0">Nama Pengurus :</label>
 															<div class="col-auto">
-																<select class="form-select form-select-sm w-auto" id="organiserInput" name="organiser" required>
+																<select class="form-select form-select-sm w-auto" id="organiserInput" name="organiser">
 																	<option value="" selected disabled>Pilih Nama Pengurus</option>
 																	<option value="Staf 1">Staf 1</option>
 																	<option value="Staf 2">Staf 2</option>
@@ -558,15 +558,14 @@ endif;
 		<script src="../../../assets/js/custom/modals/upgrade-plan.js"></script>
 		<script>
 			// Log any alerts to console for debugging
-			const alert = document.querySelector('.alert');
-			if (alert) {
-				const alertText = alert.textContent;
+			const alertBox = document.querySelector('.alert');
+			if (alertBox) {
+				const alertText = alertBox.textContent;
 				console.log('🔴 ALERT MESSAGE:', alertText);
 
-				// Only auto-hide SUCCESS alerts, keep ERROR/WARNING visible
-				if (alert.classList.contains('alert-success')) {
+				if (alertBox.classList.contains('alert-success')) {
 					setTimeout(() => {
-						const bsAlert = new bootstrap.Alert(alert);
+						const bsAlert = new bootstrap.Alert(alertBox);
 						bsAlert.close();
 					});
 				}
@@ -635,10 +634,9 @@ endif;
 
 				// ✅ Validation check before showing modal
 				if (!eventName || !startDate || !endDate || !state || !locationName) {
-					const errorMsg = 'Please fill all required fields before confirming.';
-					console.error('❌ VALIDATION FAILED:', errorMsg);
-					alert('❌ ' + errorMsg);
-					return;
+					console.error('❌ VALIDATION FAILED');
+					showError('Please fill all required fields before confirming.');
+					return; // 🔴 STOP execution here
 				}
 
 				// Additional client-side date validation
@@ -649,25 +647,25 @@ endif;
 
 				if (endTS < startTS) {
 					console.error('❌ End date before start date');
-					alert('❌ Event end date cannot be earlier than start date.');
+					showError('❌ Event end date cannot be earlier than start date.');
 					return;
 				}
 
 				if (closeRegTS < openRegTS) {
 					console.error('❌ Close registration before open registration');
-					alert('❌ Registration closing date cannot be earlier than opening date.');
+					showError('❌ Registration closing date cannot be earlier than opening date.');
 					return;
 				}
 
 				if (openRegTS > startTS) {
 					console.error('❌ Registration opens after event starts');
-					alert('❌ Registration cannot open after event starts.');
+					showError('❌ Registration cannot open after event starts.');
 					return;
 				}
 
 				if (closeRegTS > endTS) {
 					console.error('❌ Registration closes after event ends');
-					alert('❌ Registration cannot close after event ends.');
+					showError('❌ Registration cannot close after event ends.');
 					return;
 				}
 
@@ -756,6 +754,32 @@ endif;
 			}
 		</script>
 
+		<!-- Error Alert For Confirm Button  -->
+		<script>
+			function showError(message) {
+				// Remove existing error if any
+				const existing = document.querySelector('.custom-error-alert');
+				if (existing) existing.remove();
+
+				const errorBox = document.createElement('div');
+				errorBox.className = 'alert alert-danger alert-dismissible fade show custom-error-alert position-fixed top-0 start-50 translate-middle-x mt-5';
+				errorBox.style.zIndex = '12000';
+				errorBox.role = 'alert';
+
+				errorBox.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+				document.body.appendChild(errorBox);
+
+				// Auto remove after 4 seconds
+				setTimeout(() => {
+					const bsAlert = new bootstrap.Alert(errorBox);
+					bsAlert.close();
+				}, 4000);
+			}
+		</script>
 	</div>
 	<!--end::Javascript-->
 </body>

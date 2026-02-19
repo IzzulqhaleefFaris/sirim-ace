@@ -192,7 +192,21 @@ require_manage_events();
                     })
                 });
 
-                const data = await res.json();
+                const raw = await res.text();
+                let data = null;
+
+                try {
+                    data = JSON.parse(raw);
+                } catch (parseError) {
+                    console.error('Invalid API response:', raw);
+                    showResult('error', 'Ralat pelayan: respons tidak sah. Sila semak konfigurasi API.');
+                    return;
+                }
+
+                if (!res.ok) {
+                    showResult('error', data.message || ('Ralat pelayan (HTTP ' + res.status + ').'));
+                    return;
+                }
 
                 if (data.status === 'success') {
                     // Play success sound if available

@@ -1,7 +1,10 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-include "include/config.php";
+require_once __DIR__ . '/../../include/config.php';
+require_once __DIR__ . '/../../include/updateEventStatus.php';
+
+updateEventStatuses($conn);
 
 function respond(string $status, string $message, array $extra = []): void
 {

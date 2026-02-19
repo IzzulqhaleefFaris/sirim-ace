@@ -318,7 +318,7 @@ $states = $conn->query("SELECT * FROM att_state");
 
                                                     <div class="col-12 mb-3">
                                                         <label for="address_line1" class="form-label">
-                                                            <i class="bi bi-geo-alt-fill me-1"></i>&nbsp;Alamat Baris 1
+                                                            Alamat Baris 1
                                                         </label>
                                                         <input type="text"
                                                             id="address_line1"

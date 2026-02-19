@@ -151,7 +151,7 @@ $stmt->close();
                                         <i class="bi bi-arrow-left me-1"></i>Back
                                     </a>
                                     <a class="btn btn-success"
-                                        href="event-registration-export.php?id=<?= urlencode($eventId) ?>">
+                                        href="event-registrations-export.php?id=<?= urlencode($eventId) ?>">
                                         <i class="bi bi-download me-1"></i>Export CSV (Excel)
                                     </a>
                                 </div>
@@ -198,47 +198,51 @@ $stmt->close();
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table id="regTable" class="table table-hover align-middle">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>No</th>
-                                                    <th>Registration ID</th>
-                                                    <th>Participant ID</th>
-                                                    <th>Name</th>
-                                                    <th>Email</th>
-                                                    <th>Phone</th>
-                                                    <th>Company</th>
-                                                    <th>Status</th>
-                                                    <th>Check-in Time</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php $i = 1; ?>
-                                                <?php foreach ($all as $r): ?>
+                                    <?php if (!empty($all)): ?>
+                                        <div class="table-responsive">
+                                            <table id="regTable" class="table table-hover align-middle">
+                                                <thead class="table-light">
                                                     <tr>
-                                                        <td class="text-center"><?= $i++ ?></td>
-                                                        <td><?= htmlspecialchars($r['registration_id']) ?></td>
-                                                        <td><?= htmlspecialchars($r['participant_id']) ?></td>
-                                                        <td><?= htmlspecialchars($r['participant_name'] ?? '-') ?></td>
-                                                        <td><?= htmlspecialchars($r['participant_email'] ?? '-') ?></td>
-                                                        <td><?= htmlspecialchars($r['participant_phone'] ?? '-') ?></td>
-                                                        <td><?= htmlspecialchars($r['participant_company'] ?? '-') ?></td>
-                                                        <td>
-                                                            <?php
-                                                            $badge = 'secondary';
-                                                            if ($r['_status'] === 'Present') $badge = 'success';
-                                                            if ($r['_status'] === 'Absent') $badge = 'danger';
-                                                            if ($r['_status'] === 'Registered') $badge = 'warning';
-                                                            ?>
-                                                            <span class="badge bg-<?= $badge ?>"><?= htmlspecialchars($r['_status']) ?></span>
-                                                        </td>
-                                                        <td><?= htmlspecialchars($r['check_in_time'] ?? '-') ?></td>
+                                                        <th>No</th>
+                                                        <th>Registration ID</th>
+                                                        <th>Participant ID</th>
+                                                        <th>Name</th>
+                                                        <th>Email</th>
+                                                        <th>Phone</th>
+                                                        <th>Company</th>
+                                                        <th>Status</th>
+                                                        <th>Check-in Time</th>
                                                     </tr>
-                                                <?php endforeach; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                </thead>
+                                                <tbody>
+                                                    <?php $i = 1; ?>
+                                                    <?php foreach ($all as $r): ?>
+                                                        <tr>
+                                                            <td class="text-center"><?= $i++ ?></td>
+                                                            <td><?= htmlspecialchars($r['registration_id']) ?></td>
+                                                            <td><?= htmlspecialchars($r['participant_id']) ?></td>
+                                                            <td><?= htmlspecialchars($r['participant_name'] ?? '-') ?></td>
+                                                            <td><?= htmlspecialchars($r['participant_email'] ?? '-') ?></td>
+                                                            <td><?= htmlspecialchars($r['participant_phone'] ?? '-') ?></td>
+                                                            <td><?= htmlspecialchars($r['participant_company'] ?? '-') ?></td>
+                                                            <td>
+                                                                <?php
+                                                                $badgeClass = 'bg-secondary';
+                                                                if ($r['_status'] === 'Present') $badgeClass = 'bg-success';
+                                                                if ($r['_status'] === 'Absent') $badgeClass = 'bg-danger';
+                                                                if ($r['_status'] === 'Registered') $badgeClass = 'bg-warning text-dark';
+                                                                ?>
+                                                                <span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($r['_status']) ?></span>
+                                                            </td>
+                                                            <td><?= htmlspecialchars($r['check_in_time'] ?? '-') ?></td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="alert alert-light border text-center mb-0">No registrations found for this event</div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -257,6 +261,10 @@ $stmt->close();
 
     <script>
         $(document).ready(function() {
+            if (!$('#regTable').length) {
+                return;
+            }
+
             const table = $('#regTable').DataTable({
                 pageLength: 25,
                 order: [

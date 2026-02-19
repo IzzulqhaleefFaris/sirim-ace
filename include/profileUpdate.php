@@ -7,14 +7,39 @@ if (!isset($_SESSION['userId'])) {
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    exit;
+}
+
 $userId = $_SESSION['userId'];
 
 // Get POST data safely
-$nama = trim($_POST['nama']);
-$stafId = trim($_POST['stafId'] ?? null);
-$email = trim($_POST['email']);
-$participant_phone = trim($_POST['participant_phone'] ?? null);
-$participant_company = trim($_POST['participant_company'] ?? null);
+$nama = trim($_POST['nama'] ?? '');
+$stafId = trim($_POST['stafId'] ?? '');
+$email = trim($_POST['email'] ?? '');
+$participant_phone = trim($_POST['participant_phone'] ?? '');
+$participant_company = trim($_POST['participant_company'] ?? '');
+
+if ($nama === '' || $email === '') {
+    $message = 'Nama dan e-mel wajib diisi.';
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        http_response_code(422);
+        echo json_encode([
+            'success' => false,
+            'message' => $message
+        ]);
+        exit;
+    }
+
+    $_SESSION['msg'] = [
+        'type' => 'danger',
+        'text' => $message
+    ];
+    header("Location: " . $_SERVER['HTTP_REFERER']);
+    exit;
+}
 
 // Get role from session
 $roleId = $_SESSION['roleId'];
@@ -30,11 +55,14 @@ try{
     $stmt -> bind_param("ssss", $nama, $stafId, $email, $userId);
 
     if (!$stmt -> execute()){
-        throw new Exception("Gagal kemaskini maklumat pengguna.");
+        throw new Exception("Gagal kemaskini maklumat pengguna: " . $stmt->error);
     }
 
+    $stmt->close();
+
     //Update Participant Data
-    if ($roleId == 2){
+    $shouldSyncParticipant = ($roleId == 2) || $participant_phone !== '' || $participant_company !== '';
+    if ($shouldSyncParticipant){
         //Check if participant already exists
         $check = $conn -> prepare(
             "SELECT participant_id FROM att_participant WHERE participant_id = ?"
@@ -42,6 +70,7 @@ try{
         $check -> bind_param ("s", $userId);
         $check -> execute();
         $res = $check-> get_result();
+        $check->close();
 
         if($res -> num_rows > 0){
             //UPDATE
@@ -64,14 +93,17 @@ try{
                             );
         }
         if (!$stmt2 -> execute()){
-            throw new Exception ("Gagal kemaskini maklumat pengguna.");
+            throw new Exception ("Gagal kemaskini maklumat participant: " . $stmt2->error);
         }
+
+        $stmt2->close();
     }
     // Commit transaction
     $conn -> commit();
 
     // Update session cache
     $_SESSION['nama'] = $nama;
+    $_SESSION['email'] = $email;
 
     // Check if this is an AJAX request
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {

@@ -59,6 +59,7 @@ $endDate   = date('d M Y', strtotime($event['event_endDate']));
 
 $openDate = date('d M Y', strtotime($event['event_openRegistration']));
 $closeDate = date('d M Y', strtotime($event['event_closeRegistration']));
+$isRegistrationClosed = strtotime(date('Y-m-d')) > strtotime($event['event_closeRegistration']);
 
 //Disable Daftar button if registered
 $isRegistered = false;
@@ -314,13 +315,20 @@ $chk->close();
                                             </div>
                                         </div>
 
-                                        <div class="d-flex flex-wrap gap-2 mt-4">
+                                        <div class="d-flex flex-wrap align-items-center gap-2 mt-4">
                                             <?php if ($isRegistered): ?>
                                                 <button class="btn btn-secondary btn-lg px-5" disabled>
                                                     Telah Berdaftar
                                                 </button>
-                                                <small class="text-muted mt-2 d-block">
+                                                <small class="text-muted mb-0">
                                                     Anda telah berjaya mendaftar untuk event ini.
+                                                </small>
+                                            <?php elseif ($isRegistrationClosed): ?>
+                                                <button class="btn btn-secondary btn-lg px-5" disabled>
+                                                    Pendaftaran Ditutup
+                                                </button>
+                                                <small class="text-muted mb-0">
+                                                    Tarikh pendaftaran telah ditutup untuk event ini.
                                                 </small>
                                             <?php else: ?>
                                                 <button type="button"

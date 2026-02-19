@@ -83,6 +83,16 @@ function buildQrUrl(string $registrationId): string
             height: 180px;
             object-fit: contain;
         }
+
+        .btn-back-events {
+            transition: all 0.2s ease;
+        }
+
+        .btn-back-events:hover {
+            background-color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+        }
     </style>
 </head>
 <!--end::Head-->
@@ -112,7 +122,7 @@ function buildQrUrl(string $registrationId): string
                                 <h2 class="fw-bold mb-0">My Events</h2>
                                 <p class="text-muted mb-0">QR anda berada di sini. Tunjukkan kepada petugas untuk imbasan.</p>
                             </div>
-                            <a href="event-list.php" class="btn btn-light border">
+                            <a href="event-list.php" class="btn btn-light border bg-white btn-back-events">
                                 <i class="bi bi-arrow-left me-1"></i> Kembali ke Senarai Event
                             </a>
                         </div>

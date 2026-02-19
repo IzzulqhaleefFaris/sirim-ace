@@ -281,7 +281,7 @@ if (isset($_SESSION['msg'])) {
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">Name Penuh </label>
+                            <label class="col-sm-3 col-form-label">Nama Penuh </label>
                             <div class="col-sm-8">
                                 <input type="text" class="form-control form-control-sm" id="nama" name="nama" value="<?php echo $rowsp['nama']; ?>" />
                             </div>
@@ -510,7 +510,22 @@ if (isset($_SESSION['msg'])) {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .then(response => response.json())
+            .then(async response => {
+                const raw = await response.text();
+                let data = null;
+
+                try {
+                    data = JSON.parse(raw);
+                } catch (e) {
+                    throw new Error('Invalid server response');
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Ralat kemaskini profil.');
+                }
+
+                return data;
+            })
             .then(data => {
                 if (data.success) {
                     alertContainer.innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert"><i class="bi bi-check-circle"></i>&nbsp;' + data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
@@ -524,7 +539,7 @@ if (isset($_SESSION['msg'])) {
             })
             .catch(error => {
                 console.error('Error:', error);
-                alertContainer.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert"><i class="bi bi-exclamation-circle"></i>&nbsp;Ralat dalam kemaskini profil.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+                alertContainer.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert"><i class="bi bi-exclamation-circle"></i>&nbsp;' + (error.message || 'Ralat dalam kemaskini profil.') + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
             });
         });
     </script>
