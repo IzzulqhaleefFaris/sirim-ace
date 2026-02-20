@@ -265,7 +265,7 @@ if ($searchTerm !== '') {
                                                     <!-- Event name-->
                                                     <h4 class="fw-bolder mb-2 event-title"><?= htmlspecialchars($event['event_name']) ?></h4>
                                                     <!-- Event location-->
-                                                    <div class="text-muted fw-semibold event-meta"><?= htmlspecialchars($event['location_name']) ?> - <?= htmlspecialchars($event['state_name']) ?></div>
+                                                    <div class="text-muted fw-semibold event-meta"><strong>Venue:</strong> <?= htmlspecialchars($event['location_name']) ?> - <?= htmlspecialchars($event['state_name']) ?></div>
                                                     <!-- Event date -->
                                                     <div class="small mt-2 text-gray-700">
                                                         <?= date('d M Y', strtotime($event['event_startDate'])) ?>

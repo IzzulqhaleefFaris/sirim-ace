@@ -42,7 +42,6 @@ function sendEventCreatedEmail(mysqli $conn, string $eventOwnerId, string $event
     $mail->addTo($recipientEmail, $recipientName);
 
     $textContent = "Your event has been created successfully.\n" .
-        "Event ID: {$eventId}\n" .
         "Event Name: {$eventName}\n" .
         "Start Date: {$eventStartDate}\n" .
         "End Date: {$eventEndDate}\n";

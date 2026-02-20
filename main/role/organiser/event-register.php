@@ -1,6 +1,7 @@
 <?php
 session_start();
 include "../../../include/config.php";
+include "../../../include/qrEmail.php";
 
 // Must be logged in
 if (!isset($_SESSION['userId'])) {
@@ -69,9 +70,55 @@ $insertStmt->bind_param("sss", $newCode, $eventId, $participantId);
 if ($insertStmt->execute()) {
     // cache latest registration id for QR display
     $_SESSION['latest_registration_id'] = $newCode;
+
+    $emailSent = false;
+    $mailReason = null;
+
+    $participantName = '';
+    $participantEmail = '';
+    $eventName = 'Event';
+
+    $userStmt = $conn->prepare("SELECT nama, email FROM user WHERE userId = ? LIMIT 1");
+    if ($userStmt) {
+        $userStmt->bind_param("s", $participantId);
+        $userStmt->execute();
+        $userRes = $userStmt->get_result();
+        if ($userRes && ($userRow = $userRes->fetch_assoc())) {
+            $participantName = trim($userRow['nama'] ?? '');
+            $participantEmail = trim($userRow['email'] ?? '');
+        }
+        $userStmt->close();
+    }
+
+    $eventStmt = $conn->prepare("SELECT event_name FROM att_event WHERE event_id = ? LIMIT 1");
+    if ($eventStmt) {
+        $eventStmt->bind_param("s", $eventId);
+        $eventStmt->execute();
+        $eventRes = $eventStmt->get_result();
+        if ($eventRes && ($eventRow = $eventRes->fetch_assoc())) {
+            $eventName = trim($eventRow['event_name'] ?? 'Event');
+        }
+        $eventStmt->close();
+    }
+
+    if ($participantEmail !== '' && filter_var($participantEmail, FILTER_VALIDATE_EMAIL)) {
+        $emailSent = sendRegistrationQrEmail(
+            $participantEmail,
+            $participantName,
+            $newCode,
+            $eventId,
+            $eventName,
+            $mailReason
+        );
+    } else {
+        $mailReason = 'Email berdaftar tidak sah atau kosong.';
+    }
+
     $_SESSION['msg']                    = [
         'type' => 'success',
-        'text' => 'Pendaftaran berjaya! QR anda sedia di halaman My Events.'
+        'text' => $emailSent
+            ? 'Pendaftaran berjaya! QR anda sedia di halaman My Events dan juga telah dihantar ke email berdaftar anda.'
+            : 'Pendaftaran berjaya! QR anda sedia di halaman My Events. QR email tidak berjaya dihantar: ' . ($mailReason ?: 'Ralat tidak diketahui')
     ];
 } else {
     $_SESSION['msg'] = [

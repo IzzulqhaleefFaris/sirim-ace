@@ -73,26 +73,23 @@ if ($_SESSION["roleId"] == '2') { ?>
                         <span class="menu-title">Manage Events</span>
                     </a>
                 </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/attendance/main/role/organiser/my-events.php" style="text-decoration: none;">
+                        <span class="menu-icon"><i class="bi bi-calendar-check fs-3"></i></span>
+                        <span class="menu-title">My Events & QR</span>
+                    </a>
+                </li>
             </ul>
         </div>
         <!--end::Events Dropdown-->
 
-        <!--begin::My Events & QR (Participant)-->
-        <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/organiser/my-events.php" style="text-decoration: none;">
-                <span class="menu-icon"><i class="bi bi-calendar-check fs-3"></i></span>
-                <span class="menu-title">My Events & QR</span>
-            </a>
-        </div>
-        <!--end::My Events & QR (Participant)-->
-
         <!--begin::Pengguna-->
-        <div class="menu-item me-lg-1">
+        <!-- <div class="menu-item me-lg-1">
             <a class="menu-link py-3" href="/attendance/main/role/organiser/dashboard.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-newspaper fs-3"></i></span>
-                <span class="menu-title">Dashboard</span><!--CHANGED: Dashboard-->
+                <span class="menu-title">Dashboard</span>
             </a>
-        </div>
+        </div> -->
         <!--end::Pengguna-->
 
         <!--begin::Pengguna-->

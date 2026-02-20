@@ -139,6 +139,11 @@ if (!function_exists('formatEventDateRange')) {
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
 	<style>
+		a.btn.btn-dark.btn-browse:hover {
+			background-color: #3a3f44 !important;
+			border-color: #3a3f44 !important;
+		}
+
 		.home-hero {
 			border-radius: 1rem;
 		}
@@ -207,7 +212,7 @@ if (!function_exists('formatEventDateRange')) {
 												<div class="text-muted">Terokai event, daftar dengan cepat, dan semak status kehadiran anda.</div>
 											</div>
 											<div class="d-flex gap-2">
-												<a href="event-list.php" class="btn btn-primary btn-sm">Browse Events</a>
+												<a href="event-list.php" class="btn btn-dark btn-sm btn-browse">Browse Events</a>
 												<a href="my-events.php" class="btn btn-light btn-sm border">My Events & QR</a>
 											</div>
 										</div>
@@ -232,10 +237,10 @@ if (!function_exists('formatEventDateRange')) {
 										</div>
 									</div>
 									<div class="col-md-6 col-xl-3">
-										<div class="card stat-card shadow-sm border-0 h-100 border-start border-3 border-info">
+										<div class="card stat-card shadow-sm border-0 h-100 border-start border-3 border-warning">
 											<div class="card-body">
 												<div class="text-muted small mb-1">Upcoming Events</div>
-												<div class="h3 fw-bold mb-0 text-info"><?php echo number_format($stats['upcomingEventsCount']); ?></div>
+												<div class="h3 fw-bold mb-0 text-warning"><?php echo number_format($stats['upcomingEventsCount']); ?></div>
 											</div>
 										</div>
 									</div>
@@ -311,7 +316,7 @@ if (!function_exists('formatEventDateRange')) {
 																<?php else: ?>
 																	<span class="badge badge-light-secondary"><?php echo number_format((int)($event['total_registrations'] ?? 0)); ?> registered</span>
 																<?php endif; ?>
-																<a href="event-view.php?id=<?php echo urlencode($event['event_id']); ?>" class="btn btn-primary btn-sm border">Lihat Event</a>
+																<a href="event-view.php?id=<?php echo urlencode($event['event_id']); ?>" class="btn btn-dark btn-sm btn-browse">Lihat Event</a>
 															</div>
 														</div>
 													<?php endforeach; ?>

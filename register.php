@@ -9,6 +9,13 @@ if (isset($_SESSION['userId'])) {
     header('Location: home.php');
     exit;
 }
+
+$msg = $_SESSION['msg'] ?? null;
+if ($msg) {
+    $msgType = is_array($msg) ? ($msg['type'] ?? 'info') : 'info';
+    $msgText = is_array($msg) ? ($msg['text'] ?? '') : $msg;
+    unset($_SESSION['msg']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -74,6 +81,33 @@ if (isset($_SESSION['userId'])) {
 <!--begin::Body-->
 
 <body class="d-flex flex-column min-vh-100 bg-white py-2 main-bg">
+    <?php if (!empty($msgText)): ?>
+        <div class="modal fade" id="sessionMsgModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-<?= htmlspecialchars($msgType) ?> text-white">
+                        <h5 class="modal-title"><?= ($msgType === 'danger' ? 'Ralat' : 'Makluman') ?></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><?= htmlspecialchars($msgText) ?></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var modalEl = document.getElementById('sessionMsgModal');
+                if (modalEl && typeof bootstrap !== 'undefined') {
+                    new bootstrap.Modal(modalEl).show();
+                } else if (modalEl) {
+                    alert(modalEl.querySelector('.modal-body p').textContent);
+                }
+            });
+        </script>
+    <?php endif; ?>
+
     <!--begin::Main content-->
     <main class="flex-grow-1 d-flex flex-column justify-content-center align-items-center p-10">
         <!--begin::Logo-->
@@ -87,7 +121,7 @@ if (isset($_SESSION['userId'])) {
                                     <div class="text-center">
                                         <a href="index.php" class="d-inline-flex align-items-center justify-content-center">
                                             <img alt="Logo Attendance"
-                                                src="assets/media/logos/atendance.png"
+                                                src="assets/media/logos/attendance.png"
                                                 class="h-150px me-4" />
 
                                             <img alt="Logo SIRIM"
@@ -135,7 +169,7 @@ if (isset($_SESSION['userId'])) {
                                         <input type="hidden" name="roleId" value="2">
                                         <div class="col-12">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" name="iAgree" id="iAgree" required>
+                                                <input class="form-check-input" type="checkbox" value="1" name="iAgree" id="iAgree" required>
                                                 <label class="form-check-label text-dark" for="iAgree">
                                                     Saya bersetuju dengan <a href="#!" class="link-primary text-decoration-none">Terma dan Syarat</a>
                                                 </label>
@@ -143,7 +177,7 @@ if (isset($_SESSION['userId'])) {
                                         </div>
                                         <div class="col-12">
                                             <div class="d-grid">
-                                                <button class="btn bsb-btn-xl btn-primary" type="submit">Daftar</button>
+                                                <button class="btn bsb-btn-xl btn-dark" type="submit" id="registerSubmitBtn" disabled>Daftar</button>
                                             </div>
                                         </div>
                                     </div>
@@ -207,6 +241,15 @@ if (isset($_SESSION['userId'])) {
         <script src="assets/js/custom/authentication/sign-in/general.js"></script>
         <!--end::Page Custom Javascript-->
         <script>
+            const iAgreeCheckbox = document.getElementById("iAgree");
+            const registerSubmitBtn = document.getElementById("registerSubmitBtn");
+
+            if (iAgreeCheckbox && registerSubmitBtn) {
+                iAgreeCheckbox.addEventListener("change", function() {
+                    registerSubmitBtn.disabled = !this.checked;
+                });
+            }
+
             function toggleRegisterPassword() {
                 const password = document.getElementById("password");
                 const icon = document.getElementById("togglePasswordIcon");

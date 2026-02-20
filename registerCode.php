@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once('include/config.php');
 require_once('include/aes7.php');
 
@@ -81,5 +83,12 @@ try {
 } catch (Exception $e) {
 
     $conn->rollback();
-    echo $e->getMessage();
+
+    $_SESSION['msg'] = [
+        'type' => 'danger',
+        'text' => $e->getMessage()
+    ];
+
+    header("Location: register.php");
+    exit;
 }
