@@ -89,14 +89,14 @@ if (isset($conn) && $conn instanceof mysqli) {
 				$upcomingEvents[] = $event;
 			}
 		} else {
-			$eventsError = "Tidak dapat memuatkan senarai upcoming events.";
+			$eventsError = "Unable to load upcoming events list.";
 		}
 		$upcomingStmt->close();
 	} else {
-		$eventsError = "Tidak dapat memuatkan senarai upcoming events.";
+		$eventsError = "Unable to load upcoming events list.";
 	}
 } else {
-	$eventsError = "Sambungan pangkalan data tidak tersedia.";
+	$eventsError = "Database connection is not available.";
 }
 
 if (!function_exists('formatEventDateRange')) {
@@ -209,7 +209,7 @@ if (!function_exists('formatEventDateRange')) {
 										<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
 											<div>
 												<h2 class="fw-bolder mb-1">Participant Dashboard</h2>
-												<div class="text-muted">Terokai event, daftar dengan cepat, dan semak status kehadiran anda.</div>
+												<div class="text-muted">Explore events, register quickly, and track your attendance status.</div>
 											</div>
 											<div class="d-flex gap-2">
 												<a href="event-list.php" class="btn btn-dark btn-sm btn-browse">Browse Events</a>
@@ -223,7 +223,7 @@ if (!function_exists('formatEventDateRange')) {
 									<div class="col-md-6 col-xl-3">
 										<div class="card stat-card shadow-sm border-0 h-100 border-start border-3 border-dark">
 											<div class="card-body">
-												<div class="text-muted small mb-1">Jumlah Event</div>
+												<div class="text-muted small mb-1">Total Events</div>
 												<div class="h3 fw-bold mb-0"><?php echo number_format($stats['totalEvents']); ?></div>
 											</div>
 										</div>
@@ -231,7 +231,7 @@ if (!function_exists('formatEventDateRange')) {
 									<div class="col-md-6 col-xl-3">
 										<div class="card stat-card shadow-sm border-0 h-100 border-start border-3 border-primary">
 											<div class="card-body">
-												<div class="text-muted small mb-1">Event Bulan Ini</div>
+												<div class="text-muted small mb-1">Events This Month</div>
 												<div class="h3 fw-bold mb-0 text-primary"><?php echo number_format($stats['eventsThisMonth']); ?></div>
 											</div>
 										</div>
@@ -261,7 +261,7 @@ if (!function_exists('formatEventDateRange')) {
 											<div class="card-body d-flex flex-column gap-3">
 												<span class="action-icon bg-light-primary"><i class="bi bi-search fs-2 text-primary"></i></span>
 												<div class="fw-bolder fs-5">Browse Events</div>
-												<div class="text-muted small">Cari event mengikut kategori, tarikh dan lokasi.</div>
+												<div class="text-muted small">Find events by category, date, and location.</div>
 											</div>
 										</div>
 										<!-- </a> -->
@@ -272,7 +272,7 @@ if (!function_exists('formatEventDateRange')) {
 											<div class="card-body d-flex flex-column gap-3">
 												<span class="action-icon bg-light-success"><i class="bi bi-calendar-check fs-2 text-success"></i></span>
 												<div class="fw-bolder fs-5">My Events & QR</div>
-												<div class="text-muted small">Semak pendaftaran anda dan tunjukkan QR semasa check-in.</div>
+												<div class="text-muted small">Review your registrations and show your QR at check-in.</div>
 											</div>
 										</div>
 										<!-- </a> -->
@@ -281,8 +281,8 @@ if (!function_exists('formatEventDateRange')) {
 										<div class="card quick-action h-100 shadow-sm">
 											<div class="card-body d-flex flex-column gap-3">
 												<span class="action-icon bg-light-warning"><i class="bi bi-check2-circle fs-2 text-warning"></i></span>
-												<div class="fw-bolder fs-5">Kehadiran Direkod</div>
-												<div class="text-muted small"><?php echo number_format($stats['myCheckedIn']); ?> event telah berjaya anda hadiri.</div>
+												<div class="fw-bolder fs-5">Attendance Recorded</div>
+												<div class="text-muted small"><?php echo number_format($stats['myCheckedIn']); ?> events successfully attended.</div>
 											</div>
 										</div>
 									</div>
@@ -292,13 +292,13 @@ if (!function_exists('formatEventDateRange')) {
 									<div class="col-xl-7">
 										<div class="card shadow-sm h-100">
 											<div class="card-header border-0 pt-4">
-												<h3 class="card-title fw-bold">Senarai Event Akan Datang</h3>
+												<h3 class="card-title fw-bold">Upcoming Events</h3>
 											</div>
 											<div class="card-body pt-0">
 												<?php if ($eventsError): ?>
 													<div class="alert alert-danger mb-0"><?php echo htmlspecialchars($eventsError); ?></div>
 												<?php elseif (empty($upcomingEvents)): ?>
-													<div class="text-muted">Tiada future events untuk dipaparkan.</div>
+													<div class="text-muted">No upcoming events to display.</div>
 												<?php else: ?>
 													<?php foreach ($upcomingEvents as $event): ?>
 														<div class="upcoming-item d-flex justify-content-between flex-wrap gap-3 align-items-center">
@@ -311,12 +311,7 @@ if (!function_exists('formatEventDateRange')) {
 																</div>
 															</div>
 															<div class="d-flex align-items-center gap-2">
-																<?php if ((int)($event['is_registered'] ?? 0) > 0): ?>
-																	<span class="badge badge-light-success">Registered</span>
-																<?php else: ?>
-																	<span class="badge badge-light-secondary"><?php echo number_format((int)($event['total_registrations'] ?? 0)); ?> registered</span>
-																<?php endif; ?>
-																<a href="event-view.php?id=<?php echo urlencode($event['event_id']); ?>" class="btn btn-dark btn-sm btn-browse">Lihat Event</a>
+																<a href="event-view.php?id=<?php echo urlencode($event['event_id']); ?>" class="btn btn-dark btn-sm btn-browse">View Event</a>
 															</div>
 														</div>
 													<?php endforeach; ?>

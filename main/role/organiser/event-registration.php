@@ -303,13 +303,13 @@ $stmt->close();
                     [0, 'asc']
                 ],
                 language: {
-                    search: "Cari:",
-                    lengthMenu: "Papar _MENU_ rekod",
-                    info: "Menunjukkan _START_ hingga _END_ daripada _TOTAL_ rekod",
-                    infoEmpty: "Menunjukkan 0 hingga 0 daripada 0 rekod",
-                    infoFiltered: "(ditapis daripada _MAX_ jumlah rekod)",
-                    zeroRecords: "Tiada rekod ditemui",
-                    emptyTable: "Tiada data dalam jadual",
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ records",
+                    info: "Showing _START_ to _END_ of _TOTAL_ records",
+                    infoEmpty: "Showing 0 to 0 of 0 records",
+                    infoFiltered: "(filtered from _MAX_ total records)",
+                    zeroRecords: "No matching records found",
+                    emptyTable: "No data available in table",
                 }
             });
 

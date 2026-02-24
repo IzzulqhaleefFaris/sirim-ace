@@ -120,10 +120,10 @@ function buildQrUrl(string $registrationId): string
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <div>
                                 <h2 class="fw-bold mb-0">My Events</h2>
-                                <p class="text-muted mb-0">QR anda berada di sini. Tunjukkan kepada petugas untuk imbasan.</p>
+                                <p class="text-muted mb-0">Your QR is available here. Show it to staff for scanning.</p>
                             </div>
                             <a href="browse-event-list.php" class="btn btn-light border bg-white btn-back-events">
-                                <i class="bi bi-arrow-left me-1"></i> Kembali ke Senarai Event
+                                <i class="bi bi-arrow-left me-1"></i> Back to Event List
                             </a>
                         </div>
 
@@ -148,7 +148,7 @@ function buildQrUrl(string $registrationId): string
                                                         <?= date('d M Y', strtotime($row['event_startDate'])) ?> – <?= date('d M Y', strtotime($row['event_endDate'])) ?>
                                                     </div>
                                                     <?php if (!empty($row['location_name'])): ?>
-                                                        <div class="text-muted small">Lokasi: <?= htmlspecialchars($row['location_name']) ?></div>
+                                                        <div class="text-muted small">Location: <?= htmlspecialchars($row['location_name']) ?></div>
                                                     <?php endif; ?>
                                                     <div class="mt-2">
                                                         <span class="badge bg-primary me-2"><?= htmlspecialchars($eventStatus) ?></span>
@@ -163,7 +163,7 @@ function buildQrUrl(string $registrationId): string
 
                                                 <div class="text-center mb-3">
                                                     <img src="<?= htmlspecialchars($qrUrl) ?>" alt="QR Code" class="qr-img border rounded p-2 bg-white" />
-                                                    <div class="small text-muted mt-2">QR mengandungi Registration ID anda.</div>
+                                                    <div class="small text-muted mt-2">QR contains your Registration ID.</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -171,7 +171,7 @@ function buildQrUrl(string $registrationId): string
                                 <?php endwhile; ?>
                             </div>
                         <?php else: ?>
-                            <div class="alert alert-info">Anda belum mendaftar mana-mana event.</div>
+                            <div class="alert alert-info">You have not registered for any events yet.</div>
                         <?php endif; ?>
                     </div>
                     <!--end::Post-->

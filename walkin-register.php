@@ -17,12 +17,12 @@ function sendWalkInQrEmail(string $recipientEmail, string $recipientName, string
     }
 
     if (!$apiKey) {
-        $failureReason = 'SENDGRID_API_KEY belum diset pada server.';
+        $failureReason = 'SENDGRID_API_KEY is not set on the server.';
         return false;
     }
 
     if (!$recipientEmail) {
-        $failureReason = 'Alamat e-mel penerima kosong.';
+        $failureReason = 'Recipient email address is empty.';
         return false;
     }
 
@@ -30,7 +30,7 @@ function sendWalkInQrEmail(string $recipientEmail, string $recipientName, string
     $fromName = getenv('SENDGRID_FROM_NAME') ?: 'SIRIM Attendance';
 
     if (!$fromEmail) {
-        $failureReason = 'SENDGRID_FROM_EMAIL belum diset.';
+        $failureReason = 'SENDGRID_FROM_EMAIL is not set.';
         return false;
     }
 
@@ -39,18 +39,18 @@ function sendWalkInQrEmail(string $recipientEmail, string $recipientName, string
     $mail->setSubject('Walk-in QR Registration - ' . $eventName);
     $mail->addTo($recipientEmail, $recipientName !== '' ? $recipientName : 'Participant');
 
-    $textContent = "Pendaftaran walk-in berjaya.\n" .
+    $textContent = "Walk-in registration successful.\n" .
         "Event: {$eventName} ({$eventId})\n" .
         "Registration ID: {$registrationId}\n" .
         "QR Link: {$qrUrl}\n";
 
     $htmlContent = "
-        <h3>Pendaftaran Walk-in Berjaya</h3>
+        <h3>Walk-in Registration Successful</h3>
         <p><strong>Event:</strong> {$eventName} ({$eventId})</p>
         <p><strong>Registration ID:</strong> {$registrationId}</p>
-        <p>Sila tunjukkan QR ini kepada petugas untuk imbasan:</p>
+        <p>Please show this QR to the staff for scanning:</p>
         <p><img src=\"{$qrUrl}\" alt=\"Walk-in QR\" style=\"max-width:240px;border:1px solid #ddd;padding:8px;border-radius:8px;\"></p>
-        <p>Jika imej tidak dipaparkan, guna pautan ini: <a href=\"{$qrUrl}\">Lihat QR</a></p>
+        <p>If the image is not displayed, use this link: <a href=\"{$qrUrl}\">View QR</a></p>
     ";
 
     $mail->addContent('text/plain', $textContent);
@@ -61,7 +61,7 @@ function sendWalkInQrEmail(string $recipientEmail, string $recipientName, string
         $response = $sendgrid->send($mail);
 
         if ($response->statusCode() >= 400) {
-            $failureReason = 'SendGrid menolak permintaan (HTTP ' . $response->statusCode() . ').';
+            $failureReason = 'SendGrid rejected the request (HTTP ' . $response->statusCode() . ').';
             error_log('SendGrid walk-in email rejected: HTTP ' . $response->statusCode() . ' | Body: ' . $response->body());
             return false;
         }
@@ -85,7 +85,7 @@ $registrationId = null;
 $emailInfo = null;
 
 if ($eventId === '') {
-    $error = 'Event tidak sah.';
+    $error = 'Invalid event.';
 } else {
     $stmtEvent = $conn->prepare("SELECT event_id, event_name, event_startDate, event_endDate, event_status FROM att_event WHERE event_id = ? LIMIT 1");
     if ($stmtEvent) {
@@ -95,11 +95,11 @@ if ($eventId === '') {
         if ($resEvent && $resEvent->num_rows > 0) {
             $event = $resEvent->fetch_assoc();
         } else {
-            $error = 'Event tidak ditemui.';
+            $error = 'Event not found.';
         }
         $stmtEvent->close();
     } else {
-        $error = 'Ralat pelayan semasa memuatkan event.';
+        $error = 'Server error while loading event.';
     }
 }
 
@@ -107,7 +107,7 @@ $isEventCurrent = $event && (($event['event_status'] ?? '') === 'Current');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
     if (!$isEventCurrent) {
-        $error = 'Walk-in hanya dibenarkan semasa event sedang berlangsung.';
+        $error = 'Walk-in is only allowed while the event is ongoing.';
     } else {
         $walkinName = trim($_POST['walkin_name'] ?? '');
         $walkinEmail = trim($_POST['walkin_email'] ?? '');
@@ -115,10 +115,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
         $walkinCompany = trim($_POST['walkin_company'] ?? '');
 
         if ($walkinName === '') {
-            $error = 'Nama walk-in diperlukan.';
+            $error = 'Walk-in name is required.';
         } else {
             if ($walkinEmail !== '' && !filter_var($walkinEmail, FILTER_VALIDATE_EMAIL)) {
-                $error = 'Format e-mel tidak sah.';
+                $error = 'Invalid email format.';
             }
         }
 
@@ -161,8 +161,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                                 $mailReason
                             );
                             $emailInfo = $sent
-                                ? 'QR juga telah dihantar ke e-mel anda.'
-                                : 'QR tidak dapat dihantar ke e-mel: ' . ($mailReason ?: 'Ralat tidak diketahui') . ' Sila guna QR di halaman ini.';
+                                ? 'The QR has also been sent to your email.'
+                                : 'QR could not be sent to email: ' . ($mailReason ?: 'Unknown error') . ' Please use the QR on this page.';
                         }
                     }
                     $dupStmt->close();
@@ -197,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
 
             $insertStmt = $conn->prepare($insertSql);
             if (!$insertStmt) {
-                $error = 'Ralat server semasa daftar walk-in.';
+                $error = 'Server error while registering walk-in.';
             } else {
                 $insertStmt->bind_param(
                     "sssssss",
@@ -212,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
 
                 if ($insertStmt->execute()) {
                     $registrationId = $newCode;
-                    $success = 'Pendaftaran walk-in berjaya.';
+                    $success = 'Walk-in registration successful.';
                     $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' . urlencode($registrationId);
 
                     if ($walkinEmail !== '') {
@@ -227,11 +227,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                             $mailReason
                         );
                         $emailInfo = $sent
-                            ? 'QR juga telah dihantar ke e-mel anda.'
-                            : 'QR tidak dapat dihantar ke e-mel: ' . ($mailReason ?: 'Ralat tidak diketahui') . ' Sila guna QR di halaman ini.';
+                            ? 'The QR has also been sent to your email.'
+                            : 'QR could not be sent to email: ' . ($mailReason ?: 'Unknown error') . ' Please use the QR on this page.';
                     }
                 } else {
-                    $error = 'Pendaftaran gagal. Sila cuba lagi.';
+                    $error = 'Registration failed. Please try again.';
                 }
 
                 $insertStmt->close();
@@ -284,7 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                         <?php if ($qrUrl): ?>
                             <img src="<?= htmlspecialchars($qrUrl) ?>" alt="Walk-in QR" class="img-fluid border rounded p-2 bg-white" style="max-width: 260px;">
                         <?php endif; ?>
-                        <div class="small text-muted mt-2">Tunjukkan QR ini kepada petugas untuk imbasan.</div>
+                        <div class="small text-muted mt-2">Show this QR to staff for scanning.</div>
                     </div>
                 <?php endif; ?>
 
@@ -292,28 +292,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                     <form method="POST" class="row g-3">
                         <input type="hidden" name="event" value="<?= htmlspecialchars($eventId) ?>">
                         <div class="col-12">
-                            <label class="form-label">Nama <span class="text-danger">*</span></label>
+                            <label class="form-label">Name <span class="text-danger">*</span></label>
                             <input type="text" name="walkin_name" class="form-control" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">E-mel</label>
+                            <label class="form-label">Email</label>
                             <input type="email" name="walkin_email" class="form-control">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">No Telefon</label>
+                            <label class="form-label">Phone Number</label>
                             <input type="text" name="walkin_phone" class="form-control">
                         </div>
                         <div class="col-12">
-                            <label class="form-label">Syarikat</label>
+                            <label class="form-label">Company</label>
                             <input type="text" name="walkin_company" class="form-control">
                         </div>
                         <div class="col-12 d-flex gap-2 mt-2">
-                            <button type="submit" class="btn btn-primary">Daftar Walk-in</button>
-                            <a href="/attendance" class="btn btn-light border">Kembali</a>
+                            <button type="submit" class="btn btn-primary">Register Walk-in</button>
+                            <a href="/attendance" class="btn btn-light border">Back</a>
                         </div>
                     </form>
                 <?php elseif ($event): ?>
-                    <div class="alert alert-warning mb-0">Walk-in hanya tersedia apabila event berstatus Current.</div>
+                    <div class="alert alert-warning mb-0">Walk-in is only available when the event status is Current.</div>
                 <?php endif; ?>
             </div>
         </div>

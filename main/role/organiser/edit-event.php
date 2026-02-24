@@ -135,10 +135,10 @@ $states = $conn->query("SELECT * FROM att_state");
                                             <h2 class="fw-bold mb-1">
                                                 Edit Event
                                             </h2>
-                                            <p class="text-muted mb-0">Kemaskini maklumat event</p>
+                                            <p class="text-muted mb-0">Update event information</p>
                                         </div>
                                         <a href="event-list.php" class="btn btn-light border">
-                                            <i class="bi bi-arrow-left me-1"></i>Kembali
+                                            <i class="bi bi-arrow-left me-1"></i>Back
                                         </a>
                                     </div>
 
@@ -163,13 +163,13 @@ $states = $conn->query("SELECT * FROM att_state");
 
                                                 <!-- Event Information Section -->
                                                 <h5 class="section-header">
-                                                    <i class="bi bi-info-circle me-2 text-primary"></i>Maklumat Event
+                                                    <i class="bi bi-info-circle me-2 text-primary"></i>Event Information
                                                 </h5>
 
                                                 <div class="row mb-4">
                                                     <div class="col-12 mb-3">
                                                         <label for="event_name" class="form-label">
-                                                            Nama Event
+                                                            Event Name
                                                         </label>
                                                         <input type="text"
                                                             id="event_name"
@@ -177,16 +177,16 @@ $states = $conn->query("SELECT * FROM att_state");
                                                             class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['event_name']) ?>"
                                                             required
-                                                            placeholder="Masukkan nama event">
-                                                        <div class="invalid-feedback">Sila masukkan nama event.</div>
+                                                            placeholder="Enter event name">
+                                                        <div class="invalid-feedback">Please enter event name.</div>
                                                     </div>
 
                                                     <div class="col-12 mb-3">
                                                         <label for="event_type_id" class="form-label">
-                                                            Jenis Event
+                                                            Event Type
                                                         </label>
                                                         <select id="event_type_id" name="event_type_id" class="form-select form-select-lg" required>
-                                                            <option value="">-- Pilih Jenis Event --</option>
+                                                            <option value="">-- Select Event Type --</option>
                                                             <?php
                                                             $types->data_seek(0); // Reset pointer
                                                             while ($t = $types->fetch_assoc()):
@@ -197,19 +197,19 @@ $states = $conn->query("SELECT * FROM att_state");
                                                                 </option>
                                                             <?php endwhile; ?>
                                                         </select>
-                                                        <div class="invalid-feedback">Sila pilih jenis event.</div>
+                                                        <div class="invalid-feedback">Please select event type.</div>
                                                     </div>
                                                 </div>
 
                                                 <!-- Event Dates Section -->
                                                 <h5 class="section-header mt-4">
-                                                    <i class="bi bi-calendar-range me-2 text-primary"></i>Tarikh Event
+                                                    <i class="bi bi-calendar-range me-2 text-primary"></i>Event Dates
                                                 </h5>
 
                                                 <div class="row mb-4">
                                                     <div class="col-md-6 mb-3">
                                                         <label for="event_startDate" class="form-label ">
-                                                            Event Mula
+                                                            Event Start
                                                         </label>
                                                         <input type="date"
                                                             id="event_startDate"
@@ -217,11 +217,11 @@ $states = $conn->query("SELECT * FROM att_state");
                                                             class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['event_startDate']) ?>"
                                                             required>
-                                                        <div class="invalid-feedback">Sila pilih tarikh mula event.</div>
+                                                        <div class="invalid-feedback">Please select event start date.</div>
                                                     </div>
                                                     <div class="col-md-6 mb-3">
                                                         <label for="event_endDate" class="form-label">
-                                                            Event Tamat
+                                                            Event End
                                                         </label>
                                                         <input type="date"
                                                             id="event_endDate"
@@ -229,51 +229,51 @@ $states = $conn->query("SELECT * FROM att_state");
                                                             class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['event_endDate']) ?>"
                                                             required>
-                                                        <div class="invalid-feedback">Sila pilih tarikh tamat event.</div>
+                                                        <div class="invalid-feedback">Please select event end date.</div>
                                                     </div>
                                                 </div>
 
                                                 <!-- Registration Dates Section -->
                                                 <h5 class="section-header mt-4">
-                                                    <i class="bi bi-person-plus me-2 text-primary"></i>Tarikh Pendaftaran
+                                                    <i class="bi bi-person-plus me-2 text-primary"></i>Registration Dates
                                                 </h5>
 
                                                 <div class="row mb-4">
                                                     <div class="col-md-6 mb-3">
                                                         <label for="event_openRegistration" class="form-label">
-                                                            Pendaftaran Dibuka
+                                                            Registration Open
                                                         </label>
                                                         <input type="date"
                                                             id="event_openRegistration"
                                                             name="event_openRegistration"
                                                             class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['event_openRegistration'] ?? '') ?>"
-                                                            placeholder="Pilihan">
-                                                        <small class="form-text text-muted">Kosongkan jika tidak dinyatakan</small>
+                                                            placeholder="Optional">
+                                                        <small class="form-text text-muted">Leave empty if not specified</small>
                                                     </div>
                                                     <div class="col-md-6 mb-3">
                                                         <label for="event_closeRegistration" class="form-label">
-                                                            Pendaftaran Ditutup
+                                                            Registration Close
                                                         </label>
                                                         <input type="date"
                                                             id="event_closeRegistration"
                                                             name="event_closeRegistration"
                                                             class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['event_closeRegistration'] ?? '') ?>"
-                                                            placeholder="Pilihan">
-                                                        <small class="form-text text-muted">Kosongkan jika tidak dinyatakan</small>
+                                                            placeholder="Optional">
+                                                        <small class="form-text text-muted">Leave empty if not specified</small>
                                                     </div>
                                                 </div>
 
                                                 <!-- Location Section -->
                                                 <h5 class="section-header mt-4">
-                                                    <i class="bi bi-geo-alt me-2 text-primary"></i>Maklumat Lokasi
+                                                    <i class="bi bi-geo-alt me-2 text-primary"></i>Location Information
                                                 </h5>
 
                                                 <div class="row mb-4">
                                                     <div class="col-12 mb-3">
                                                         <label for="location_name" class="form-label">
-                                                            <i class="bi bi-building me-1"></i> &nbsp;Nama Lokasi
+                                                            <i class="bi bi-building me-1"></i> &nbsp;Location Name
                                                         </label>
                                                         <input type="text"
                                                             id="location_name"
@@ -282,27 +282,27 @@ $states = $conn->query("SELECT * FROM att_state");
                                                             value="<?= htmlspecialchars($event['location_name'] ?? '') ?>"
                                                             required
                                                             placeholder="Contoh: Dewan Serbaguna">
-                                                        <div class="invalid-feedback">Sila masukkan nama lokasi.</div>
+                                                        <div class="invalid-feedback">Please enter location name.</div>
                                                     </div>
 
                                                     <div class="col-md-6 mb-3">
                                                         <label for="location_buildingName" class="form-label">
-                                                            <i class="bi bi-building-check me-1"></i>Nama Bangunan
+                                                            <i class="bi bi-building-check me-1"></i>Building Name
                                                         </label>
                                                         <input type="text"
                                                             id="location_buildingName"
                                                             name="location_buildingName"
                                                             class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['location_buildingName'] ?? '') ?>"
-                                                            placeholder="Contoh: Bangunan Utama">
+                                                                placeholder="Example: Main Building">
                                                     </div>
 
                                                     <div class="col-md-6 mb-3">
                                                         <label for="state_id" class="form-label">
-                                                            Negeri
+                                                            State
                                                         </label>
                                                         <select id="state_id" name="state_id" class="form-select form-select-lg" required>
-                                                            <option value="">-- Pilih Negeri --</option>
+                                                            <option value="">-- Select State --</option>
                                                             <?php
                                                             $states->data_seek(0); // Reset pointer
                                                             while ($s = $states->fetch_assoc()):
@@ -313,65 +313,65 @@ $states = $conn->query("SELECT * FROM att_state");
                                                                 </option>
                                                             <?php endwhile; ?>
                                                         </select>
-                                                        <div class="invalid-feedback">Sila pilih negeri.</div>
+                                                        <div class="invalid-feedback">Please select state.</div>
                                                     </div>
 
                                                     <div class="col-12 mb-3">
                                                         <label for="address_line1" class="form-label">
-                                                            Alamat Baris 1
+                                                            Address Line 1
                                                         </label>
                                                         <input type="text"
                                                             id="address_line1"
                                                             name="address_line1"
                                                             class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['address_line1'] ?? '') ?>"
-                                                            placeholder="Masukkan alamat baris 1">
+                                                                placeholder="Enter address line 1">
                                                     </div>
 
                                                     <div class="col-12 mb-3">
                                                         <label for="address_line2" class="form-label">
-                                                            Alamat Baris 2
+                                                            Address Line 2
                                                         </label>
                                                         <input type="text"
                                                             id="address_line2"
                                                             name="address_line2"
                                                             class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['address_line2'] ?? '') ?>"
-                                                            placeholder="Masukkan alamat baris 2">
+                                                                placeholder="Enter address line 2">
                                                     </div>
 
                                                     <div class="col-md-6 mb-3">
                                                         <label for="address_city" class="form-label">
-                                                            Bandar
+                                                            City
                                                         </label>
                                                         <input type="text"
                                                             id="address_city"
                                                             name="address_city"
                                                             class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['address_city'] ?? '') ?>"
-                                                            placeholder="Masukkan bandar">
+                                                                placeholder="Enter city">
                                                     </div>
 
                                                     <div class="col-md-6 mb-3">
                                                         <label for="address_postcode" class="form-label">
-                                                            Poskod
+                                                            Postcode
                                                         </label>
                                                         <input type="text"
                                                             id="address_postcode"
                                                             name="address_postcode"
                                                             class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['address_postcode'] ?? '') ?>"
-                                                            placeholder="Masukkan poskod">
+                                                            placeholder="Enter postcode">
                                                     </div>
                                                 </div>
 
                                                 <!-- Form Actions -->
                                                 <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
                                                     <a href="event-list.php" class="btn btn-secondary btn-lg">
-                                                        <i class="bi bi-x-circle me-1"></i>Batal
+                                                        <i class="bi bi-x-circle me-1"></i>Cancel
                                                     </a>
                                                     <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
-                                                        <i class="bi bi-check-circle me-1"></i>Kemaskini Event
+                                                        <i class="bi bi-check-circle me-1"></i>Update Event
                                                     </button>
                                                 </div>
                                             </form>
@@ -417,7 +417,7 @@ $states = $conn->query("SELECT * FROM att_state");
                 } else {
                     // Disable submit button and show loading
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Memproses...';
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Processing...';
                 }
                 form.classList.add('was-validated');
             }, false);
@@ -431,7 +431,7 @@ $states = $conn->query("SELECT * FROM att_state");
             function validateDates() {
                 if (startDate.value && endDate.value) {
                     if (new Date(endDate.value) < new Date(startDate.value)) {
-                        endDate.setCustomValidity('Tarikh tamat mesti selepas tarikh mula');
+                        endDate.setCustomValidity('End date must be after start date');
                         endDate.reportValidity();
                         return false;
                     } else {
@@ -441,7 +441,7 @@ $states = $conn->query("SELECT * FROM att_state");
 
                 if (openReg.value && closeReg.value) {
                     if (new Date(closeReg.value) < new Date(openReg.value)) {
-                        closeReg.setCustomValidity('Tarikh tutup pendaftaran mesti selepas tarikh buka');
+                        closeReg.setCustomValidity('Registration close date must be after open date');
                         closeReg.reportValidity();
                         return false;
                     } else {
@@ -451,7 +451,7 @@ $states = $conn->query("SELECT * FROM att_state");
 
                 if (openReg.value && startDate.value) {
                     if (new Date(openReg.value) > new Date(startDate.value)) {
-                        openReg.setCustomValidity('Tarikh buka pendaftaran tidak boleh selepas tarikh mula event');
+                        openReg.setCustomValidity('Registration open date cannot be after event start date');
                         openReg.reportValidity();
                         return false;
                     } else {
@@ -461,7 +461,7 @@ $states = $conn->query("SELECT * FROM att_state");
 
                 if (closeReg.value && endDate.value) {
                     if (new Date(closeReg.value) > new Date(endDate.value)) {
-                        closeReg.setCustomValidity('Tarikh tutup pendaftaran tidak boleh selepas tarikh tamat event');
+                        closeReg.setCustomValidity('Registration close date cannot be after event end date');
                         closeReg.reportValidity();
                         return false;
                     } else {

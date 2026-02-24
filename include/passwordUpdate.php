@@ -8,7 +8,7 @@ $newPassword = md5($_POST['password']);
 if (!$userId || !$newPassword) {
     $_SESSION['msg'] = [
         'type' => 'danger',
-        'text' => 'Data tidak lengkap.'
+        'text' => 'Incomplete data.'
     ];
     header("Location: " . $_SERVER['HTTP_REFERER']);
     exit;
@@ -20,12 +20,12 @@ $stmt->bind_param("ss", $newPassword, $userId);
 if ($stmt->execute()) {
     $_SESSION['msg'] = [
         'type' => 'success',
-        'text' => 'Kata laluan berjaya dikemaskini.'
+        'text' => 'Password updated successfully.'
     ];
 } else {
     $_SESSION['msg'] = [
         'type' => 'danger',
-        'text' => 'Gagal kemaskini kata laluan.'
+        'text' => 'Failed to update password.'
     ];
 }
 

@@ -165,35 +165,35 @@ endif;
 										<form id="eventForm" method="POST" action="event-creation.php" enctype="multipart/form-data">
 											<div class="card shadow-sm">
 												<div class="card-header">
-													<h5 class="card-title fs-1" style="font-weight: 800">Pendaftaran Event</h5>
+													<h5 class="card-title fs-1" style="font-weight: 800">Event Registration</h5>
 												</div>
 												<div class="card-body">
 
 													<div class="container">
 														<!--begin::Info Asas-->
-														<h5 class="card-title fs-2" style="font-weight: 800">Info Asas</h5>
+														<h5 class="card-title fs-2" style="font-weight: 800">Basic Info</h5>
 
-														<h3 class="card-title"><small class="text-danger fs-8"> Sila isikan ruang yang bertanda (<i class="text-danger">*</i>&nbsp;)</small></h3>
+														<h3 class="card-title"><small class="text-danger fs-8"> Please fill in all required fields (<i class="text-danger">*</i>&nbsp;)</small></h3>
 
 														<div class="row g-2 py-2">
-															<label class="form-label form-label-sm required">Nama Event :</label>
+															<label class="form-label form-label-sm required">Event Name :</label>
 															<input
 																type="text"
 																class="form-control form-control-sm w-100"
 																id="event_name"
 																name="event_name"
 																value="<?= htmlspecialchars($_POST['event_name'] ?? '') ?>"
-																placeholder="Nama event"
+																placeholder="Event name"
 																required />
 														</div>
 
 														<div class="row g-2 py-2">
-															<label class="form-label form-label-sm ">Maklumat Event :</label>
+															<label class="form-label form-label-sm ">Event Details :</label>
 															<textarea
 																class="form-control form-control-sm w-60"
 																id="event_description"
 																name="event_description"
-																placeholder="Isikan maklumat event berkenaan"
+																placeholder="Enter event details"
 																style="height: 100px;"><?= htmlspecialchars($_POST['event_description'] ?? '') ?></textarea>
 														</div>
 
@@ -247,9 +247,9 @@ endif;
 														</div>
 
 														<div class="row g-2 py-2">
-															<label class="form-label form-label-sm required">Jenis Event :</label>
+															<label class="form-label form-label-sm required">Event Type :</label>
 															<select class="form-select form-select-sm w-auto" name="event_type_id" id="jenisEvent">
-																<option selected disabled>Pilih Jenis</option>
+																<option selected disabled>Select Type</option>
 																<?php if ($eventTypes): ?>
 																	<?php while ($r = $eventTypes->fetch_assoc()): ?>
 																		<option value="<?= htmlspecialchars($r['event_type_id']) ?>"
@@ -263,10 +263,10 @@ endif;
 
 
 														<div class="row g-2 py-2">
-															<label for="organiserInput" class="form-label form-label-sm mb-0">Nama Pengurus :</label>
+															<label for="organiserInput" class="form-label form-label-sm mb-0">Manager Name :</label>
 															<div class="col-auto">
 																<select class="form-select form-select-sm w-auto" id="organiserInput" name="organiser">
-																	<option value="" selected disabled>Pilih Nama Pengurus</option>
+																	<option value="" selected disabled>Select Manager Name</option>
 																	<option value="Staf 1">Staf 1</option>
 																	<option value="Staf 2">Staf 2</option>
 																	<option value="Staf 3">Staf 3</option>
@@ -351,18 +351,18 @@ endif;
 															</div>
 														</div><br><br>
 
-														<h5 class="card-title fs-2" style="font-weight: 800">Tarikh Pembukaan & Penutupan Pendaftaran</h5>
+														<h5 class="card-title fs-2" style="font-weight: 800">Registration Opening & Closing Dates</h5>
 
 														<div class="row g-2 py-2">
 															<!-- Open Registration Date -->
 															<div class="col-md-6">
-																<label for="event_openRegistration" class="form-label">Tarikh Buka Pendaftaran <span class="text-danger">*</span></label>
+																<label for="event_openRegistration" class="form-label">Registration Open Date <span class="text-danger">*</span></label>
 																<input type="date" class="form-control" name="event_openRegistration" id="event_openRegistration" required>
 															</div>
 
 															<!-- Close Registration Date -->
 															<div class="col-md-6">
-																<label for="event_closeRegistration" class="form-label">Tarikh Tutup Pendaftaran <span class="text-danger">*</span></label>
+																<label for="event_closeRegistration" class="form-label">Registration Close Date <span class="text-danger">*</span></label>
 																<input type="date" class="form-control" name="event_closeRegistration" id="event_closeRegistration" required>
 															</div>
 														</div>
@@ -376,27 +376,27 @@ endif;
 
 														<div class="row g-2 py-2">
 															<div class="col-md-6">
-																<label class="form-label form-label-sm required">Nama Lokasi :</label>
-																<input type="text" class="form-control form-control-sm mb-2" id="location_name" name="location_name" placeholder="Nama lokasi" style="max-width: 250px;" />
+																<label class="form-label form-label-sm required">Location Name :</label>
+																<input type="text" class="form-control form-control-sm mb-2" id="location_name" name="location_name" placeholder="Location name" style="max-width: 250px;" />
 																<label class="form-label form-label-sm">Bangunan/Blok :</label>
 																<input type="text" class="form-control form-control-sm mb-2" id="location_buildingName" name="location_buildingName" placeholder="Bangunan" style="max-width: 250px;" />
 																<label class="form-label form-label-sm">Bilik/Dewan :</label>
 																<input type="text" class="form-control form-control-sm mb-2" id="location_room" name="location_room" placeholder="Bilik" style="max-width: 250px;" />
-																<label class="form-label form-label-sm">Aras :</label>
-																<input type="text" class="form-control form-control-sm" id="location_level" name="location_level" placeholder="Aras" style="max-width: 250px;" />
+																<label class="form-label form-label-sm">Level :</label>
+																<input type="text" class="form-control form-control-sm" id="location_level" name="location_level" placeholder="Level" style="max-width: 250px;" />
 															</div>
 															<div class="col-md-6" rowspan="4">
 																<label class="form-label form-label-sm required">Alamat Baris 1 :</label>
-																<input type="text" class="form-control form-control-sm mb-2" id="address_line1" name="address_line1" placeholder="Nama Bangunan/No. Lot" />
+																<input type="text" class="form-control form-control-sm mb-2" id="address_line1" name="address_line1" placeholder="Building Name/Lot No." />
 																<label class="form-label form-label-sm">Alamat Baris 2 :</label>
-																<input type="text" class="form-control form-control-sm mb-2" id="address_line2" name="address_line2" placeholder="Nama Jalan" />
-																<label class="form-label form-label-sm required">Bandar :</label>
-																<input type="text" class="form-control form-control-sm mb-2" id="address_city" name="address_city" placeholder="Bandar" />
-																<label class="form-label form-label-sm required">Poskod :</label>
-																<input type="text" class="form-control form-control-sm" id="address_postcode" name="address_postcode" placeholder="Poskod" />
-																<label class="form-label form-label-sm required pt-2">Negeri : </label><br>
+																<input type="text" class="form-control form-control-sm mb-2" id="address_line2" name="address_line2" placeholder="Street Name" />
+																<label class="form-label form-label-sm required">City :</label>
+																<input type="text" class="form-control form-control-sm mb-2" id="address_city" name="address_city" placeholder="City" />
+																<label class="form-label form-label-sm required">Postcode :</label>
+																<input type="text" class="form-control form-control-sm" id="address_postcode" name="address_postcode" placeholder="Postcode" />
+																<label class="form-label form-label-sm required pt-2">State : </label><br>
 																<select class="form-select form-select-sm" name="state_id" id="negeriSelect" required>
-																	<option selected disabled>Pilih Negeri</option>
+																	<option selected disabled>Select State</option>
 																	<?php if ($states): ?>
 																		<?php while ($s = $states->fetch_assoc()): ?>
 																			<?php $sel = (isset($_POST['state_id']) && $_POST['state_id'] === $s['state_id']) ? 'selected' : ''; ?>
@@ -414,7 +414,7 @@ endif;
 												<div class="separator separator-dotted border-muted"></div>
 
 												<div class="d-flex justify-content-end ">
-													<button type="reset" class="btn btn-sm btn-white fw-bolder btn-active-light-primary me-2">Set Semula</button>
+													<button type="reset" class="btn btn-sm btn-white fw-bolder btn-active-light-primary me-2">Reset</button>
 													<button type="button" class="btn btn-primary" id="confirmBtn">Confirm</button>
 												</div>
 											</div>
@@ -430,48 +430,47 @@ endif;
 															<div class="bg-light rounded-3 p-3 mb-3 border">
 																<div class="d-flex justify-content-between align-items-center">
 																	<div>
-																		<div class="text-muted small">Semak butiran</div>
-																		<div class="fw-semibold">Sila pastikan semua maklumat adalah betul</div>
+																		<div class="text-muted small">Review details</div>
+																		<div class="fw-semibold">Please ensure all information is correct</div>
 																	</div>
-																	<span class="badge bg-dark">Confirm</span>
 																</div>
 															</div>
 															<table class="table table-sm table-hover align-middle mb-0">
 																<tbody>
 																	<tr>
-																		<th class="text-muted w-25">Nama Event</th>
+																		<th class="text-muted w-25">Event Name</th>
 																		<td id="confirmEventName" class="fw-semibold"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">Jenis Event</th>
+																		<th class="text-muted">Event Type</th>
 																		<td id="confirmEventType"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">Tarikh Mula</th>
+																		<th class="text-muted">Start Date</th>
 																		<td id="confirmStartDate"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">Tarikh Tamat</th>
+																		<th class="text-muted">End Date</th>
 																		<td id="confirmEndDate"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">Buka Pendaftaran</th>
+																		<th class="text-muted">Registration Open</th>
 																		<td id="confirmOpenRegistration"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">Tutup Pendaftaran</th>
+																		<th class="text-muted">Registration Close</th>
 																		<td id="confirmCloseRegistration"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">Negeri</th>
+																		<th class="text-muted">State</th>
 																		<td id="confirmState"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">Nama Lokasi</th>
+																		<th class="text-muted">Location Name</th>
 																		<td id="confirmLocationName"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">Alamat Event</th>
+																		<th class="text-muted">Event Address</th>
 																		<td id="confirmAddress"></td>
 																	</tr>
 																	<tr>
@@ -571,7 +570,7 @@ endif;
 				}
 			}
 
-			// Jenis Event Dropdown
+			// Event Type Dropdown
 			document.querySelectorAll('.jenis-event-option').forEach(function(item) {
 				item.addEventListener('click', function(e) {
 					e.preventDefault();
@@ -580,7 +579,7 @@ endif;
 				});
 			});
 
-			// Nama Pengurus Dropdown
+			// Manager Name Dropdown
 			document.querySelectorAll('.organiser-option').forEach(function(item) {
 				item.addEventListener('click', function(e) {
 					e.preventDefault();

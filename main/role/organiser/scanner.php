@@ -62,7 +62,7 @@ require_manage_events();
                             <div class="col-lg-6">
                                 <div class="card shadow-sm h-100">
                                     <div class="card-header">
-                                        <h5 class="card-title mb-0">Kamera</h5>
+                                        <h5 class="card-title mb-0">Camera</h5>
                                     </div>
                                     <div class="card-body">
                                         <video id="preview" class="w-100 border rounded" style="min-height:240px;"></video>
@@ -71,9 +71,9 @@ require_manage_events();
                                             <button class="btn btn-secondary" id="startBack">Back Cam</button>
                                         </div>
                                         <div id="cameraStatus" class="alert alert-info mt-3" role="alert">
-                                            <i class="bi bi-info-circle me-2"></i>Memulakan kamera...
+                                            <i class="bi bi-info-circle me-2"></i>Starting camera...
                                         </div>
-                                        <div class="small text-muted mt-2">Pastikan QR jelas sebelum imbas.</div>
+                                        <div class="small text-muted mt-2">Make sure the QR is clear before scanning.</div>
                                     </div>
                                 </div>
                             </div>
@@ -90,14 +90,14 @@ require_manage_events();
                                                 <input type="text"
                                                     class="form-control form-control-lg"
                                                     id="manualCode"
-                                                    placeholder="Contoh: REG0001"
+                                                    placeholder="Example: REG0001"
                                                     autocomplete="off" />
                                                 <button class="btn btn-primary btn-lg" type="submit">
                                                     <i class="bi bi-check-circle me-1"></i>Submit
                                                 </button>
                                             </div>
                                             <small class="text-muted">
-                                                Imbas QR kod peserta atau masukkan Registration ID secara manual
+                                                Scan participant QR code or enter Registration ID manually
                                             </small>
                                         </form>
                                         <div id="resultBox" class="alert d-none mb-0" role="alert"></div>
@@ -169,7 +169,7 @@ require_manage_events();
 
         async function submitCode(code) {
             if (!code || code.trim() === '') {
-                showResult('error', 'Sila masukkan Registration ID');
+                showResult('error', 'Please enter Registration ID');
                 return;
             }
 
@@ -179,7 +179,7 @@ require_manage_events();
             // Show loading
             resultBox.className = 'alert alert-info';
             resultBox.classList.remove('d-none');
-            resultBox.innerHTML = '<div class="spinner-border spinner-border-sm me-2" role="status"></div>Memproses...';
+            resultBox.innerHTML = '<div class="spinner-border spinner-border-sm me-2" role="status"></div>Processing...';
 
             try {
                 const res = await fetch('../../api/api_attendance_validate.php', {
@@ -199,12 +199,12 @@ require_manage_events();
                     data = JSON.parse(raw);
                 } catch (parseError) {
                     console.error('Invalid API response:', raw);
-                    showResult('error', 'Ralat pelayan: respons tidak sah. Sila semak konfigurasi API.');
+                    showResult('error', 'Server error: invalid response. Please check API configuration.');
                     return;
                 }
 
                 if (!res.ok) {
-                    showResult('error', data.message || ('Ralat pelayan (HTTP ' + res.status + ').'));
+                    showResult('error', data.message || ('Server error (HTTP ' + res.status + ').'));
                     return;
                 }
 
@@ -215,17 +215,17 @@ require_manage_events();
                         audio.play().catch(() => {});
                     } catch (e) {}
 
-                    showResult('success', data.message || 'Kehadiran berjaya direkodkan!', {
+                    showResult('success', data.message || 'Attendance recorded successfully!', {
                         event_name: data.event_name,
                         attendance_id: data.attendance_id,
                         check_in_time: data.check_in_time
                     });
                 } else {
-                    showResult('error', data.message || 'Ralat semasa memproses. Sila cuba lagi.');
+                    showResult('error', data.message || 'Error while processing. Please try again.');
                 }
             } catch (e) {
                 console.error('Error:', e);
-                showResult('error', 'Ralat sambungan. Sila pastikan sambungan internet anda aktif.');
+                showResult('error', 'Connection error. Please ensure your internet connection is active.');
             }
         }
 
@@ -240,7 +240,7 @@ require_manage_events();
                 console.log('Cameras found:', cameras.length);
                 
                 if (cameras.length === 0) {
-                    updateCameraStatus('danger', 'Tiada kamera ditemui. Sila gunakan manual entry.');
+                    updateCameraStatus('danger', 'No camera found. Please use manual entry.');
                     document.getElementById('preview').style.display = 'none';
                     document.getElementById('startFront').disabled = true;
                     document.getElementById('startBack').disabled = true;
@@ -266,11 +266,11 @@ require_manage_events();
                 // Start camera
                 const selectedCamera = cameras[cameraIndex] || cameras[0];
                 scanner.start(selectedCamera).then(() => {
-                    updateCameraStatus('success', 'Kamera aktif. Sila imbas QR kod.');
+                    updateCameraStatus('success', 'Camera is active. Please scan QR code.');
                     activeCameraIndex = cameraIndex;
                 }).catch(err => {
                     console.error('Start camera error:', err);
-                    updateCameraStatus('danger', 'Ralat: ' + err.message + '. Sila benarkan akses kamera.');
+                    updateCameraStatus('danger', 'Error: ' + err.message + '. Please allow camera access.');
                 });
 
                 // Enable/disable buttons based on available cameras
@@ -284,8 +284,8 @@ require_manage_events();
             }).catch(function(e) {
                 console.error('Camera initialization error:', e);
                 updateCameraStatus('danger', 
-                    'Ralat mengakses kamera: ' + e.message + 
-                    '. Sila pastikan anda memberikan kebenaran akses kamera.');
+                    'Error accessing camera: ' + e.message + 
+                    '. Please ensure camera access permission is granted.');
                 document.getElementById('preview').style.display = 'none';
                 document.getElementById('startFront').disabled = true;
                 document.getElementById('startBack').disabled = true;
@@ -297,13 +297,13 @@ require_manage_events();
 
         // Front camera button
         document.getElementById('startFront').addEventListener('click', function() {
-            updateCameraStatus('info', 'Menukar ke kamera hadapan...');
+            updateCameraStatus('info', 'Switching to front camera...');
             initScanner(0);
         });
 
         // Back camera button
         document.getElementById('startBack').addEventListener('click', function() {
-            updateCameraStatus('info', 'Menukar ke kamera belakang...');
+            updateCameraStatus('info', 'Switching to back camera...');
             initScanner(1);
         });
 

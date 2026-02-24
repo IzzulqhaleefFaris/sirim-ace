@@ -129,7 +129,7 @@ if (isset($_SESSION['msg'])) {
                             <div class="menu-item px-1">
                                 <a type="button" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#modalProfile" style="text-decoration: none;">
                                     <span class="menu-icon"><i class="bi bi-person-fill fs-3"></i></span>
-                                    <span class="menu-title">Profil Saya</span>
+                                    <span class="menu-title">My Profile</span>
                                 </a>
                             </div>
 
@@ -138,7 +138,7 @@ if (isset($_SESSION['msg'])) {
                             <div class="menu-item px-1">
                                 <a type="button" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#modalCp" style="text-decoration: none;">
                                     <span class="menu-icon"><i class="bi bi-shield-lock-fill fs-3"></i></span>
-                                    <span class="menu-title">Tukar Kata Laluan</span>
+                                    <span class="menu-title">Change Password</span>
                                 </a>
                             </div>
                             <!--end::Menu item-->
@@ -268,7 +268,7 @@ if (isset($_SESSION['msg'])) {
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title fs-2x" id="modalProfileLabel"><i class="bi bi-person-fill fs-3x text-dark"></i>&nbsp;Profil Saya</h5>
+                        <h5 class="modal-title fs-2x" id="modalProfileLabel"><i class="bi bi-person-fill fs-3x text-dark"></i>&nbsp;My Profile</h5>
 
                         <!--begin::Close-->
                         <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal" aria-label="Close">
@@ -281,25 +281,25 @@ if (isset($_SESSION['msg'])) {
 
                     <div class="modal-body">
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">ID Pengguna </label>
+                            <label class="col-sm-3 col-form-label">User ID </label>
                             <div class="col-sm-8">
                                 <input type="text" class="form-control form-control-sm form-control-solid" id="userId" name="userId" value="<?php echo $rowsp['userId']; ?>" readonly />
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">Kata Laluan </label>
+                            <label class="col-sm-3 col-form-label">Password </label>
                             <div class="col-sm-8">
                                 <input type="password" class="form-control form-control-sm form-control-solid" id="password" name="password" value="<?php echo $rowsp['password']; ?>" readonly />
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">Nama Penuh </label>
+                            <label class="col-sm-3 col-form-label">Full Name </label>
                             <div class="col-sm-8">
                                 <input type="text" class="form-control form-control-sm" id="nama" name="nama" value="<?php echo $rowsp['nama']; ?>" />
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">No. Pekerja</label>
+                            <label class="col-sm-3 col-form-label">Staff ID</label>
                             <div class="col-sm-8">
                                 <input
                                     type="text"
@@ -313,13 +313,13 @@ if (isset($_SESSION['msg'])) {
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">E-mel </label>
+                            <label class="col-sm-3 col-form-label">Email </label>
                             <div class="col-sm-8">
                                 <input type="text" class="form-control form-control-sm" id="email" name="email" placeholder="eg: contoh@mpsepang.gov.my" value="<?php echo $rowsp['email']; ?>" />
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">No. Telefon</label>
+                            <label class="col-sm-3 col-form-label">Phone Number</label>
                             <div class="col-sm-8">
                                 <input type="text"
                                     class="form-control form-control-sm"
@@ -329,7 +329,7 @@ if (isset($_SESSION['msg'])) {
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">Syarikat </label>
+                            <label class="col-sm-3 col-form-label">Company </label>
                             <div class="col-sm-8">
                                 <input type="text"
                                     class="form-control form-control-sm"
@@ -339,16 +339,16 @@ if (isset($_SESSION['msg'])) {
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">Peranan </label>
+                            <label class="col-sm-3 col-form-label">Role </label>
                             <div class="col-sm-8">
                                 <?php if ($rowsp['roleId'] == 1) { ?>
-                                    <input type="text" class="form-control form-control-sm form-control-solid" id="status" name="status" value="Pentadbir" readonly />
+                                    <input type="text" class="form-control form-control-sm form-control-solid" id="status" name="status" value="Admin" readonly />
                                 <?php } elseif ($rowsp['roleId'] == '2') { ?>
-                                    <input type="text" class="form-control form-control-sm form-control-solid" id="status" name="status" value="Penguatkuasa" readonly />
+                                    <input type="text" class="form-control form-control-sm form-control-solid" id="status" name="status" value="Participant" readonly />
                                 <?php } elseif ($rowsp['roleId'] == '3') { ?>
-                                    <input type="text" class="form-control form-control-sm form-control-solid" id="status" name="status" value="Operator" readonly />
+                                    <input type="text" class="form-control form-control-sm form-control-solid" id="status" name="status" value="Organizer" readonly />
                                 <?php } else { ?>
-                                    <input type="roleId" class="form-control form-control-sm form-control-solid" id="status" name="status" value="Rekod Tiada" readonly />
+                                    <input type="roleId" class="form-control form-control-sm form-control-solid" id="status" name="status" value="No Record" readonly />
                                 <?php } ?>
                             </div>
                         </div>
@@ -356,17 +356,17 @@ if (isset($_SESSION['msg'])) {
                             <label class="col-sm-3 col-form-label">Status </label>
                             <div class="col-sm-8">
                                 <?php if ($rowsp['status'] == 'A') { ?>
-                                    <input type="text" class="form-control form-control-sm form-control-solid" id="status" name="status" value="Aktif" readonly />
+                                    <input type="text" class="form-control form-control-sm form-control-solid" id="status" name="status" value="Active" readonly />
                                 <?php } else { ?>
-                                    <input type="text" class="form-control form-control-sm form-control-solid" id="status" name="status" value="Tidak Aktif" readonly />
+                                    <input type="text" class="form-control form-control-sm form-control-solid" id="status" name="status" value="Inactive" readonly />
                                 <?php } ?>
                             </div>
                         </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-white btn-active-light-dark" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-sm btn-primary">Kemaskini</button>
+                        <button type="button" class="btn btn-sm btn-white btn-active-light-dark" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-sm btn-primary">Update</button>
                     </div>
                 </div>
             </div>
@@ -396,7 +396,7 @@ if (isset($_SESSION['msg'])) {
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title fs-2x" id="modalCpLabel"><i class="bi bi-shield-lock-fill fs-2x text-dark"></i>&nbsp;Tukar Kata Laluan</h5>
+                        <h5 class="modal-title fs-2x" id="modalCpLabel"><i class="bi bi-shield-lock-fill fs-2x text-dark"></i>&nbsp;Change Password</h5>
                         <!--begin::Close-->
                         <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal" aria-label="Close">
                             <span class="svg-icon svg-icon-2x"><i class="bi bi-x fs-2"></i></span>
@@ -407,12 +407,12 @@ if (isset($_SESSION['msg'])) {
                     <div class="modal-body">
                         <div class="mb-3 row">
                             <p>
-                                <span class="text-danger">Adakah anda pasti untuk set semula kata laluan anda?</span><br>
-                                <span class="text-danger"> Jika Ya, sila masukkan kata laluan baru :</span>
+                                <span class="text-danger">Are you sure you want to reset your password?</span><br>
+                                <span class="text-danger"> If yes, please enter a new password:</span>
                             </p>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-4 col-form-label">Kata Laluan Baru </label>
+                            <label class="col-sm-4 col-form-label">New Password </label>
                             <div class="col-sm-8 position-relative mb-3" id="show_hide_password">
                                 <input class="form-control form-control-sm" type="password" name="password" id="password" autocomplete="off" placeholder="password" />
                                 <div class="input-group-append">
@@ -426,8 +426,8 @@ if (isset($_SESSION['msg'])) {
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-white btn-active-light-dark" data-bs-dismiss="modal">Tidak</button>
-                        <button type="submit" class="btn btn-sm btn-primary">Ya</button>
+                        <button type="button" class="btn btn-sm btn-white btn-active-light-dark" data-bs-dismiss="modal">No</button>
+                        <button type="submit" class="btn btn-sm btn-primary">Yes</button>
                     </div>
                 </div>
             </div>
@@ -569,7 +569,7 @@ if (isset($_SESSION['msg'])) {
                 }
 
                 if (!response.ok) {
-                    throw new Error(data.message || 'Ralat kemaskini profil.');
+                    throw new Error(data.message || 'Profile update error.');
                 }
 
                 return data;
@@ -587,7 +587,7 @@ if (isset($_SESSION['msg'])) {
             })
             .catch(error => {
                 console.error('Error:', error);
-                alertContainer.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert"><i class="bi bi-exclamation-circle"></i>&nbsp;' + (error.message || 'Ralat dalam kemaskini profil.') + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+                alertContainer.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert"><i class="bi bi-exclamation-circle"></i>&nbsp;' + (error.message || 'Error while updating profile.') + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
             });
         });
     </script>

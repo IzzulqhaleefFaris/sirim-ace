@@ -172,9 +172,9 @@ require_manage_events();
 																	<thead class="table-dark">
 																		<tr class="fw-bolder fs-6 text-gray-800 px-7">
 																			<th class="text-light font-weight-bold mr-4">Bil</th>
-																			<th class="text-light font-weight-bold mr-4">Nama</th>
+                                                                            <th class="text-light font-weight-bold mr-4">Name</th>
 																			<th class="text-light font-weight-bold mr-4">Company</th>
-                                                                            <th class="text-light font-weight-bold mr-4">Masa Hadir</th>
+                                                                                    <th class="text-light font-weight-bold mr-4">Check-in Time</th>
 																		</tr>
 																	</thead>
 																	<tbody>

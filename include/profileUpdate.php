@@ -22,7 +22,7 @@ $participant_phone = trim($_POST['participant_phone'] ?? '');
 $participant_company = trim($_POST['participant_company'] ?? '');
 
 if ($nama === '' || $email === '') {
-    $message = 'Nama dan e-mel wajib diisi.';
+    $message = 'Name and email are required.';
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
         header('Content-Type: application/json');
         http_response_code(422);
@@ -55,7 +55,7 @@ try{
     $stmt -> bind_param("ssss", $nama, $stafId, $email, $userId);
 
     if (!$stmt -> execute()){
-        throw new Exception("Gagal kemaskini maklumat pengguna: " . $stmt->error);
+        throw new Exception("Failed to update user information: " . $stmt->error);
     }
 
     $stmt->close();
@@ -93,7 +93,7 @@ try{
                             );
         }
         if (!$stmt2 -> execute()){
-            throw new Exception ("Gagal kemaskini maklumat participant: " . $stmt2->error);
+            throw new Exception ("Failed to update participant information: " . $stmt2->error);
         }
 
         $stmt2->close();
@@ -110,14 +110,14 @@ try{
         header('Content-Type: application/json');
         echo json_encode([
             'success' => true,
-            'message' => 'Profil berjaya dikemaskini.'
+            'message' => 'Profile updated successfully.'
         ]);
         exit;
     }
 
     $_SESSION['msg'] = [
         'type' => 'success',
-        'text' => 'Profil berjaya dikemaskini.'
+        'text' => 'Profile updated successfully.'
     ];
     
     header("Location: " . $_SERVER['HTTP_REFERER']);

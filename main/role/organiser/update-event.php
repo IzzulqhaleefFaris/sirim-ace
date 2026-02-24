@@ -38,7 +38,7 @@ $event_type_id = trim($_POST['event_type_id'] ?? '');
 
 // Validation
 if ($eventId === '' || $name === '' || $start === '' || $end === '') {
-    $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Sila lengkapkan semua medan yang diperlukan.'];
+    $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Please complete all required fields.'];
     header("Location: edit-event.php?id=" . urlencode($eventId));
     exit;
 }
@@ -52,22 +52,22 @@ $openTS = $openReg ? strtotime($openReg) : null;
 $closeTS = $closeReg ? strtotime($closeReg) : null;
 
 if ($endTS < $startTS) {
-    $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Tarikh tamat tidak boleh lebih awal dari tarikh mula'];
+    $_SESSION['msg'] = ['type' => 'warning', 'text' => 'End date cannot be earlier than start date.'];
     header("Location: edit-event.php?id=" . urlencode($eventId));
     exit;
 }
 if ($openTS !== null && $closeTS !== null && $closeTS < $openTS) {
-    $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Tarikh tutup pendaftaran tidak boleh lebih awal dari tarikh buka'];
+    $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Registration close date cannot be earlier than open date.'];
     header("Location: edit-event.php?id=" . urlencode($eventId));
     exit;
 }
 if ($openTS !== null && $openTS > $startTS) {
-    $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Tarikh buka pendaftaran tidak boleh selepas tarikh mula event'];
+    $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Registration open date cannot be after event start date.'];
     header("Location: edit-event.php?id=" . urlencode($eventId));
     exit;
 }
 if ($closeTS !== null && $closeTS > $endTS) {
-    $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Tarikh tutup pendaftaran tidak boleh selepas tarikh tamat event'];
+    $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Registration close date cannot be after event end date.'];
     header("Location: edit-event.php?id=" . urlencode($eventId));
     exit;
 }
@@ -86,7 +86,7 @@ try {
         $stmtLoc = $conn->prepare($sqlLoc);
         
         if ($stmtLoc === false) {
-            throw new Exception("Ralat menyediakan query lokasi: " . $conn->error);
+            throw new Exception("Error preparing location query: " . $conn->error);
         }
         
         // Convert empty strings to null for optional fields
@@ -109,7 +109,7 @@ try {
         );
         
         if (!$stmtLoc->execute()) {
-            throw new Exception("Gagal mengemaskini lokasi: " . $stmtLoc->error);
+            throw new Exception("Failed to update location: " . $stmtLoc->error);
         }
         
         $totalAffectedRows += $stmtLoc->affected_rows;
@@ -130,7 +130,7 @@ try {
     $stmt = $conn->prepare($sql);
     
     if ($stmt === false) {
-        throw new Exception("Ralat menyediakan query event: " . $conn->error);
+        throw new Exception("Error preparing event query: " . $conn->error);
     }
 
     // Convert empty strings to null for optional fields
@@ -152,7 +152,7 @@ try {
     );
 
     if (!$stmt->execute()) {
-        throw new Exception("Gagal mengemaskini event: " . $stmt->error);
+        throw new Exception("Failed to update event: " . $stmt->error);
     }
 
     $totalAffectedRows += $stmt->affected_rows;
@@ -168,12 +168,12 @@ try {
     if ($totalAffectedRows > 0) {
         $_SESSION['msg'] = [
             'type' => 'success',
-            'text' => 'Event berjaya dikemaskini!'
+            'text' => 'Event updated successfully!'
         ];
     } else {
         $_SESSION['msg'] = [
             'type' => 'info',
-            'text' => 'Tiada perubahan dibuat pada data event.'
+            'text' => 'No changes were made to the event data.'
         ];
     }
     

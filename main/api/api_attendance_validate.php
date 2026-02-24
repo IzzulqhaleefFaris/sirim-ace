@@ -15,7 +15,7 @@ function respond(string $status, string $message, array $extra = []): void
 $registrationId = trim($_POST['registration_id'] ?? $_GET['registration_id'] ?? '');
 
 if ($registrationId === '') {
-    respond('error', 'Registration ID diperlukan.');
+    respond('error', 'Registration ID is required.');
 }
 
 // 1. Check registration exists and pull event context
@@ -43,7 +43,7 @@ $stmt->execute();
 $res = $stmt->get_result();
 
 if (!$res || $res->num_rows === 0) {
-    respond('error', 'Registration ID tidak sah.');
+    respond('error', 'Invalid Registration ID.');
 }
 
 $reg = $res->fetch_assoc();

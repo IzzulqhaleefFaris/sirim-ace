@@ -68,7 +68,7 @@ if (isset($conn) && $conn instanceof mysqli) {
                                 <div class="col-md-4">
                                     <div class="card shadow-sm border-0 h-100">
                                         <div class="card-body">
-                                            <div class="text-muted mb-2">Jumlah Pengguna</div>
+                                            <div class="text-muted mb-2">Total Users</div>
                                             <h2 class="fw-bold mb-0"><?php echo number_format($stats['users']); ?></h2>
                                         </div>
                                     </div>
@@ -76,7 +76,7 @@ if (isset($conn) && $conn instanceof mysqli) {
                                 <div class="col-md-4">
                                     <div class="card shadow-sm border-0 h-100">
                                         <div class="card-body">
-                                            <div class="text-muted mb-2">Jumlah Event</div>
+                                            <div class="text-muted mb-2">Total Events</div>
                                             <h2 class="fw-bold mb-0"><?php echo number_format($stats['events']); ?></h2>
                                         </div>
                                     </div>
@@ -84,7 +84,7 @@ if (isset($conn) && $conn instanceof mysqli) {
                                 <div class="col-md-4">
                                     <div class="card shadow-sm border-0 h-100">
                                         <div class="card-body">
-                                            <div class="text-muted mb-2">Jumlah Pendaftaran</div>
+                                            <div class="text-muted mb-2">Total Registrations</div>
                                             <h2 class="fw-bold mb-0"><?php echo number_format($stats['registrations']); ?></h2>
                                         </div>
                                     </div>
@@ -95,18 +95,18 @@ if (isset($conn) && $conn instanceof mysqli) {
                                 <div class="col-md-6">
                                     <div class="card shadow-sm border-0 h-100">
                                         <div class="card-body">
-                                            <h4 class="fw-bold mb-3">Urus Event</h4>
-                                            <p class="text-muted">Lihat, kemaskini, dan pantau semua event.</p>
-                                            <a class="btn btn-primary btn-sm" href="event-list.php">Buka Senarai Event</a>
+                                            <h4 class="fw-bold mb-3">Manage Events</h4>
+                                            <p class="text-muted">View, update, and monitor all events.</p>
+                                            <a class="btn btn-primary btn-sm" href="event-list.php">Open Event List</a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="card shadow-sm border-0 h-100">
                                         <div class="card-body">
-                                            <h4 class="fw-bold mb-3">Urus Pengguna</h4>
-                                            <p class="text-muted">Kemaskini peranan dan status pengguna.</p>
-                                            <a class="btn btn-primary btn-sm" href="users.php">Buka Pengurusan Pengguna</a>
+                                            <h4 class="fw-bold mb-3">Manage Users</h4>
+                                            <p class="text-muted">Update user roles and status.</p>
+                                            <a class="btn btn-primary btn-sm" href="users.php">Open User Management</a>
                                         </div>
                                     </div>
                                 </div>

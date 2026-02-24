@@ -19,7 +19,7 @@ if ($_SESSION["roleId"] == '2') { ?>
         <div class="menu-item me-lg-1">
             <a class="menu-link py-3" href="/attendance/main/role/participant/home.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-house fs-3"></i></span>
-                <span class="menu-title">Utama</span>
+                <span class="menu-title">Home</span>
             </a>
         </div>
         <!--end::Home-->
@@ -49,7 +49,7 @@ if ($_SESSION["roleId"] == '2') { ?>
         <div class="menu-item me-lg-1">
             <a class="menu-link py-3" href="/attendance/main/role/organiser/home.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-calendar-event fs-3"></i></span>
-                <span class="menu-title">Utama</span>
+                <span class="menu-title">Home</span>
             </a>
         </div>
         <!--end::Home-->
@@ -61,6 +61,12 @@ if ($_SESSION["roleId"] == '2') { ?>
                 <span class="menu-title">Events</span>
             </a>
             <ul class="dropdown-menu shadow-sm border-0 events-dropdown-menu" style="min-width: 240px; z-index: 3000;">
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/attendance/main/role/organiser/create-event.php" style="text-decoration: none;">
+                        <span class="menu-icon"><i class="bi bi-calendar2-plus fs-3"></i></span>
+                        <span class="menu-title">Create Event</span>
+                    </a>
+                </li>
                 <li>
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/attendance/main/role/organiser/browse-event-list.php" style="text-decoration: none;">
                         <span class="menu-icon"><i class="bi bi-search fs-3"></i></span>
@@ -109,7 +115,7 @@ if ($_SESSION["roleId"] == '2') { ?>
         <div class="menu-item me-lg-1">
             <a class="menu-link py-3" href="/attendance/main/role/admin/home.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-house fs-3"></i></span>
-                <span class="menu-title">Utama</span>
+                <span class="menu-title">Home</span>
             </a>
         </div>
         <!--end::Home-->
@@ -118,7 +124,7 @@ if ($_SESSION["roleId"] == '2') { ?>
         <div class="menu-item me-lg-1">
             <a class="menu-link py-3" href="/attendance/main/role/admin/event-list.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-calendar-event fs-3"></i></span>
-                <span class="menu-title">Urus Event</span>
+                <span class="menu-title">Manage Events</span>
             </a>
         </div>
         <!--end::Event Management-->
@@ -127,7 +133,7 @@ if ($_SESSION["roleId"] == '2') { ?>
         <div class="menu-item me-lg-1">
             <a class="menu-link py-3" href="/attendance/main/role/admin/users.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-people fs-3"></i></span>
-                <span class="menu-title">Urus Pengguna</span>
+                <span class="menu-title">Manage Users</span>
             </a>
         </div>
         <!--end::User Management-->

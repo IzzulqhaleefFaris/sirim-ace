@@ -10,7 +10,7 @@ if (
 ) {
     $_SESSION['msg'] = [
         'type' => 'danger',
-        'text' => 'Permintaan tidak sah (CSRF).'
+        'text' => 'Invalid request (CSRF).'
     ];
     header('Location: index.php');
     exit;
@@ -69,7 +69,7 @@ if(isset($_POST['login']))
         } else {
             $_SESSION['msg'] = [
                 'type' => 'danger',
-                'text' => 'Email atau kata laluan salah.'
+                'text' => 'Incorrect email or password.'
             ];
             header('Location: index.php');
             exit;
@@ -77,7 +77,7 @@ if(isset($_POST['login']))
     } else {
         $_SESSION['msg'] = [
             'type' => 'danger',
-            'text' => 'Sila masukkan email dan kata laluan.'
+            'text' => 'Please enter email and password.'
         ];
         header('location:index.php');
         exit;

@@ -15,7 +15,7 @@ $eventId = $_GET['id'] ?? null;
 if (!$eventId) {
     $_SESSION['msg'] = [
         'type' => 'danger',
-        'text' => 'Event tidak sah.'
+        'text' => 'Invalid event.'
     ];
     header("Location: event-list.php");
     exit;
@@ -34,7 +34,7 @@ $stmt->store_result();
 if ($stmt->num_rows > 0) {
     $_SESSION['msg'] = [
         'type' => 'warning',
-        'text' => 'Anda telah berdaftar untuk event ini.'
+        'text' => 'You are already registered for this event.'
     ];
     header("Location: event-view.php?id=$eventId");
     exit;
@@ -111,19 +111,19 @@ if ($insertStmt->execute()) {
             $mailReason
         );
     } else {
-        $mailReason = 'Email berdaftar tidak sah atau kosong.';
+        $mailReason = 'Registered email is invalid or empty.';
     }
 
     $_SESSION['msg']                    = [
         'type' => 'success',
         'text' => $emailSent
-            ? 'Pendaftaran berjaya! QR anda sedia di halaman My Events dan juga telah dihantar ke email berdaftar anda.'
-            : 'Pendaftaran berjaya! QR anda sedia di halaman My Events. QR email tidak berjaya dihantar: ' . ($mailReason ?: 'Ralat tidak diketahui')
+            ? 'Registration successful! Your QR is ready on the My Events page and has also been sent to your registered email.'
+            : 'Registration successful! Your QR is ready on the My Events page. QR email could not be sent: ' . ($mailReason ?: 'Unknown error')
     ];
 } else {
     $_SESSION['msg'] = [
         'type' => 'danger',
-        'text' => 'Pendaftaran gagal. Sila cuba lagi.'
+        'text' => 'Registration failed. Please try again.'
     ];
 }
 

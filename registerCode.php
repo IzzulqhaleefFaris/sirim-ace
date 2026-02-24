@@ -20,7 +20,7 @@ try {
     $checkEmail->execute();
     $resultEmail = $checkEmail->get_result();
     if ($resultEmail->num_rows > 0) {
-        throw new Exception("Email sudah wujud. Sila gunakan email lain.");
+        throw new Exception("Email already exists. Please use another email.");
     }
 
     //Generate unique user ID in format of ATDXXXXXXX
@@ -42,7 +42,7 @@ try {
     $stmt->bind_param("sssiss", $userId, $password, $nama, $roleId, $email, $status);
 
     if (!$stmt->execute()) {
-        throw new Exception("Gagal Daftar Akaun.");
+        throw new Exception("Failed to register account.");
     }
 
     //If role is participant
@@ -66,14 +66,14 @@ try {
         );
 
         if (!$stmt2->execute()) {
-            throw new Exception("Gagal daftar participant.");
+            throw new Exception("Failed to register participant.");
         }
     }
 
     // Optional: show generated User ID on login page
     $_SESSION['msg'] = [
         'type' => 'info',
-        'text' => "Pendaftaran berjaya! User ID anda: $userId"
+        'text' => "Registration successful! Your User ID: $userId"
     ];
 
     $conn->commit();

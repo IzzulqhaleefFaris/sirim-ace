@@ -86,7 +86,7 @@ if ($msg) {
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header bg-<?= htmlspecialchars($msgType) ?> text-white">
-                        <h5 class="modal-title"><?= ($msgType === 'danger' ? 'Ralat' : 'Makluman') ?></h5>
+                        <h5 class="modal-title\"><?= ($msgType === 'danger' ? 'Error' : 'Notice') ?></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -142,24 +142,24 @@ if ($msg) {
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="mb-5">
-                                            <h2 class="h3">Pendaftaran Akaun</h2>
+                                            <h2 class="h3">Account Registration</h2>
                                         </div>
                                     </div>
                                 </div>
                                 <form action="registerCode.php" method="POST">
                                     <div class="row gy-3 gy-md-4 overflow-hidden">
                                         <div class="col-12">
-                                            <label for="name" class="form-label">Nama Penuh <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="name" id="name" placeholder="Isikan Nama Penuh Anda" required>
+                                            <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="name" id="name" placeholder="Enter your full name" required>
                                         </div>
                                         <div class="col-12">
                                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                            <input type="email" class="form-control" name="email" id="email" placeholder="Isikan Email Anda" required>
+                                                <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email" required>
                                         </div>
                                         <div class="col-12">
                                             <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
                                             <div class="password-field">
-                                                <input type="password" class="form-control" name="password" id="password" placeholder="Masukkan Password Anda" value="" required>
+                                                <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password" value="" required>
                                                 <button type="button" class="btn btn-sm toggle-password-btn" onclick="toggleRegisterPassword()" aria-label="Toggle password visibility">
                                                     <i class="fa fa-eye-slash" id="togglePasswordIcon"></i>
                                                 </button>
@@ -171,13 +171,13 @@ if ($msg) {
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" value="1" name="iAgree" id="iAgree" required>
                                                 <label class="form-check-label text-dark" for="iAgree">
-                                                    Saya bersetuju dengan <a href="#!" class="link-primary text-decoration-none">Terma dan Syarat</a>
+                                                    I agree to the <a href="#!" class="link-primary text-decoration-none">Terms and Conditions</a>
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="col-12">
                                             <div class="d-grid">
-                                                <button class="btn bsb-btn-xl btn-dark" type="submit" id="registerSubmitBtn" disabled>Daftar</button>
+                                                <button class="btn bsb-btn-xl btn-dark" type="submit" id="registerSubmitBtn" disabled>Register</button>
                                             </div>
                                         </div>
                                     </div>
@@ -185,7 +185,7 @@ if ($msg) {
                                 <div class="row">
                                     <div class="col-12">
                                         <hr class="mt-5 mb-4 border-secondary-subtle">
-                                        <p class="m-0 text-dark text-center">Sudah mempunyai akaun? <a href="/attendance/" class="link-primary text-decoration-none">Log Masuk</a></p>
+                                        <p class="m-0 text-dark text-center">Already have an account? <a href="/attendance/" class="link-primary">Sign In</a></p>
                                     </div>
                                 </div>
                                 <!-- <div class="row">

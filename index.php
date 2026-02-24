@@ -60,11 +60,11 @@ header("Pragma: no-cache");
 			var passwordField = document.loginForm.user_pass;
 
 			if (emailField.value.trim() === '') {
-				alert('Sila masukkan email.');
+				alert('Please enter email.');
 				emailField.focus();
 				return false;
 			} else if (passwordField.value.trim() === '') {
-				alert('Sila masukkan kata laluan.');
+				alert('Please enter password.');
 				passwordField.focus();
 				return false;
 			}
@@ -117,7 +117,7 @@ header("Pragma: no-cache");
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header bg-<?= htmlspecialchars($msgType) ?> text-white">
-						<h5 class="modal-title"><?= ($msgType === 'danger' ? 'Ralat' : 'Makluman') ?></h5>
+						<h5 class="modal-title"><?= ($msgType === 'danger' ? 'Error' : 'Notice') ?></h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
@@ -177,7 +177,7 @@ header("Pragma: no-cache");
 							<!--begin::Wrapper-->
 							<div class="d-flex flex-stack mb-2">
 								<!--begin::Label-->
-								<label class="form-label fw-bolder text-dark fs-6 mb-0">Kata Laluan</label>
+								<label class="form-label fw-bolder text-dark fs-6 mb-0">Password</label>
 								<!--end::Label-->
 							</div>
 							<!--end::Wrapper-->
@@ -197,7 +197,7 @@ header("Pragma: no-cache");
 
 						<!--begin::Actions-->
 						<div class="text-center mb-3">
-							<button class="btn btn-lg btn-dark w-75 mb-3" type="submit" name="login"><i class="bi bi-box-arrow-in-right fs-1"></i>&nbsp;Log Masuk</button>
+							<button class="btn btn-lg btn-dark w-75 mb-3" type="submit" name="login"><i class="bi bi-box-arrow-in-right fs-1"></i>&nbsp;Sign In</button>
 							<!--end::Submit button-->
 						</div>
 						<!--end::Actions-->
@@ -214,8 +214,8 @@ header("Pragma: no-cache");
 					<!-- Start:: Register text -->
 					<div class="text-end mt-2">
 						<small class="text-muted">
-							Belum ada akaun?
-							<a href="register.php" class="link-primary">Daftar Sini!</a>
+							Don't have an account?
+							<a href="register.php" class="link-primary">Register here!</a>
 						</small>
 					</div>
 					<!-- End:: Register text -->
@@ -267,7 +267,7 @@ header("Pragma: no-cache");
 
 		<?php if (isset($_GET['register']) && $_GET['register'] == 'success'): ?>
 			<script>
-				alert("Pendaftaran berjaya! Sila log masuk.");
+				alert("Registration successful! Please sign in.");
 			</script>
 		<?php endif; ?>
 	</div>

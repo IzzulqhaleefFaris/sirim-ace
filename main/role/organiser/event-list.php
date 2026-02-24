@@ -170,7 +170,7 @@ if (isset($statsStmt)) {
                                         <div class="card-body">
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1">
-                                                    <div class="text-muted small mb-1 fs-5">Jumlah Event</div>
+                                                    <div class="text-muted small mb-1 fs-5">Total Events</div>
                                                     <div class="h3 fw-bold mb-0"><?= number_format($stats['total']) ?></div>
                                                 </div>
                                                 <div class="fs-1 opacity-75">
@@ -232,12 +232,12 @@ if (isset($statsStmt)) {
                                 <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
                                     <div>
                                         <h5 class="card-title mb-0 fw-bold">
-                                            <i class="bi bi-calendar3 me-2 text-primary"></i>Senarai Event
+                                            <i class="bi bi-calendar3 me-2 text-primary"></i>Event List
                                         </h5>
-                                        <small class="text-muted">Urus dan pantau semua event anda</small>
+                                        <small class="text-muted">Manage and monitor all your events</small>
                                     </div>
                                     <a href="create-event.php" class="btn btn-primary d-flex align-items-center">
-                                        <i class="bi bi-plus-circle me-2"></i> Tambah Event
+                                        <i class="bi bi-plus-circle me-2"></i> Add Event
                                     </a>
                                 </div>
 
@@ -257,13 +257,13 @@ if (isset($statsStmt)) {
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th style="width: 50px;">No</th>
-                                                        <th><i class="bi bi-calendar-event me-1"></i>Nama Event</th>
-                                                        <th><i class="bi bi-geo-alt me-1"></i>Lokasi</th>
-                                                        <th><i class="bi bi-tag me-1"></i>Jenis</th>
-                                                        <th><i class="bi bi-calendar-check me-1"></i>Mula</th>
-                                                        <th><i class="bi bi-calendar-x me-1"></i>Tamat</th>
+                                                        <th><i class="bi bi-calendar-event me-1"></i>Event Name</th>
+                                                        <th><i class="bi bi-geo-alt me-1"></i>Location</th>
+                                                        <th><i class="bi bi-tag me-1"></i>Type</th>
+                                                        <th><i class="bi bi-calendar-check me-1"></i>Start</th>
+                                                        <th><i class="bi bi-calendar-x me-1"></i>End</th>
                                                         <th style="width: 100px;"><i class="bi bi-info-circle me-1"></i>Status</th>
-                                                        <th style="width: 200px;" class="text-center"><i class="bi bi-gear me-1"></i>Tindakan</th>
+                                                        <th style="width: 200px;" class="text-center"><i class="bi bi-gear me-1"></i>Actions</th>
                                                     </tr>
                                                 </thead>
 
@@ -300,7 +300,7 @@ if (isset($statsStmt)) {
                                                     if (!$res) {
                                                         echo "<tr><td colspan= '8' class='text-danger'> Database Error: " . htmlspecialchars($conn->error) . "</td></tr>";
                                                     } elseif ($res->num_rows == 0) {
-                                                        echo "<tr><td colspan='8' class='text-center text-muted py-3'>Tiada event ditemui.</td></tr>";
+                                                        echo "<tr><td colspan='8' class='text-center text-muted py-3'>No events found.</td></tr>";
                                                     } else {
                                                         function getStatusBadge($status)
                                                         {
@@ -415,11 +415,11 @@ if (isset($statsStmt)) {
                 const eventName = btn.dataset.name || 'event ini';
 
                 if (!id || !/^[A-Za-z0-9_-]+$/.test(id)) {
-                    alert('Ralat: ID event tidak sah');
+                    alert('Error: Invalid event ID');
                     return;
                 }
 
-                if (!confirm(`Adakah anda pasti mahu memadam event "${eventName}"?\n\nTindakan ini tidak boleh dibuat asal semula.`)) return;
+                if (!confirm(`Are you sure you want to delete event "${eventName}"?\n\nThis action cannot be undone.`)) return;
 
                 // Disable button to prevent double-click
                 btn.disabled = true;
@@ -441,7 +441,7 @@ if (isset($statsStmt)) {
                             alertDiv.className = 'alert alert-success alert-dismissible fade show m-3';
                             alertDiv.innerHTML = `
                                 <i class="bi bi-check-circle me-2"></i>
-                                Event berjaya dipadam.
+                                Event deleted successfully.
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             `;
                             document.body.insertBefore(alertDiv, document.body.firstChild);
@@ -449,14 +449,14 @@ if (isset($statsStmt)) {
                             // Reload after short delay
                             setTimeout(() => location.reload(), 500);
                         } else {
-                            alert('Gagal memadam event: ' + text);
+                            alert('Failed to delete event: ' + text);
                             btn.disabled = false;
                             btn.innerHTML = '<i class="bi bi-trash"></i>';
                         }
                     })
                     .catch(err => {
                         console.error(err);
-                        alert('Ralat rangkaian. Sila cuba semula.');
+                        alert('Network error. Please try again.');
                         btn.disabled = false;
                         btn.innerHTML = '<i class="bi bi-trash"></i>';
                     });
@@ -492,21 +492,21 @@ if (isset($statsStmt)) {
                 pageLength: 25,
                 lengthMenu: [
                     [10, 25, 50, 100, -1],
-                    [10, 25, 50, 100, "Semua"]
+                    [10, 25, 50, 100, "All"]
                 ],
                 language: {
-                    search: "Cari:",
-                    lengthMenu: "Papar _MENU_ rekod",
-                    info: "Menunjukkan _START_ hingga _END_ daripada _TOTAL_ rekod",
-                    infoEmpty: "Menunjukkan 0 hingga 0 daripada 0 rekod",
-                    infoFiltered: "(ditapis daripada _MAX_ jumlah rekod)",
-                    zeroRecords: "Tiada rekod ditemui",
-                    emptyTable: "Tiada data dalam jadual",
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ records",
+                    info: "Showing _START_ to _END_ of _TOTAL_ records",
+                    infoEmpty: "Showing 0 to 0 of 0 records",
+                    infoFiltered: "(filtered from _MAX_ total records)",
+                    zeroRecords: "No matching records found",
+                    emptyTable: "No data available in table",
                     paginate: {
-                        first: "Pertama",
-                        last: "Akhir",
-                        next: "Seterusnya",
-                        previous: "Sebelumnya"
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
                     }
                 },
                 dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',

@@ -15,10 +15,10 @@ if (isset($conn) && $conn instanceof mysqli) {
             $users[] = $row;
         }
     } else {
-        $error = 'Tidak dapat memuatkan senarai pengguna.';
+        $error = 'Unable to load user list.';
     }
 } else {
-    $error = 'Sambungan pangkalan data tidak tersedia.';
+    $error = 'Database connection is not available.';
 }
 
 $flash = $_SESSION['msg'] ?? null;
@@ -30,7 +30,7 @@ unset($_SESSION['msg']);
 <head>
     <base href="">
     <meta charset="utf-8" />
-    <title>Urus Pengguna | ATTENDANCE SYSTEM</title>
+    <title>Manage Users | ATTENDANCE SYSTEM</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" href="../../../assets/media/logos/soljar_ico.ico" />
 
@@ -87,11 +87,11 @@ unset($_SESSION['msg']);
                         <div id="kt_content_container" class="container py-6">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
-                                    <h2 class="fw-bold mb-0">Urus Pengguna</h2>
-                                    <p class="text-muted mb-0">Kemaskini peranan dan status pengguna.</p>
+                                    <h2 class="fw-bold mb-0">Manage Users</h2>
+                                    <p class="text-muted mb-0">Update user roles and status.</p>
                                 </div>
                                 <a href="home.php" class="btn btn-light border">
-                                    <i class="bi bi-arrow-left me-1"></i> Kembali
+                                    <i class="bi bi-arrow-left me-1"></i> Back
                                 </a>
                             </div>
 
@@ -110,17 +110,17 @@ unset($_SESSION['msg']);
                                 <div class="card shadow-sm admin-table-card">
                                     <div class="card-header d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 py-3">
                                         <div>
-                                            <div class="fw-bold">Senarai Pengguna</div>
-                                            <div class="text-muted small">Kemaskini peranan dan status dengan cepat.</div>
+                                            <div class="fw-bold">User List</div>
+                                            <div class="text-muted small">Quickly update roles and status.</div>
                                         </div>
                                         <div class="d-flex align-items-center gap-2">
-                                            <input id="userSearch" type="search" class="form-control form-control-sm search-input" placeholder="Cari nama, email, atau ID" />
+                                            <input id="userSearch" type="search" class="form-control form-control-sm search-input" placeholder="Search name, email, or ID" />
                                         </div>
                                     </div>
                                     
                                     <div class="card-body">
                                         <div class="d-flex justify-content-end mb-2">
-                                            <span class="text-muted ">Bilangan pengguna:</span>
+                                            <span class="text-muted ">User count:</span>
                                             <span class="text-muted ms-1" id="userCount">0</span>
                                         </div>
                                         <div class="table-responsive">
@@ -128,11 +128,11 @@ unset($_SESSION['msg']);
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th class="p-3 ">User ID</th>
-                                                        <th class="p-3">Nama</th>
+                                                        <th class="p-3">Name</th>
                                                         <th class="p-3">Email</th>
-                                                        <th class="p-3">Peranan</th>
+                                                        <th class="p-3">Role</th>
                                                         <th class="p-3">Status</th>
-                                                        <th class="p-3">Tindakan</th>
+                                                        <th class="p-3">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -148,19 +148,19 @@ unset($_SESSION['msg']);
                                                                 <form class="d-flex gap-2" method="POST" action="users-update.php">
                                                                     <input type="hidden" name="userId" value="<?= htmlspecialchars($user['userId']) ?>" />
                                                                     <select name="roleId" class="form-select form-select-sm" style="width: 160px;">
-                                                                        <option value="1" <?= $user['roleId'] == 1 ? 'selected' : '' ?>>Organiser</option>
+                                                                        <option value="1" <?= $user['roleId'] == 1 ? 'selected' : '' ?>>Organizer</option>
                                                                         <option value="2" <?= $user['roleId'] == 2 ? 'selected' : '' ?>>Participant</option>
                                                                         <option value="3" <?= $user['roleId'] == 3 ? 'selected' : '' ?>>Admin</option>
                                                                     </select>
                                                             </td>
                                                             <td class="p-3">
                                                                     <select name="status" class="form-select form-select-sm" style="width: 120px;">
-                                                                        <option value="A" <?= $user['status'] === 'A' ? 'selected' : '' ?>>Aktif</option>
-                                                                        <option value="D" <?= $user['status'] === 'D' ? 'selected' : '' ?>>Nyahaktif</option>
+                                                                        <option value="A" <?= $user['status'] === 'A' ? 'selected' : '' ?>>Active</option>
+                                                                        <option value="D" <?= $user['status'] === 'D' ? 'selected' : '' ?>>Inactive</option>
                                                                     </select>
                                                             </td>
                                                             <td class="p-3" >
-                                                                    <button class="btn btn-primary btn-sm" type="submit">Simpan</button>
+                                                                    <button class="btn btn-primary btn-sm" type="submit">Save</button>
                                                                 </form>
                                                             </td>
                                                         </tr>

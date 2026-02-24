@@ -95,7 +95,7 @@ require_manage_events();
 										<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
 											<div>
 												<h2 class="fw-bolder mb-1">Organizer Dashboard</h2>
-												<div class="text-muted">Urus event, semak senarai pendaftaran, dan imbas kehadiran dengan lebih pantas.</div>
+												<div class="text-muted">Manage events, review registrations, and scan attendance faster.</div>
 											</div>
 										</div>
 									</div>
@@ -106,8 +106,8 @@ require_manage_events();
 										<a href="create-event.php" class="card quick-action h-100 text-decoration-none text-dark shadow-sm">
 											<div class="card-body d-flex flex-column gap-3">
 												<span class="action-icon bg-light-info"><i class="bi bi-calendar-event fs-2 text-info"></i></span>
-												<div class="fw-bolder fs-5">Daftar Event</div>
-												<div class="text-muted small">Cipta event baru dan tetapkan maklumat pendaftaran.</div>
+												<div class="fw-bolder fs-5">Create Event</div>
+												<div class="text-muted small">Create a new event and set registration details.</div>
 											</div>
 										</a>
 									</div>
@@ -117,7 +117,7 @@ require_manage_events();
 											<div class="card-body d-flex flex-column gap-3">
 												<span class="action-icon bg-light-primary"><i class="bi bi-search fs-2 text-primary"></i></span>
 												<div class="fw-bolder fs-5">Browse Events</div>
-												<div class="text-muted small">Lihat senarai event untuk pendaftaran dan semakan.</div>
+												<div class="text-muted small">Browse events for registration and review.</div>
 											</div>
 										</a>
 									</div>
@@ -127,7 +127,7 @@ require_manage_events();
 											<div class="card-body d-flex flex-column gap-3">
 												<span class="action-icon bg-light-warning"><i class="bi bi-gear fs-2 text-warning"></i></span>
 												<div class="fw-bolder fs-5">Manage Events</div>
-												<div class="text-muted small">Urus, kemaskini dan pantau event penganjur.</div>
+												<div class="text-muted small">Manage, update, and monitor organizer events.</div>
 											</div>
 										</a>
 									</div>
@@ -137,7 +137,7 @@ require_manage_events();
 											<div class="card-body d-flex flex-column gap-3">
 												<span class="action-icon bg-light-dark"><i class="bi bi-calendar-check fs-2 text-dark"></i></span>
 												<div class="fw-bolder fs-5">My Events & QR</div>
-												<div class="text-muted small">Lihat event yang didaftarkan dan QR pendaftaran anda.</div>
+												<div class="text-muted small">View your registered events and registration QR.</div>
 											</div>
 										</a>
 									</div>
@@ -146,8 +146,8 @@ require_manage_events();
 										<a href="scanner.php" class="card quick-action h-100 text-decoration-none text-dark shadow-sm">
 											<div class="card-body d-flex flex-column gap-3">
 												<span class="action-icon bg-light-success"><i class="bi bi-upc-scan fs-2 text-success"></i></span>
-												<div class="fw-bolder fs-5">Imbas Kedatangan</div>
-												<div class="text-muted small">Imbas QR peserta untuk rekod kehadiran semasa event.</div>
+												<div class="fw-bolder fs-5">Scan Attendance</div>
+												<div class="text-muted small">Scan participant QR codes to record attendance during events.</div>
 											</div>
 										</a>
 									</div>
@@ -156,10 +156,10 @@ require_manage_events();
 										<div class="card quick-action h-100 shadow-sm">
 											<div class="card-body d-flex flex-column gap-3">
 												<span class="action-icon bg-light-warning"><i class="bi bi-journals fs-2 text-warning"></i></span>
-												<div class="fw-bolder fs-5">Laporan Kedatangan (2025)</div>
+												<div class="fw-bolder fs-5">Attendance Report (2025)</div>
 												<div class="dropdown w-100 mt-auto">
 													<button class="btn btn-light-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false" aria-haspopup="true">
-														Pilih Event
+														Select Event
 													</button>
 													<ul class="dropdown-menu w-100">
 														<li><a class="dropdown-item" href="attendanceReport.php?eventId=STUES2">STU Engagement Series 2 (Penang)</a></li>

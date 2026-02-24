@@ -20,7 +20,7 @@ $validStatus = ['A', 'D'];
 if ($userId === '' || !in_array($roleId, $validRoles, true) || !in_array($status, $validStatus, true)) {
     $_SESSION['msg'] = [
         'type' => 'danger',
-        'text' => 'Data pengguna tidak sah.'
+        'text' => 'Invalid user data.'
     ];
     header('Location: users.php');
     exit;
@@ -29,7 +29,7 @@ if ($userId === '' || !in_array($roleId, $validRoles, true) || !in_array($status
 if ($userId === ($_SESSION['userId'] ?? '')) {
     $_SESSION['msg'] = [
         'type' => 'warning',
-        'text' => 'Tidak boleh mengubah peranan atau status untuk akaun sendiri.'
+        'text' => 'You cannot change role or status for your own account.'
     ];
     header('Location: users.php');
     exit;
@@ -39,7 +39,7 @@ $stmt = $conn->prepare("UPDATE user SET roleId = ?, status = ? WHERE userId = ?"
 if (!$stmt) {
     $_SESSION['msg'] = [
         'type' => 'danger',
-        'text' => 'Ralat pangkalan data.'
+        'text' => 'Database error.'
     ];
     header('Location: users.php');
     exit;
@@ -49,12 +49,12 @@ $stmt->bind_param("iss", $roleId, $status, $userId);
 if ($stmt->execute()) {
     $_SESSION['msg'] = [
         'type' => 'success',
-        'text' => 'Pengguna berjaya dikemaskini.'
+        'text' => 'User updated successfully.'
     ];
 } else {
     $_SESSION['msg'] = [
         'type' => 'danger',
-        'text' => 'Gagal mengemaskini pengguna.'
+        'text' => 'Failed to update user.'
     ];
 }
 

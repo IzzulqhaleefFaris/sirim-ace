@@ -112,7 +112,7 @@
                     <div class="menu-item">
                         <a class="menu-link py-3" href="pbt_kemaskininosiri.php">
                             <span class="menu-icon"><i class="bi bi-file-earmark-text fs-3"></i></span>
-                            <span class="menu-title">Kemaskini No. Siri Iklan</span>
+                            <span class="menu-title">Update Ad Serial Number</span>
                         </a>
                     </div>
                     <div class="menu-item">
@@ -124,13 +124,13 @@
                     <div class="menu-item">
                         <a class="menu-link py-3" href="pbt_kemaskininosiri_premis_carian.php">
                             <span class="menu-icon"><i class="bi bi-file-earmark-binary fs-3"></i></span>
-                            <span class="menu-title">Kemaskini No. Siri Premis - Carian</span>
+                            <span class="menu-title">Update Premise Serial Number - Search</span>
                         </a>
                     </div>
                     <div class="menu-item">
                         <a class="menu-link py-3" href="pbt_kemaskininosiri_premis.php">
                             <span class="menu-icon"><i class="bi bi-file-earmark-binary-fill fs-3"></i></span>
-                            <span class="menu-title">Kemaskini No. Siri Premis - Pilihan</span>
+                            <span class="menu-title">Update Premise Serial Number - Selection</span>
                         </a>
                     </div>
                     <div class="menu-item">

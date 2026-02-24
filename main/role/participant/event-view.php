@@ -61,7 +61,7 @@ $openDate = date('d M Y', strtotime($event['event_openRegistration']));
 $closeDate = date('d M Y', strtotime($event['event_closeRegistration']));
 $isRegistrationClosed = strtotime(date('Y-m-d')) > strtotime($event['event_closeRegistration']);
 
-//Disable Daftar button if registered
+//Disable Register button if registered
 $isRegistered = false;
 $chk = $conn->prepare("
     SELECT registration_id 
@@ -243,7 +243,7 @@ $chk->close();
                                     </div>
                                 </div>
                                 <a href="event-list.php" class="btn btn-light btn-sm">
-                                    <i class="bi bi-arrow-left me-1"></i> Kembali
+                                    <i class="bi bi-arrow-left me-1"></i> Back
                                 </a>
                             </div>
 
@@ -258,10 +258,10 @@ $chk->close();
                                 <div class="col-12">
                                     <div class="p-4 p-lg-5">
                                         <div class="info-section">
-                                            <div class="info-section-title">Maklumat</div>
+                                            <div class="info-section-title">Information</div>
                                             <div class="info-grid">
                                                 <div class="info-item">
-                                                    <div class="info-label">Jenis Event</div>
+                                                    <div class="info-label">Event Type</div>
                                                     <div class="info-value"><?= htmlspecialchars($event['event_type_name'] ?? '-') ?></div>
                                                 </div>
                                                 <div class="info-item">
@@ -272,44 +272,44 @@ $chk->close();
                                         </div>
 
                                         <div class="info-section">
-                                            <div class="info-section-title">Lokasi & Alamat</div>
+                                            <div class="info-section-title">Location & Address</div>
                                             <div class="info-grid">
                                                 <div class="info-item">
-                                                    <div class="info-label">Lokasi</div>
+                                                    <div class="info-label">Location</div>
                                                     <div class="info-value"> <?= htmlspecialchars($event['location_name'] ?? '-') ?></div>
                                                 </div>
                                                 <div class="info-item">
-                                                    <div class="info-label">Alamat</div>
+                                                    <div class="info-label">Address</div>
                                                     <div class="info-value"><?= htmlspecialchars($fullAddress) ?></div>
                                                 </div>
                                                 <div class="info-item">
-                                                    <div class="info-label">Bangunan</div>
+                                                    <div class="info-label">Building</div>
                                                     <div class="info-value"><?= htmlspecialchars($event['location_buildingName'] ?? '-') ?></div>
                                                 </div>
                                                 <div class="info-item">
-                                                    <div class="info-label">Aras</div>
+                                                    <div class="info-label">Level</div>
                                                     <div class="info-value"><?= htmlspecialchars($event['location_level'] ?? '-') ?></div>
                                                 </div>
                                                 <div class="info-item">
-                                                    <div class="info-label">Bilik</div>
+                                                    <div class="info-label">Room</div>
                                                     <div class="info-value"><?= htmlspecialchars($event['location_room'] ?? '-') ?></div>
                                                 </div>
                                                 <div class="info-item">
-                                                    <div class="info-label">Negeri</div>
+                                                    <div class="info-label">State</div>
                                                     <div class="info-value"><?= htmlspecialchars($event['state_name'] ?? '-') ?></div>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="info-section">
-                                            <div class="info-section-title">Pendaftaran</div>
+                                            <div class="info-section-title">Registration</div>
                                             <div class="info-grid">
                                                 <div class="info-item">
-                                                    <div class="info-label">Dibuka</div>
+                                                    <div class="info-label">Opens</div>
                                                     <div class="info-value">📝 <?= $openDate ?></div>
                                                 </div>
                                                 <div class="info-item">
-                                                    <div class="info-label">Ditutup</div>
+                                                    <div class="info-label">Closes</div>
                                                     <div class="info-value">⛔ <?= $closeDate ?></div>
                                                 </div>
                                             </div>
@@ -318,24 +318,24 @@ $chk->close();
                                         <div class="d-flex flex-wrap align-items-center gap-2 mt-4">
                                             <?php if ($isRegistered): ?>
                                                 <button class="btn btn-secondary btn-lg px-5" disabled>
-                                                    Telah Berdaftar
+                                                    Registered
                                                 </button>
                                                 <small class="text-muted mb-0">
-                                                    Anda telah berjaya mendaftar untuk event ini.
+                                                    You have successfully registered for this event.
                                                 </small>
                                             <?php elseif ($isRegistrationClosed): ?>
                                                 <button class="btn btn-secondary btn-lg px-5" disabled>
-                                                    Pendaftaran Ditutup
+                                                    Registration Closed
                                                 </button>
                                                 <small class="text-muted mb-0">
-                                                    Tarikh pendaftaran telah ditutup untuk event ini.
+                                                    Registration has closed for this event.
                                                 </small>
                                             <?php else: ?>
                                                 <button type="button"
                                                     class="btn btn-primary btn-lg rounded px-5 fw-bold"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#confirmRegisterModal">
-                                                    <i class="bi bi-check-circle me-2"></i> Daftar
+                                                    <i class="bi bi-check-circle me-2"></i> Register
                                                 </button>
                                             <?php endif; ?>
                                         </div>
@@ -356,12 +356,12 @@ $chk->close();
                                 </div>
 
                                 <div class="modal-body">
-                                    Adakah anda ingin berdaftar untuk event "<strong><?= htmlspecialchars($event['event_name']) ?></strong>"?
+                                    Do you want to register for event "<strong><?= htmlspecialchars($event['event_name']) ?></strong>"?
                                 </div>
 
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                    <a href="event-register.php?id=<?= $event['event_id'] ?>" class="btn btn-primary">Ya, Daftar</a>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <a href="event-register.php?id=<?= $event['event_id'] ?>" class="btn btn-primary">Yes, Register</a>
                                 </div>
                             </div>
                         </div>

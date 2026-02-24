@@ -29,12 +29,12 @@ if (!function_exists('sendRegistrationQrEmail')) {
         }
 
         if (!$apiKey) {
-            $failureReason = 'SENDGRID_API_KEY belum diset pada server.';
+            $failureReason = 'SENDGRID_API_KEY is not set on the server.';
             return false;
         }
 
         if (!$recipientEmail) {
-            $failureReason = 'Alamat e-mel penerima kosong.';
+            $failureReason = 'Recipient email address is empty.';
             return false;
         }
 
@@ -42,7 +42,7 @@ if (!function_exists('sendRegistrationQrEmail')) {
         $fromName = getenv('SENDGRID_FROM_NAME') ?: 'SIRIM Attendance';
 
         if (!$fromEmail) {
-            $failureReason = 'SENDGRID_FROM_EMAIL belum diset.';
+            $failureReason = 'SENDGRID_FROM_EMAIL is not set.';
             return false;
         }
 
@@ -53,18 +53,18 @@ if (!function_exists('sendRegistrationQrEmail')) {
         $mail->setSubject('QR Attendance - ' . $eventName);
         $mail->addTo($recipientEmail, $recipientName !== '' ? $recipientName : 'Participant');
 
-        $textContent = "Pendaftaran berjaya.\n" .
+        $textContent = "Registration successful.\n" .
             "Event: {$eventName}\n" .
             "Registration ID: {$registrationId}\n" .
             "QR Link: {$qrUrl}\n";
 
         $htmlContent = "
-            <h3>Pendaftaran Berjaya</h3>
+            <h3>Registration Successful</h3>
             <p><strong>Event:</strong> {$eventName} ({$eventId})</p>
             <p><strong>Registration ID:</strong> {$registrationId}</p>
-            <p>Sila tunjukkan QR ini semasa kehadiran event:</p>
+            <p>Please show this QR during event attendance:</p>
             <p><img src=\"{$qrUrl}\" alt=\"Attendance QR\" style=\"max-width:240px;border:1px solid #ddd;padding:8px;border-radius:8px;\"></p>
-            <p>Jika imej tidak dipaparkan, guna pautan ini: <a href=\"{$qrUrl}\">Lihat QR</a></p>
+            <p>If the image is not displayed, use this link: <a href=\"{$qrUrl}\">View QR</a></p>
         ";
 
         $mail->addContent('text/plain', $textContent);
@@ -75,7 +75,7 @@ if (!function_exists('sendRegistrationQrEmail')) {
             $response = $sendgrid->send($mail);
 
             if ($response->statusCode() >= 400) {
-                $failureReason = 'SendGrid menolak permintaan (HTTP ' . $response->statusCode() . ').';
+                $failureReason = 'SendGrid rejected the request (HTTP ' . $response->statusCode() . ').';
                 error_log('SendGrid registration email rejected: HTTP ' . $response->statusCode() . ' | Body: ' . $response->body());
                 return false;
             }
