@@ -23,7 +23,7 @@ updateEventStatuses($conn);
 
 // Redirect to login if not logged in
 if (!isset($_SESSION['userId'])) {
-	header('Location: /attendance/index.php');
+	header('Location: /sirimace/index.php');
 	exit;
 }
 
@@ -203,8 +203,8 @@ endif;
 															<!-- Image Preview -->
 															<div class="mb-2 text-center">
 																<img id="eventImagePreview"
-																	src="<?= !empty($event['event_image']) ? '/attendance/' . htmlspecialchars($event['event_image']) : '/attendance/images/custom/no_image.jpg' ?>"
-																	data-default-src="<?= !empty($event['event_image']) ? '/attendance/' . htmlspecialchars($event['event_image']) : '/attendance/images/custom/no_image.jpg' ?>"
+																	src="<?= !empty($event['event_image']) ? '/sirimace/' . htmlspecialchars($event['event_image']) : '/sirimace/images/custom/no_image.jpg' ?>"
+																	data-default-src="<?= !empty($event['event_image']) ? '/sirimace/' . htmlspecialchars($event['event_image']) : '/sirimace/images/custom/no_image.jpg' ?>"
 																	alt="Event Image Preview"
 																	class="event-img-detail">
 															</div>

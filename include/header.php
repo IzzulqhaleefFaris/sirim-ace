@@ -71,7 +71,7 @@ if (isset($_SESSION['msg'])) {
 
         <!--begin::Logo-->
         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0 me-lg-10">
-            <a><img alt="Logo" src="/attendance/assets/media/logos/attendance.png" class="h-55px" /></a>
+            <a><img alt="Logo" src="/sirimace/assets/media/logos/attendance.png" class="h-55px" /></a>
         </div>
         <!--end::Logo-->
 
@@ -161,7 +161,7 @@ if (isset($_SESSION['msg'])) {
                                     <input id="tarikhKeluar" name="tarikhKeluar" value="<?php echo $rows['tarikhKeluar']; ?>" hidden readonly />
                                 </div>
                                 <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
-                                <form method="POST" action="/attendance/include/logout.php" class="d-inline">
+                                <form method="POST" action="/sirimace/include/logout.php" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                                     <button type="submit" class="btn btn-light-dark px-2"><i class="bi bi-box-arrow-right fs-1"></i>&nbsp;Log Keluar</button>
                                 </form>
@@ -263,7 +263,7 @@ if (isset($_SESSION['msg'])) {
     ?>
     <!--begin::My Profile-->
     <form id="profileForm" class="form" method="post" name="profileForm"
-        action="<?php echo '/attendance/include/profileUpdate.php?userId=' . $rowsp['userId']; ?>">
+        action="<?php echo '/sirimace/include/profileUpdate.php?userId=' . $rowsp['userId']; ?>">
         <div class="modal fade" tabindex="-1" id="modalProfile" role="dialog" aria-labelledby="modalProfileLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -391,7 +391,7 @@ if (isset($_SESSION['msg'])) {
 
     <!--begin::Change Password-->
     <form class="form theme-form" method="post" name="passwordUpdate"
-        action="/attendance/include/passwordUpdate.php?userId=<?php echo $rowsp['userId']; ?>">
+        action="/sirimace/include/passwordUpdate.php?userId=<?php echo $rowsp['userId']; ?>">
         <div class="modal fade" tabindex="-1" id="modalCp" role="dialog" aria-labelledby="modalCpLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

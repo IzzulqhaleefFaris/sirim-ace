@@ -5,7 +5,7 @@ include "../../../include/qrEmail.php";
 
 // Must be logged in
 if (!isset($_SESSION['userId'])) {
-    header("Location: /attendance");
+    header("Location: /sirimace");
     exit;
 }
 

@@ -17,7 +17,7 @@ if ($_SESSION["roleId"] == '2') { ?>
     <div class="menu menu-lg-rounded menu-column menu-lg-row menu-state-bg menu-title-gray-700 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-400 fw-bold my-5 my-lg-0 align-items-stretch" id="" data-kt-menu="true">
         <!--begin::Home-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/participant/home.php" style="text-decoration: none;">
+            <a class="menu-link py-3" href="/sirimace/main/role/participant/home.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-house fs-3"></i></span>
                 <span class="menu-title">Home</span>
             </a>
@@ -26,7 +26,7 @@ if ($_SESSION["roleId"] == '2') { ?>
 
         <!--begin::Senarai Event-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/participant/event-list.php" style="text-decoration: none;">
+            <a class="menu-link py-3" href="/sirimace/main/role/participant/event-list.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-list-task fs-3"></i></span>
                 <span class="menu-title">Browse Events</span>
             </a>
@@ -35,7 +35,7 @@ if ($_SESSION["roleId"] == '2') { ?>
 
         <!--begin::My Events & QR-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/participant/my-events.php" style="text-decoration: none;">
+            <a class="menu-link py-3" href="/sirimace/main/role/participant/my-events.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-calendar-check fs-3"></i></span>
                 <span class="menu-title">My Events & QR</span>
             </a>
@@ -47,7 +47,7 @@ if ($_SESSION["roleId"] == '2') { ?>
     <div class="menu menu-lg-rounded menu-column menu-lg-row menu-state-bg menu-title-gray-700 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-400 fw-bold my-5 my-lg-0 align-items-stretch" id="" data-kt-menu="true">
         <!--begin::Home-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/organiser/home.php" style="text-decoration: none;">
+            <a class="menu-link py-3" href="/sirimace/main/role/organiser/home.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-calendar-event fs-3"></i></span>
                 <span class="menu-title">Home</span>
             </a>
@@ -62,25 +62,25 @@ if ($_SESSION["roleId"] == '2') { ?>
             </a>
             <ul class="dropdown-menu shadow-sm border-0 events-dropdown-menu" style="min-width: 240px; z-index: 3000;">
                 <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/attendance/main/role/organiser/create-event.php" style="text-decoration: none;">
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/sirimace/main/role/organiser/create-event.php" style="text-decoration: none;">
                         <span class="menu-icon"><i class="bi bi-calendar2-plus fs-3"></i></span>
                         <span class="menu-title">Create Event</span>
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/attendance/main/role/organiser/browse-event-list.php" style="text-decoration: none;">
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/sirimace/main/role/organiser/browse-event-list.php" style="text-decoration: none;">
                         <span class="menu-icon"><i class="bi bi-search fs-3"></i></span>
                         <span class="menu-title">Browse Event</span>
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/attendance/main/role/organiser/event-list.php" style="text-decoration: none;">
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/sirimace/main/role/organiser/event-list.php" style="text-decoration: none;">
                         <span class="menu-icon"><i class="bi bi-gear fs-3"></i></span>
                         <span class="menu-title">Manage Events</span>
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/attendance/main/role/organiser/my-events.php" style="text-decoration: none;">
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/sirimace/main/role/organiser/my-events.php" style="text-decoration: none;">
                         <span class="menu-icon"><i class="bi bi-calendar-check fs-3"></i></span>
                         <span class="menu-title">My Events & QR</span>
                     </a>
@@ -91,7 +91,7 @@ if ($_SESSION["roleId"] == '2') { ?>
 
         <!--begin::Pengguna-->
         <!-- <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/organiser/dashboard.php" style="text-decoration: none;">
+            <a class="menu-link py-3" href="/sirimace/main/role/organiser/dashboard.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-newspaper fs-3"></i></span>
                 <span class="menu-title">Dashboard</span>
             </a>
@@ -100,7 +100,7 @@ if ($_SESSION["roleId"] == '2') { ?>
 
         <!--begin::Pengguna-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/organiser/scanner.php" style="text-decoration: none;">
+            <a class="menu-link py-3" href="/sirimace/main/role/organiser/scanner.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-upc-scan fs-3"></i></span>
                 <span class="menu-title">Scanner</span><!--CHANGED: Kehadiran-->
             </a>
@@ -113,7 +113,7 @@ if ($_SESSION["roleId"] == '2') { ?>
     <div class="menu menu-lg-rounded menu-column menu-lg-row menu-state-bg menu-title-gray-700 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-400 fw-bold my-5 my-lg-0 align-items-stretch" id="kt_header_menu" data-kt-menu="true">
         <!--begin::Home-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/admin/home.php" style="text-decoration: none;">
+            <a class="menu-link py-3" href="/sirimace/main/role/admin/home.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-house fs-3"></i></span>
                 <span class="menu-title">Home</span>
             </a>
@@ -122,7 +122,7 @@ if ($_SESSION["roleId"] == '2') { ?>
 
         <!--begin::Event Management-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/admin/event-list.php" style="text-decoration: none;">
+            <a class="menu-link py-3" href="/sirimace/main/role/admin/event-list.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-calendar-event fs-3"></i></span>
                 <span class="menu-title">Manage Events</span>
             </a>
@@ -131,7 +131,7 @@ if ($_SESSION["roleId"] == '2') { ?>
 
         <!--begin::User Management-->
         <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/attendance/main/role/admin/users.php" style="text-decoration: none;">
+            <a class="menu-link py-3" href="/sirimace/main/role/admin/users.php" style="text-decoration: none;">
                 <span class="menu-icon"><i class="bi bi-people fs-3"></i></span>
                 <span class="menu-title">Manage Users</span>
             </a>

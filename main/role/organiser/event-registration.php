@@ -153,7 +153,7 @@ $stmt->close();
                                     </a>
                                     <?php
                                     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-                                    $walkInUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/attendance/walkin-register.php?event=' . urlencode($eventId);
+                                    $walkInUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/sirimace/walkin-register.php?event=' . urlencode($eventId);
                                     $walkInQr = 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=' . urlencode($walkInUrl);
                                     ?>
                                     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#walkInQrModal">

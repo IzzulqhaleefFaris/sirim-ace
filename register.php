@@ -185,7 +185,7 @@ if ($msg) {
                                 <div class="row">
                                     <div class="col-12">
                                         <hr class="mt-5 mb-4 border-secondary-subtle">
-                                        <p class="m-0 text-dark text-center">Already have an account? <a href="/attendance/" class="link-primary">Sign In</a></p>
+                                        <p class="m-0 text-dark text-center">Already have an account? <a href="/sirimace/" class="link-primary">Sign In</a></p>
                                     </div>
                                 </div>
                                 <!-- <div class="row">

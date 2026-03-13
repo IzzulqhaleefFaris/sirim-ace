@@ -247,9 +247,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
     <meta charset="utf-8" />
     <title>Walk-in Registration | ATTENDANCE SYSTEM</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="shortcut icon" href="/attendance/assets/media/logos/soljar_ico.ico" />
-    <link href="/attendance/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-    <link href="/attendance/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/sirimace/assets/media/logos/soljar_ico.ico" />
+    <link href="/sirimace/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="/sirimace/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body class="bg-light">
@@ -309,7 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                         </div>
                         <div class="col-12 d-flex gap-2 mt-2">
                             <button type="submit" class="btn btn-primary">Register Walk-in</button>
-                            <a href="/attendance" class="btn btn-light border">Back</a>
+                            <a href="/sirimace" class="btn btn-light border">Back</a>
                         </div>
                     </form>
                 <?php elseif ($event): ?>

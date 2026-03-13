@@ -10,13 +10,13 @@ if (empty($_SESSION['csrf_token'])) {
 if (isset($_SESSION['userId'])) {
 	$roleId = $_SESSION['roleId'] ?? null;
 	if ($roleId == 1) {
-		header('Location: /attendance/main/role/organiser/home.php?pg=OFCR');
+		header('Location: /sirimace/main/role/organiser/home.php?pg=OFCR');
 		exit;
 	} elseif ($roleId == 2) {
-		header('Location: /attendance/main/role/participant/home.php?pg=OFCR');
+		header('Location: /sirimace/main/role/participant/home.php?pg=OFCR');
 		exit;
 	} elseif ($roleId == 3) {
-		header('Location: /attendance/main/role/admin/home.php?pg=ADMIN');
+		header('Location: /sirimace/main/role/admin/home.php?pg=ADMIN');
 		exit;
 	}
 	// For unknown roles or no role, show login page

@@ -17,8 +17,8 @@ require_manage_events();
 	<link rel="shortcut icon" href="../../../assets/media/logos/soljar_ico.ico" />
 
 	<!-- Global Javascript -->
-	<script src="/attendance/assets/plugins/global/plugins.bundle.js"></script>
-	<script src="/attendance/assets/js/scripts.bundle.js"></script>
+	<script src="/sirimace/assets/plugins/global/plugins.bundle.js"></script>
+	<script src="/sirimace/assets/js/scripts.bundle.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 

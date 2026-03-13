@@ -8,7 +8,7 @@ updateEventStatuses($conn);
 
 // Redirect to login if not logged in
 if (!isset($_SESSION['userId'])) {
-    header('Location: /attendance');
+    header('Location: /sirimace');
     exit;
 }
 

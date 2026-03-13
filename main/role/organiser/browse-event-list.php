@@ -8,7 +8,7 @@ updateEventStatuses($conn);
 
 // Redirect to login if not logged in
 if (!isset($_SESSION['userId'])) {
-    header('Location: /attendance');
+    header('Location: /sirimace');
     exit;
 }
 
@@ -252,7 +252,7 @@ if ($searchTerm !== '') {
                                         <div class="card h-100 event-card">
                                             <!-- Event image-->
                                             <?php
-                                            $eventImage = "/attendance/" . $event['event_image'];
+                                            $eventImage = "/sirimace/" . $event['event_image'];
                                             $status = $event['event_status'];
                                             $badgeClass = $statusBadgeClasses[$status] ?? 'badge-light-dark text-dark';
                                             ?>
