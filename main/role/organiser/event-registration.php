@@ -80,6 +80,9 @@ if ($rows) {
     $all = [];
 }
 $stmt->close();
+
+$flashMsg = $_SESSION['msg'] ?? null;
+unset($_SESSION['msg']);
 ?>
 
 <!DOCTYPE html>
@@ -151,6 +154,9 @@ $stmt->close();
                                     <a href="event-list.php" class="btn btn-light border">
                                         <i class="bi bi-arrow-left me-1"></i>Back
                                     </a>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#organiserRegisterModal">
+                                        <i class="bi bi-person-plus me-1"></i>Register
+                                    </button>
                                     <?php
                                     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
                                     $walkInUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/sirimace/walkin-register.php?event=' . urlencode($eventId);
@@ -194,6 +200,13 @@ $stmt->close();
                             </div>
 
                             <div class="card shadow-sm">
+                                <?php if ($flashMsg && !empty($flashMsg['text'])): ?>
+                                    <div class="card-body pb-0">
+                                        <div class="alert alert-<?= htmlspecialchars($flashMsg['type'] ?? 'info') ?> mb-0">
+                                            <?= htmlspecialchars($flashMsg['text']) ?>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                                     <div class="fw-bold">Registrations & Attendance</div>
                                     <div class="d-flex align-items-center gap-2">
@@ -277,6 +290,50 @@ $stmt->close();
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="modal fade" id="organiserRegisterModal" tabindex="-1" aria-labelledby="organiserRegisterModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form method="POST" action="event-assist-register.php">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="organiserRegisterModalLabel">Register Participant</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" name="event_id" value="<?= htmlspecialchars($eventId) ?>">
+
+                                                <div class="alert alert-light border mb-4">
+                                                    If the user email exists, participant will be registered using existing account.<br>
+                                                    If the user email does not exist, participant will be registered as walk-in only.
+                                                </div>
+
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Name <span class="text-danger">*</span></label>
+                                                        <input type="text" name="participant_name" class="form-control" required>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Email</label>
+                                                        <input type="email" name="participant_email" id="participantEmailField" class="form-control" placeholder="example@email.com">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Phone</label>
+                                                        <input type="text" name="participant_phone" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Company</label>
+                                                        <input type="text" name="participant_company" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Register</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -315,8 +372,8 @@ $stmt->close();
 
             $('#statusFilter').on('change', function() {
                 const val = $(this).val();
-                // Status column index = 7
-                table.column(7).search(val ? val : '', true, false).draw();
+                // Status column index = 8
+                table.column(8).search(val ? val : '', true, false).draw();
             });
         });
     </script>

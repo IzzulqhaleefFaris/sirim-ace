@@ -1,10 +1,3 @@
-<!-- 
- 
-Bypass the Modal Confirm Popup:
-new bootstrap.Modal(document.getElementById('confirmModal')).show(); 
-
--->
-
 <?php
 
 ini_set('display_errors', 1);
@@ -75,10 +68,11 @@ endif;
 	<!--end::Page Custom Javascript-->
 
 	<!--begin::Fonts-->
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" />
 	<!--end::Fonts-->
 
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
+	<link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.6.1/dist/css/coreui.min.css" rel="stylesheet" integrity="sha384-q/at3GHMpO8VjBXzZ+ymx89MhqKtK9AcxYuECgmRq1b2a3797G4sfEM/ylqgywpd" crossorigin="anonymous">
 	<link href="../../../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="../../../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -86,28 +80,168 @@ endif;
 
 	<!-- Custom Styling -->
 	<style>
+		:root {
+			--page-bg-1: #f3f7fb;
+			--page-bg-2: #eef2f8;
+			--card-bg: #ffffff;
+			--soft-border: #e7ecf3;
+			--ink-900: #122033;
+			--ink-700: #3d4e63;
+			--ink-500: #73839a;
+			--brand: #0f6cbf;
+			--brand-deep: #0b4f8d;
+		}
+
+		body {
+			font-family: "Manrope", sans-serif;
+			background: radial-gradient(circle at 10% -10%, #ffffff 0%, var(--page-bg-1) 40%, var(--page-bg-2) 100%);
+		}
+
+		.modern-page {
+			padding-top: 1rem;
+			padding-bottom: 2rem;
+		}
+
+		.modern-event-card {
+			background: var(--card-bg);
+			border: 1px solid var(--soft-border);
+			border-radius: 20px;
+			overflow: hidden;
+			box-shadow: 0 20px 45px rgba(16, 33, 55, 0.08);
+		}
+
+		.modern-card-header {
+			padding: 1.5rem 1.75rem 1rem;
+			border-bottom: 1px solid var(--soft-border);
+			background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+		}
+
+		.modern-card-title {
+			margin: 0;
+			font-size: 1.3rem;
+			font-weight: 800;
+			letter-spacing: -0.02em;
+			color: var(--ink-900);
+		}
+
+		.modern-card-subtitle {
+			margin-top: 0.35rem;
+			font-size: 0.9rem;
+			color: var(--ink-500);
+		}
+
+		.modern-card-body {
+			padding: 1.5rem 1.75rem;
+		}
+
+		.modern-section {
+			background: #fcfdff;
+			border: 1px solid var(--soft-border);
+			border-radius: 14px;
+			padding: 1rem 1rem 0.5rem;
+		}
+
+		.modern-section-title {
+			font-size: 1rem;
+			font-weight: 800;
+			color: var(--ink-900);
+			margin-bottom: 0.25rem;
+		}
+
+		.modern-section-note {
+			font-size: 0.82rem;
+			color: var(--ink-500);
+			margin-bottom: 0.75rem;
+		}
+
+		.form-control,
+		.form-select,
+		textarea.form-control {
+			border: 1px solid var(--soft-border);
+			border-radius: 10px;
+			padding-top: 0.55rem;
+			padding-bottom: 0.55rem;
+			font-size: 0.93rem;
+			color: var(--ink-900);
+			box-shadow: none;
+			transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		}
+
+		.form-control:focus,
+		.form-select:focus,
+		textarea.form-control:focus {
+			border-color: rgba(15, 108, 191, 0.5);
+			box-shadow: 0 0 0 0.2rem rgba(15, 108, 191, 0.12);
+		}
+
+		.form-label {
+			font-weight: 600;
+			color: var(--ink-700);
+			margin-bottom: 0.35rem;
+		}
+
+		.event-mode-btn {
+			border-radius: 999px !important;
+			padding: 0.4rem 1rem;
+			font-weight: 700;
+		}
+
+		.event-mode-btn.active {
+			background-color: var(--brand);
+			border-color: var(--brand) !important;
+			color: #fff;
+		}
+
 		.event-img-detail {
 			width: 100%;
 			max-width: 640px;
 			aspect-ratio: 16 / 9;
 			object-fit: cover;
-			border-radius: 15px;
+			border-radius: 14px;
+			border: 1px solid var(--soft-border);
 			display: block;
 			margin: 0 auto;
+			box-shadow: 0 8px 24px rgba(16, 33, 55, 0.1);
 		}
 
-		/* Make alerts more prominent */
 		.alert {
 			position: fixed !important;
-			/* fix it to the top of viewport */
 			top: 60px;
-			/* adjust to below header height */
-			left: 50%;
-			transform: translateX(-50%);
+			right: 18px;
+			left: auto;
+			transform: none;
 			z-index: 11000 !important;
-			/* higher than header */
-			width: auto;
-			/* or 90% if you want */
+			min-width: 320px;
+			max-width: 460px;
+			border-radius: 12px;
+			box-shadow: 0 12px 32px rgba(16, 33, 55, 0.2);
+		}
+
+		.separator {
+			opacity: 0.8;
+		}
+
+		.modern-actions {
+			padding: 1.2rem 1.5rem;
+			border-top: 1px solid var(--soft-border);
+			background: #fbfdff;
+		}
+
+		@media (max-width: 768px) {
+
+			.modern-card-header,
+			.modern-card-body,
+			.modern-actions {
+				padding-left: 1rem;
+				padding-right: 1rem;
+			}
+
+			.alert {
+				left: 12px;
+				right: 12px;
+				min-width: 0;
+				max-width: none;
+			}
 		}
 
 		.alert-danger {
@@ -157,23 +291,24 @@ endif;
 
 					<!--begin::Post-->
 					<div class="post d-flex flex-column-fluid" id="kt_post">
-						<div id="kt_content_container" class="container-fluid">
+						<div id="kt_content_container" class="container-fluid modern-page">
 							<div class="row justify-content-center">
-								<div class="col-md-8 col-lg-6">
+								<div class="col-md-11 col-lg-10 col-xl-9">
 									<!--begin::Section-->
 									<div class="py-0">
 										<form id="eventForm" method="POST" action="event-creation.php" enctype="multipart/form-data">
-											<div class="card shadow-sm">
-												<div class="card-header">
-													<h5 class="card-title fs-1" style="font-weight: 800">Event Registration</h5>
+											<div class="card modern-event-card">
+												<div class="modern-card-header">
+													<h5 class="modern-card-title">Create Event</h5>
+													<div class="modern-card-subtitle">Fill in the essential details to create your event.</div>
 												</div>
-												<div class="card-body">
+												<div class="card-body modern-card-body">
 
-													<div class="container">
+													<div class="container modern-section">
 														<!--begin::Info Asas-->
-														<h5 class="card-title fs-2" style="font-weight: 800">Basic Info</h5>
+														<h5 class="modern-section-title">Basic Info</h5>
 
-														<h3 class="card-title"><small class="text-danger fs-8"> Please fill in all required fields (<i class="text-danger">*</i>&nbsp;)</small></h3>
+														<div class="modern-section-note">Please fill in all required fields (<span class="text-danger">*</span>).</div>
 
 														<div class="row g-2 py-2">
 															<label class="form-label form-label-sm required">Event Name :</label>
@@ -248,7 +383,7 @@ endif;
 
 														<div class="row g-2 py-2">
 															<label class="form-label form-label-sm required">Event Type :</label>
-															<select class="form-select form-select-sm w-auto" name="event_type_id" id="jenisEvent">
+															<select class="form-select form-select-sm" name="event_type_id" id="jenisEvent">
 																<option selected disabled>Select Type</option>
 																<?php if ($eventTypes): ?>
 																	<?php while ($r = $eventTypes->fetch_assoc()): ?>
@@ -263,9 +398,9 @@ endif;
 
 
 														<div class="row g-2 py-2">
-															<label for="organiserInput" class="form-label form-label-sm mb-0">Manager Name :</label>
-															<div class="col-auto">
-																<select class="form-select form-select-sm w-auto" id="organiserInput" name="organiser">
+															<label for="organiserInput" class="form-label form-label-sm mb-0">Person In-Charge (PIC) :</label>
+															<div class="col-12">
+																<select class="form-select form-select-sm" id="organiserInput" name="organiser">
 																	<option value="" selected disabled>Select Manager Name</option>
 																	<option value="Staf 1">Staf 1</option>
 																	<option value="Staf 2">Staf 2</option>
@@ -276,52 +411,42 @@ endif;
 														<!-- end: Info Asas -->
 													</div>
 													<div class="separator my-7 separator-dotted border-muted"></div>
-													<div class="container">
+													<div class="container modern-section">
 														<!--begin::Tarikh & Masa-->
-														<h5 class="card-title fs-2" style="font-weight: 800">Tarikh & Masa</h5>
+														<h5 class="modern-section-title">Date & Time</h5>
 														<?php include('userErrors.php'); ?>
 
 														<div class="mb-4">
 															<div class="mb-4 pt-4 d-flex gap-2">
 																<button type="button"
-																	class="btn btn-outline-dark active"
-																	id="singleEventBtn" style="border: 1px solid black">
+																	class="btn btn-outline-dark event-mode-btn active"
+																	id="singleEventBtn">
 																	Single Event
 																</button>
 																<button type="button"
-																	class="btn btn-outline-dark"
-																	id="recurringEventBtn" style="border: 1px solid black">
+																	class="btn btn-outline-dark event-mode-btn"
+																	id="recurringEventBtn">
 																	Recurring Event
 																</button>
 															</div>
 															<input type="hidden" name="eventType" id="eventTypeInput" value="single">
 														</div>
 
-														<p style="color: #aaa5b7;">Single event can happens once and can last multiple days</p>
-
+														<p class="modern-section-note">Single event happens once and can span multiple days.</p>
+														
 														<div class="row g-2 py-2">
 															<!-- Start Date -->
 															<div class="col-md-6">
 																<label class="form-label form-label-sm required">Start Date :</label>
-																<input
-																	id="startDate"
-																	class="form-control"
-																	type="date"
-																	name="event_startDate"
-																	value="<?= htmlspecialchars($_POST['event_startDate'] ?? '') ?>"
-																	required />
+																<div id="startDateMount"></div>
+																<input type="hidden" id="startDate" name="event_startDate" value="<?= htmlspecialchars($_POST['event_startDate'] ?? '') ?>">
 															</div>
 
 															<!-- Start Time -->
 															<div class="col-md-6">
 																<label class="form-label form-label-sm required">Start Time :</label>
-																<input
-																	id="startTime"
-																	class="form-control"
-																	type="time"
-																	name="event_startTime"
-																	value="<?= htmlspecialchars($_POST['event_startTime'] ?? '09:00') ?>"
-																	required />
+																<div id="startTimeMount"></div>
+																<input type="hidden" id="startTime" name="event_startTime" value="<?= htmlspecialchars($_POST['event_startTime'] ?? '09:00') ?>">
 															</div>
 														</div>
 
@@ -329,61 +454,53 @@ endif;
 															<!-- End Date -->
 															<div class="col-md-6">
 																<label class="form-label form-label-sm required">End Date :</label>
-																<input
-																	id="endDate"
-																	class="form-control"
-																	type="date"
-																	name="event_endDate"
-																	value="<?= htmlspecialchars($_POST['event_endDate'] ?? '') ?>"
-																	required />
+																<div id="endDateMount"></div>
+																<input type="hidden" id="endDate" name="event_endDate" value="<?= htmlspecialchars($_POST['event_endDate'] ?? '') ?>">
 															</div>
 
 															<!-- End Time -->
 															<div class="col-md-6">
 																<label class="form-label form-label-sm required">End Time :</label>
-																<input
-																	id="endTime"
-																	class="form-control"
-																	type="time"
-																	name="event_endTime"
-																	value="<?= htmlspecialchars($_POST['event_endTime'] ?? '17:00') ?>"
-																	required />
+																<div id="endTimeMount"></div>
+																<input type="hidden" id="endTime" name="event_endTime" value="<?= htmlspecialchars($_POST['event_endTime'] ?? '17:00') ?>">
 															</div>
 														</div><br><br>
 
-														<h5 class="card-title fs-2" style="font-weight: 800">Registration Opening & Closing Dates</h5>
+														<h5 class="modern-section-title">Registration Window</h5>
 
 														<div class="row g-2 py-2">
 															<!-- Open Registration Date -->
 															<div class="col-md-6">
 																<label for="event_openRegistration" class="form-label">Registration Open Date <span class="text-danger">*</span></label>
-																<input type="date" class="form-control" name="event_openRegistration" id="event_openRegistration" required>
+																<div id="openRegMount"></div>
+																<input type="hidden" id="event_openRegistration" name="event_openRegistration">
 															</div>
 
 															<!-- Close Registration Date -->
 															<div class="col-md-6">
 																<label for="event_closeRegistration" class="form-label">Registration Close Date <span class="text-danger">*</span></label>
-																<input type="date" class="form-control" name="event_closeRegistration" id="event_closeRegistration" required>
+																<div id="closeRegMount"></div>
+																<input type="hidden" id="event_closeRegistration" name="event_closeRegistration">
 															</div>
 														</div>
 
 														<!-- end: Tarikh & Masa -->
 													</div>
 													<div class="separator my-7 separator-dotted border-muted"></div>
-													<div class="container">
-														<h5 class="card-title fs-2" style="font-weight: 800">Lokasi</h5>
+													<div class="container modern-section">
+														<h5 class="modern-section-title">Location</h5>
 														<?php include('userErrors.php'); ?>
 
 														<div class="row g-2 py-2">
 															<div class="col-md-6">
 																<label class="form-label form-label-sm required">Location Name :</label>
-																<input type="text" class="form-control form-control-sm mb-2" id="location_name" name="location_name" placeholder="Location name" style="max-width: 250px;" />
+																<input type="text" class="form-control form-control-sm mb-2" id="location_name" name="location_name" placeholder="Location name" />
 																<label class="form-label form-label-sm">Bangunan/Blok :</label>
-																<input type="text" class="form-control form-control-sm mb-2" id="location_buildingName" name="location_buildingName" placeholder="Bangunan" style="max-width: 250px;" />
+																<input type="text" class="form-control form-control-sm mb-2" id="location_buildingName" name="location_buildingName" placeholder="Bangunan" />
 																<label class="form-label form-label-sm">Bilik/Dewan :</label>
-																<input type="text" class="form-control form-control-sm mb-2" id="location_room" name="location_room" placeholder="Bilik" style="max-width: 250px;" />
+																<input type="text" class="form-control form-control-sm mb-2" id="location_room" name="location_room" placeholder="Bilik" />
 																<label class="form-label form-label-sm">Level :</label>
-																<input type="text" class="form-control form-control-sm" id="location_level" name="location_level" placeholder="Level" style="max-width: 250px;" />
+																<input type="text" class="form-control form-control-sm" id="location_level" name="location_level" placeholder="Level" />
 															</div>
 															<div class="col-md-6" rowspan="4">
 																<label class="form-label form-label-sm required">Alamat Baris 1 :</label>
@@ -413,7 +530,7 @@ endif;
 
 												<div class="separator separator-dotted border-muted"></div>
 
-												<div class="d-flex justify-content-end ">
+												<div class="d-flex justify-content-end modern-actions">
 													<button type="reset" class="btn btn-sm btn-white fw-bolder btn-active-light-primary me-2">Reset</button>
 													<button type="button" class="btn btn-primary" id="confirmBtn">Confirm</button>
 												</div>
@@ -545,6 +662,7 @@ endif;
 	<div>
 		<!-- Bootstrap -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.6.1/dist/js/coreui.bundle.min.js" integrity="sha384-bfWw6UWgmz1820GDTev34DLTN/eDwwySOsuWriOxV32ZBfwFgiPaDzvOP+vG0Yur" crossorigin="anonymous"></script>
 
 		<!-- Metronic -->
 		<script src="../../../assets/plugins/global/plugins.bundle.js"></script>
@@ -717,12 +835,7 @@ endif;
 			});
 		</script>
 
-		<script>
-			document.getElementById('startDate').addEventListener('change', function() {
-				const [year, month, day] = this.value.split("-");
-				document.getElementById('formattedDate').textContent = `${day}/${month}/${year}`;
-			});
-		</script>
+
 
 		<!-- Live preview of image -->
 		<script>
@@ -751,6 +864,69 @@ endif;
 					}
 				});
 			}
+		</script>
+
+		<!-- React + antd DatePicker / TimePicker via CDN (no build tool needed) -->
+		<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+		<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+		<script src="https://unpkg.com/dayjs@1/dayjs.min.js"></script>
+		<script src="https://unpkg.com/antd@5/dist/antd.min.js"></script>
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				var _a = antd, DatePicker = _a.DatePicker, TimePicker = _a.TimePicker;
+				var h = React.createElement;
+
+				var phpDefaults = {
+					startDate:  <?= json_encode($_POST['event_startDate'] ?? '') ?>,
+					endDate:    <?= json_encode($_POST['event_endDate']   ?? '') ?>,
+					startTime:  <?= json_encode($_POST['event_startTime'] ?? '09:00') ?>,
+					endTime:    <?= json_encode($_POST['event_endTime']   ?? '17:00') ?>
+				};
+
+				function mountDatePicker(mountId, hiddenId, defaultValue) {
+					var el = document.getElementById(mountId);
+					if (!el) return;
+					var defaultVal = defaultValue ? dayjs(defaultValue) : undefined;
+					var root = ReactDOM.createRoot(el);
+					root.render(h(DatePicker, {
+						defaultValue: defaultVal,
+						style: { width: '100%' },
+						format: 'DD/MM/YYYY',
+						onChange: function(dayjsObj) {
+							// Store as YYYY-MM-DD for PHP backend
+							document.getElementById(hiddenId).value = dayjsObj ? dayjsObj.format('YYYY-MM-DD') : '';
+						},
+						placeholder: 'Select date'
+					}));
+				}
+
+				function mountTimePicker(mountId, hiddenId, defaultValue) {
+					var el = document.getElementById(mountId);
+					if (!el) return;
+					var defaultVal = defaultValue ? dayjs(defaultValue, 'HH:mm') : undefined;
+					var root = ReactDOM.createRoot(el);
+					root.render(h(TimePicker, {
+						defaultValue: defaultVal,
+						style: { width: '100%' },
+						format: 'hh:mm A',
+						showSecond: false,
+						use12Hours: true,
+						needConfirm: false,
+						onChange: function(dayjsObj) {
+							// Store as HH:mm (24h) for PHP backend
+							document.getElementById(hiddenId).value = dayjsObj ? dayjsObj.format('HH:mm') : '';
+						},
+						placeholder: 'Select time'
+					}));
+				}
+
+				mountDatePicker('startDateMount', 'startDate',            phpDefaults.startDate);
+				mountTimePicker('startTimeMount', 'startTime',            phpDefaults.startTime);
+				mountDatePicker('endDateMount',   'endDate',              phpDefaults.endDate);
+				mountTimePicker('endTimeMount',   'endTime',              phpDefaults.endTime);
+				mountDatePicker('openRegMount',   'event_openRegistration',  '');
+				mountDatePicker('closeRegMount',  'event_closeRegistration', '');
+			});
 		</script>
 
 		<!-- Error Alert For Confirm Button  -->
