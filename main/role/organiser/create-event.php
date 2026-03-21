@@ -466,7 +466,9 @@ endif;
 															</div>
 														</div><br><br>
 
-														<h5 class="modern-section-title">Registration Window</h5>
+														<h5 class="modern-section-title">Registration Date</h5>
+
+														<p class="modern-section-note">Note: All dates take effect at exactly 12:00 AM local time.</p>
 
 														<div class="row g-2 py-2">
 															<!-- Open Registration Date -->
@@ -495,17 +497,17 @@ endif;
 															<div class="col-md-6">
 																<label class="form-label form-label-sm required">Location Name :</label>
 																<input type="text" class="form-control form-control-sm mb-2" id="location_name" name="location_name" placeholder="Location name" />
-																<label class="form-label form-label-sm">Bangunan/Blok :</label>
-																<input type="text" class="form-control form-control-sm mb-2" id="location_buildingName" name="location_buildingName" placeholder="Bangunan" />
-																<label class="form-label form-label-sm">Bilik/Dewan :</label>
-																<input type="text" class="form-control form-control-sm mb-2" id="location_room" name="location_room" placeholder="Bilik" />
+																<label class="form-label form-label-sm">Building/Blok :</label>
+																<input type="text" class="form-control form-control-sm mb-2" id="location_buildingName" name="location_buildingName" placeholder="Building" />
+																<label class="form-label form-label-sm">Room/Hall :</label>
+																<input type="text" class="form-control form-control-sm mb-2" id="location_room" name="location_room" placeholder="Room/Hall" />
 																<label class="form-label form-label-sm">Level :</label>
-																<input type="text" class="form-control form-control-sm" id="location_level" name="location_level" placeholder="Level" />
+																<input type="text" class="form-control form-control-sm" id="location_level" name="location_level" placeholder="Level/Floor" />
 															</div>
 															<div class="col-md-6" rowspan="4">
-																<label class="form-label form-label-sm required">Alamat Baris 1 :</label>
+																<label class="form-label form-label-sm required">Address Line 1 :</label>
 																<input type="text" class="form-control form-control-sm mb-2" id="address_line1" name="address_line1" placeholder="Building Name/Lot No." />
-																<label class="form-label form-label-sm">Alamat Baris 2 :</label>
+																<label class="form-label form-label-sm">Address Line 2 :</label>
 																<input type="text" class="form-control form-control-sm mb-2" id="address_line2" name="address_line2" placeholder="Street Name" />
 																<label class="form-label form-label-sm required">City :</label>
 																<input type="text" class="form-control form-control-sm mb-2" id="address_city" name="address_city" placeholder="City" />
@@ -591,7 +593,7 @@ endif;
 																		<td id="confirmAddress"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">Bangunan</th>
+																		<th class="text-muted">Building</th>
 																		<td id="confirmBuilding"></td>
 																	</tr>
 																	<tr>
