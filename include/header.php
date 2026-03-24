@@ -306,7 +306,8 @@ if (isset($_SESSION['msg'])) {
                                     class="form-control form-control-sm"
                                     id="stafId"
                                     name="stafId"
-                                    value="<?php echo $rowsp['stafId']; ?>" />
+                                    value="<?php echo $rowsp['stafId']; ?>" 
+                                    disabled/>
                                 <div class="form-text text-muted">
                                     (For SIRIM staffs only)
                                 </div>

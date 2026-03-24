@@ -35,6 +35,38 @@ if (!$eventRes || $eventRes->num_rows === 0) {
 $event = $eventRes->fetch_assoc();
 $eventStmt->close();
 
+// Load active staff choices for organiser-assisted registration
+$staffUsers = [];
+$staffStmt = $conn->prepare("SELECT userId, nama, email FROM user ORDER BY nama ASC");
+if ($staffStmt) {
+    $staffStmt->execute();
+    $staffRes = $staffStmt->get_result();
+    if ($staffRes) {
+        while ($s = $staffRes->fetch_assoc()) {
+            $staffUsers[] = $s;
+        }
+    }
+    $staffStmt->close();
+}
+
+// Load already registered staff for this event (account registrations only)
+$registeredStaffMap = [];
+$registeredStaffStmt = $conn->prepare("SELECT DISTINCT r.participant_id, u.nama, u.email FROM att_registration r JOIN user u ON u.userId = r.participant_id WHERE r.event_id = ? AND IFNULL(NULLIF(r.registration_source, ''), 'account') = 'account' AND u.roleId IN (1,3) ORDER BY u.nama ASC");
+if ($registeredStaffStmt) {
+    $registeredStaffStmt->bind_param("s", $eventId);
+    $registeredStaffStmt->execute();
+    $registeredStaffRes = $registeredStaffStmt->get_result();
+    if ($registeredStaffRes) {
+        while ($rs = $registeredStaffRes->fetch_assoc()) {
+            $rid = (string)($rs['participant_id'] ?? '');
+            $rname = trim((string)($rs['nama'] ?? ''));
+            $remail = trim((string)($rs['email'] ?? ''));
+            $registeredStaffMap[$rid] = $rname . ($remail !== '' ? ' (' . $remail . ')' : '');
+        }
+    }
+    $registeredStaffStmt->close();
+}
+
 // Load registrations + attendance + participant name/contact
 $sql = "
     SELECT
@@ -113,6 +145,7 @@ unset($_SESSION['msg']);
 	<link href="../../../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="../../../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 	<!--end::Global Stylesheets Bundle-->
 
     <style>
@@ -127,6 +160,105 @@ unset($_SESSION['msg']);
 
         .table thead th {
             white-space: nowrap;
+        }
+
+        .choices__inner {
+            min-height: 38px;
+            border-radius: 8px;
+        }
+
+        .selected-staff-title {
+            font-size: 0.82rem;
+            color: #6c757d;
+            margin-top: 0.6rem;
+        }
+
+        .selected-staff-list {
+            margin-top: 0.35rem;
+        }
+
+        .selected-staff-list .list-group-item {
+            padding: 0.45rem 0.75rem;
+        }
+
+        .register-modal .modal-content {
+            border: 0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 18px 40px rgba(20, 35, 55, 0.18);
+        }
+
+        .register-modal .modal-header {
+            border-bottom: 1px solid #e9edf3;
+            background: linear-gradient(180deg, #f9fbff 0%, #f3f7ff 100%);
+            padding: 1rem 1.25rem;
+        }
+
+        .register-modal .modal-title {
+            font-weight: 700;
+            color: #16324f;
+        }
+
+        .register-modal .modal-body {
+            background: #fcfdff;
+            padding: 1.15rem 1.25rem;
+        }
+
+        .register-modal .modal-footer {
+            border-top: 1px solid #e9edf3;
+            background: #f9fbff;
+        }
+
+        .register-mode-switch {
+            display: inline-flex;
+            gap: 0.45rem;
+            padding: 0.3rem;
+            border-radius: 999px;
+            border: 1px solid #dbe7f5;
+            background: #f1f6ff;
+        }
+
+        .register-mode-switch .btn {
+            border-radius: 999px !important;
+            padding: 0.35rem 0.9rem;
+            font-weight: 600;
+        }
+
+        .register-section-card {
+            background: #fff;
+            border: 1px solid #e8edf4;
+            border-radius: 12px;
+            padding: 0.9rem;
+        }
+
+        .register-section-title {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: #5a6c82;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 0.55rem;
+        }
+
+        .register-modal .form-control,
+        .register-modal .form-select,
+        .register-modal .choices__inner {
+            border-color: #dce5f1;
+        }
+
+        .register-modal .form-control:focus,
+        .register-modal .form-select:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.18rem rgba(13, 110, 253, 0.12);
+        }
+
+        .selected-staff-list {
+            max-height: 180px;
+            overflow: auto;
+        }
+
+        .selected-staff-list:empty {
+            max-height: none;
         }
     </style>
 </head>
@@ -291,7 +423,7 @@ unset($_SESSION['msg']);
                                 </div>
                             </div>
 
-                            <div class="modal fade" id="organiserRegisterModal" tabindex="-1" aria-labelledby="organiserRegisterModalLabel" aria-hidden="true">
+                            <div class="modal fade register-modal" id="organiserRegisterModal" tabindex="-1" aria-labelledby="organiserRegisterModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-lg modal-dialog-centered">
                                     <div class="modal-content">
                                         <form method="POST" action="event-assist-register.php">
@@ -301,34 +433,82 @@ unset($_SESSION['msg']);
                                             </div>
                                             <div class="modal-body">
                                                 <input type="hidden" name="event_id" value="<?= htmlspecialchars($eventId) ?>">
+                                                <input type="hidden" name="register_mode" id="registerModeInput" value="staff">
 
-                                                <div class="alert alert-light border mb-4">
-                                                    If the user email exists, participant will be registered using existing account.<br>
-                                                    If the user email does not exist, participant will be registered as walk-in only.
+                                                <div class="mb-3">
+                                                    <label class="form-label d-block mb-2">Choose Registration Type</label>
+                                                    <div class="register-mode-switch" role="group" aria-label="Registration type switch">
+                                                        <button type="button" class="btn btn-primary" id="staffModeBtn">Staff</button>
+                                                        <button type="button" class="btn btn-outline-primary" id="externalModeBtn">External Participant</button>
+                                                    </div>
                                                 </div>
 
-                                                <div class="row g-3">
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">Name <span class="text-danger">*</span></label>
-                                                        <input type="text" name="participant_name" class="form-control" required>
+                                                <div id="staffRegisterSection" class="register-section-card">
+                                                    <div class="register-section-title">Staff Registration</div>
+                                                    <div class="row g-3 align-items-end">
+                                                        <div class="col-md-9">
+                                                            <label class="form-label">Select Staff</label>
+                                                            <select id="staffPicker" class="form-select" aria-label="Search and select staff">
+                                                                <option value="">Search name/email and select</option>
+                                                                <?php foreach ($staffUsers as $staff): ?>
+                                                                    <?php
+                                                                    $staffId = (string)($staff['userId'] ?? '');
+                                                                    $staffName = trim((string)($staff['nama'] ?? ''));
+                                                                    $staffEmail = trim((string)($staff['email'] ?? ''));
+                                                                    $label = $staffName . ($staffEmail !== '' ? ' (' . $staffEmail . ')' : '');
+                                                                    $isAlreadyRegistered = isset($registeredStaffMap[$staffId]);
+                                                                    ?>
+                                                                    <option value="<?= htmlspecialchars($staffId) ?>" <?= $isAlreadyRegistered ? 'disabled' : '' ?>>
+                                                                        <?= htmlspecialchars($label) ?><?= $isAlreadyRegistered ? ' (Registered)' : '' ?>
+                                                                    </option>
+                                                                <?php endforeach; ?>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <button type="button" class="btn btn-outline-primary w-100" id="addStaffBtn">Select</button>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">Email</label>
-                                                        <input type="email" name="participant_email" id="participantEmailField" class="form-control" placeholder="example@email.com">
+                                                    <div class="small text-muted mt-2">You can select one or more staff.</div>
+                                                    <div class="selected-staff-title">Selected staff list</div>
+                                                    <div id="selectedStaffList" class="selected-staff-list"></div><br>
+                                                    <label class="form-label">Registered Staff</label>
+                                                    <div id="alreadyRegisteredStaffList" class="selected-staff-list">
+                                                        <?php if (!empty($registeredStaffMap)): ?>
+                                                            <ul class="list-group">
+                                                                <?php foreach ($registeredStaffMap as $registeredLabel): ?>
+                                                                    <li class="list-group-item"><?= htmlspecialchars($registeredLabel) ?></li>
+                                                                <?php endforeach; ?>
+                                                            </ul>
+                                                        <?php endif; ?>
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">Phone</label>
-                                                        <input type="text" name="participant_phone" class="form-control">
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">Company</label>
-                                                        <input type="text" name="participant_company" class="form-control">
+                                                    <div id="selectedStaffInputs"></div>
+                                                </div>
+
+                                                <div id="externalRegisterSection" class="d-none register-section-card">
+                                                    <div class="register-section-title">External Participant</div>
+                                                    <div class="row g-3">
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">Name <span class="text-danger">*</span></label>
+                                                            <input type="text" name="participant_name" id="externalNameField" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">Email</label>
+                                                            <input type="email" name="participant_email" id="participantEmailField" class="form-control" placeholder="example@email.com">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">Phone</label>
+                                                            <input type="text" name="participant_phone" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">Company</label>
+                                                            <input type="text" name="participant_company" class="form-control">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                                                <button type="submit" class="btn btn-primary">Register</button>
+                                                <button type="submit" class="btn btn-primary fw-semibold">Register</button>
                                             </div>
                                         </form>
                                     </div>
@@ -347,34 +527,189 @@ unset($_SESSION['msg']);
 
     <script src="assets/plugins/global/plugins.bundle.js"></script>
     <script src="assets/js/scripts.bundle.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            if (!$('#regTable').length) {
+        document.addEventListener('DOMContentLoaded', function() {
+            // DataTable is optional; modal logic should still work without it.
+            let table = null;
+            if (window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.DataTable === 'function' && window.jQuery('#regTable').length) {
+                table = window.jQuery('#regTable').DataTable({
+                    pageLength: 25,
+                    order: [
+                        [0, 'asc']
+                    ],
+                    language: {
+                        search: 'Search:',
+                        lengthMenu: 'Show _MENU_ records',
+                        info: 'Showing _START_ to _END_ of _TOTAL_ records',
+                        infoEmpty: 'Showing 0 to 0 of 0 records',
+                        infoFiltered: '(filtered from _MAX_ total records)',
+                        zeroRecords: 'No matching records found',
+                        emptyTable: 'No data available in table'
+                    }
+                });
+            }
+
+            const statusFilter = document.getElementById('statusFilter');
+            if (statusFilter) {
+                statusFilter.addEventListener('change', function() {
+                    if (!table) return;
+                    const val = this.value;
+                    table.column(8).search(val ? val : '', true, false).draw();
+                });
+            }
+
+            const registerForm = document.querySelector('#organiserRegisterModal form');
+            const registerModeInput = document.getElementById('registerModeInput');
+            const staffModeBtn = document.getElementById('staffModeBtn');
+            const externalModeBtn = document.getElementById('externalModeBtn');
+            const staffSection = document.getElementById('staffRegisterSection');
+            const externalSection = document.getElementById('externalRegisterSection');
+            const staffPicker = document.getElementById('staffPicker');
+            const addStaffBtn = document.getElementById('addStaffBtn');
+            const selectedStaffList = document.getElementById('selectedStaffList');
+            const selectedStaffInputs = document.getElementById('selectedStaffInputs');
+            const externalNameField = document.getElementById('externalNameField');
+
+            if (!registerForm || !registerModeInput || !staffModeBtn || !externalModeBtn || !staffSection || !externalSection || !staffPicker || !addStaffBtn || !selectedStaffList || !selectedStaffInputs || !externalNameField) {
                 return;
             }
 
-            const table = $('#regTable').DataTable({
-                pageLength: 25,
-                order: [
-                    [0, 'asc']
-                ],
-                language: {
-                    search: "Search:",
-                    lengthMenu: "Show _MENU_ records",
-                    info: "Showing _START_ to _END_ of _TOTAL_ records",
-                    infoEmpty: "Showing 0 to 0 of 0 records",
-                    infoFiltered: "(filtered from _MAX_ total records)",
-                    zeroRecords: "No matching records found",
-                    emptyTable: "No data available in table",
+            const selectedStaffMap = new Map();
+
+            let staffChoices = null;
+            if (typeof Choices !== 'undefined') {
+                staffChoices = new Choices(staffPicker, {
+                    searchEnabled: true,
+                    itemSelectText: '',
+                    shouldSort: false,
+                    placeholder: true,
+                    placeholderValue: 'Search staff name or email'
+                });
+            }
+
+            function setMode(mode) {
+                const isStaff = mode === 'staff';
+                registerModeInput.value = isStaff ? 'staff' : 'external';
+
+                staffSection.classList.toggle('d-none', !isStaff);
+                externalSection.classList.toggle('d-none', isStaff);
+
+                staffModeBtn.classList.toggle('btn-primary', isStaff);
+                staffModeBtn.classList.toggle('btn-outline-primary', !isStaff);
+                externalModeBtn.classList.toggle('btn-primary', !isStaff);
+                externalModeBtn.classList.toggle('btn-outline-primary', isStaff);
+
+                externalNameField.required = !isStaff;
+            }
+
+            function renderSelectedStaff() {
+                selectedStaffList.innerHTML = '';
+                selectedStaffInputs.innerHTML = '';
+
+                if (selectedStaffMap.size === 0) {
+                    return;
+                }
+
+                const list = document.createElement('ul');
+                list.className = 'list-group';
+
+                selectedStaffMap.forEach(function(label, userId) {
+                    const item = document.createElement('li');
+                    item.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+                    const labelSpan = document.createElement('span');
+                    labelSpan.textContent = label;
+                    item.appendChild(labelSpan);
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'btn btn-sm btn-light-danger';
+                    removeBtn.setAttribute('data-remove', userId);
+                    removeBtn.setAttribute('aria-label', 'Remove');
+                    removeBtn.textContent = 'Remove';
+                    item.appendChild(removeBtn);
+
+                    list.appendChild(item);
+
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'staff_ids[]';
+                    hidden.value = userId;
+                    selectedStaffInputs.appendChild(hidden);
+                });
+
+                selectedStaffList.appendChild(list);
+            }
+
+            function getSelectedStaffLabel(userId) {
+                const options = staffPicker.options || [];
+                for (let i = 0; i < options.length; i++) {
+                    if (options[i].value === userId) {
+                        return options[i].text;
+                    }
+                }
+                return userId;
+            }
+
+            addStaffBtn.addEventListener('click', function() {
+                if (!staffPicker.value) {
+                    return;
+                }
+
+                const userId = staffPicker.value;
+                const selectedOption = Array.from(staffPicker.options).find(function(opt) {
+                    return opt.value === userId;
+                });
+                if (selectedOption && selectedOption.disabled) {
+                    return;
+                }
+                const label = getSelectedStaffLabel(userId);
+
+                if (!selectedStaffMap.has(userId)) {
+                    selectedStaffMap.set(userId, label);
+                    renderSelectedStaff();
+                }
+
+                if (staffChoices) {
+                    staffChoices.removeActiveItems();
+                } else {
+                    staffPicker.value = '';
                 }
             });
 
-            $('#statusFilter').on('change', function() {
-                const val = $(this).val();
-                // Status column index = 8
-                table.column(8).search(val ? val : '', true, false).draw();
+            selectedStaffList.addEventListener('click', function(e) {
+                const btn = e.target.closest('button[data-remove]');
+                if (!btn) return;
+
+                const userId = btn.getAttribute('data-remove');
+                selectedStaffMap.delete(userId);
+                renderSelectedStaff();
             });
+
+            staffModeBtn.addEventListener('click', function() {
+                setMode('staff');
+            });
+
+            externalModeBtn.addEventListener('click', function() {
+                setMode('external');
+            });
+
+            registerForm.addEventListener('submit', function(e) {
+                if (registerModeInput.value === 'staff' && selectedStaffMap.size === 0) {
+                    e.preventDefault();
+                    alert('Please select at least one staff member.');
+                    return;
+                }
+
+                if (registerModeInput.value === 'external' && !externalNameField.value.trim()) {
+                    e.preventDefault();
+                    alert('Please fill in external participant name.');
+                }
+            });
+
+            setMode('staff');
         });
     </script>
 </body>

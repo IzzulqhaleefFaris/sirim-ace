@@ -34,6 +34,14 @@ $states = $conn->query("
     ORDER BY state_name
 ");
 
+// Dropdown: PIC users
+$picUsers = $conn->query("
+	SELECT userId, nama, email
+	FROM user
+	WHERE nama IS NOT NULL AND nama <> ''
+	ORDER BY nama
+");
+
 if (session_status() === PHP_SESSION_NONE) session_start();
 $eventCreated = $_SESSION['event_created'] ?? null;
 unset($_SESSION['event_created']);
@@ -76,6 +84,8 @@ endif;
 	<link href="../../../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="../../../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://unpkg.com/antd@5/dist/reset.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 	<!--end::Global Stylesheets Bundle-->
 
 	<!-- Custom Styling -->
@@ -165,6 +175,27 @@ endif;
 			color: var(--ink-900);
 			box-shadow: none;
 			transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		}
+
+		.choices__inner {
+			min-height: 38px;
+			border: 1px solid var(--soft-border);
+			border-radius: 10px;
+			font-size: 0.93rem;
+			padding: 0.32rem 0.55rem;
+			background: #fff;
+		}
+
+		.is-focused .choices__inner,
+		.is-open .choices__inner {
+			border-color: rgba(15, 108, 191, 0.5);
+			box-shadow: 0 0 0 0.2rem rgba(15, 108, 191, 0.12);
+		}
+
+		.choices__list--dropdown,
+		.choices__list[aria-expanded] {
+			border: 1px solid var(--soft-border);
+			border-radius: 10px;
 		}
 
 		.form-control:focus,
@@ -396,15 +427,25 @@ endif;
 															</select>
 														</div>
 
-
 														<div class="row g-2 py-2">
-															<label for="organiserInput" class="form-label form-label-sm mb-0">Person In-Charge (PIC) :</label>
+															<label for="organiserInput" class="form-label form-label-sm mb-0 required">Person In-Charge (PIC) :</label>
 															<div class="col-12">
-																<select class="form-select form-select-sm" id="organiserInput" name="organiser">
-																	<option value="" selected disabled>Select Manager Name</option>
-																	<option value="Staf 1">Staf 1</option>
-																	<option value="Staf 2">Staf 2</option>
-																	<option value="Staf 3">Staf 3</option>
+																<select class="form-select form-select-sm" id="organiserInput" name="organiser" required>
+																	<option value="" selected disabled>Select PIC</option>
+																	<?php if ($picUsers): ?>
+																		<?php while ($u = $picUsers->fetch_assoc()): ?>
+																			<?php
+																			$userId = (string)($u['userId'] ?? '');
+																			$userName = trim((string)($u['nama'] ?? ''));
+																			$userEmail = trim((string)($u['email'] ?? ''));
+																			$displayText = $userName . ($userEmail !== '' ? ' (' . $userEmail . ')' : '');
+																			$selected = (($_POST['organiser'] ?? '') === $userId) ? 'selected' : '';
+																			?>
+																			<option value="<?= htmlspecialchars($userId) ?>" <?= $selected ?>>
+																				<?= htmlspecialchars($displayText) ?>
+																			</option>
+																		<?php endwhile; ?>
+																	<?php endif; ?>
 																</select>
 															</div>
 														</div>
@@ -565,6 +606,10 @@ endif;
 																		<td id="confirmEventType"></td>
 																	</tr>
 																	<tr>
+																		<th class="text-muted">Person In-Charge (PIC)</th>
+																		<td id="confirmPIC"></td>
+																	</tr>
+																	<tr>
 																		<th class="text-muted">Start Date</th>
 																		<td id="confirmStartDate"></td>
 																	</tr>
@@ -675,6 +720,7 @@ endif;
 		<script src="../../../assets/js/custom/apps/chat/chat.js"></script>
 		<script src="../../../assets/js/custom/modals/create-app.js"></script>
 		<script src="../../../assets/js/custom/modals/upgrade-plan.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 		<script>
 			// Log any alerts to console for debugging
 			const alertBox = document.querySelector('.alert');
@@ -699,33 +745,46 @@ endif;
 				});
 			});
 
-			// Manager Name Dropdown
-			document.querySelectorAll('.organiser-option').forEach(function(item) {
-				item.addEventListener('click', function(e) {
-					e.preventDefault();
-					document.getElementById('organiserDropdown').textContent = this.textContent;
-					document.getElementById('organiserInput').value = this.getAttribute('data-value');
+			// Searchable PIC select
+			document.addEventListener('DOMContentLoaded', function() {
+				const picSelect = document.getElementById('organiserInput');
+				if (!picSelect) return;
+
+				new Choices(picSelect, {
+					searchEnabled: true,
+					itemSelectText: '',
+					shouldSort: false,
+					placeholder: true,
+					placeholderValue: 'Search PIC name or email'
 				});
 			});
 
 			// Toggle active/inactive state and update hidden input
-			document.getElementById('singleEventBtn').addEventListener('click', function() {
-				this.classList.add('active');
-				document.getElementById('recurringEventBtn').classList.remove('active');
-				document.getElementById('eventTypeInput').value = 'single';
-			});
+			// document.getElementById('singleEventBtn').addEventListener('click', function() {
+			// 	this.classList.add('active');
+			// 	document.getElementById('recurringEventBtn').classList.remove('active');
+			// 	document.getElementById('eventTypeInput').value = 'single';
+			// });
 
-			document.getElementById('recurringEventBtn').addEventListener('click', function() {
-				this.classList.add('active');
-				document.getElementById('singleEventBtn').classList.remove('active');
-				document.getElementById('eventTypeInput').value = 'recurring';
-			});
+			// document.getElementById('recurringEventBtn').addEventListener('click', function() {
+			// 	this.classList.add('active');
+			// 	document.getElementById('singleEventBtn').classList.remove('active');
+			// 	document.getElementById('eventTypeInput').value = 'recurring';
+			// });
 
 			//confirm button
 			document.getElementById('confirmBtn').addEventListener('click', function() {
+				function formatDateToDMY(dateStr) {
+					if (!dateStr || typeof dateStr !== 'string') return '';
+					const parts = dateStr.split('-');
+					if (parts.length !== 3) return dateStr;
+					return `${parts[2]}/${parts[1]}/${parts[0]}`;
+				}
+
 				// Collect input values
 				const eventName = document.querySelector('[name="event_name"]').value;
 				const eventType = document.querySelector('#jenisEvent').selectedOptions[0]?.text || '';
+				const pic = document.querySelector('#organiserInput').selectedOptions[0]?.text || '';
 				const startDate = document.querySelector('[name="event_startDate"]').value;
 				const endDate = document.querySelector('[name="event_endDate"]').value;
 				const openRegistration = document.querySelector('[name="event_openRegistration"]').value;
@@ -752,7 +811,7 @@ endif;
 				});
 
 				// ✅ Validation check before showing modal
-				if (!eventName || !startDate || !endDate || !state || !locationName) {
+				if (!eventName || !pic || !startDate || !endDate || !state || !locationName) {
 					console.error('❌ VALIDATION FAILED');
 					showError('Please fill all required fields before confirming.');
 					return; // 🔴 STOP execution here
@@ -793,10 +852,11 @@ endif;
 				// Fill modal content
 				document.getElementById('confirmEventName').textContent = eventName;
 				document.getElementById('confirmEventType').textContent = eventType;
-				document.getElementById('confirmStartDate').textContent = startDate;
-				document.getElementById('confirmEndDate').textContent = endDate;
-				document.getElementById('confirmOpenRegistration').textContent = openRegistration;
-				document.getElementById('confirmCloseRegistration').textContent = closeRegistration;
+				document.getElementById('confirmPIC').textContent = pic;
+				document.getElementById('confirmStartDate').textContent = formatDateToDMY(startDate);
+				document.getElementById('confirmEndDate').textContent = formatDateToDMY(endDate);
+				document.getElementById('confirmOpenRegistration').textContent = formatDateToDMY(openRegistration);
+				document.getElementById('confirmCloseRegistration').textContent = formatDateToDMY(closeRegistration);
 				document.getElementById('confirmState').textContent = state;
 				document.getElementById('confirmLocationName').textContent = locationName;
 				document.getElementById('confirmBuilding').textContent = building;
@@ -875,6 +935,65 @@ endif;
 		<script src="https://unpkg.com/antd@5/dist/antd.min.js"></script>
 		<script>
 			document.addEventListener('DOMContentLoaded', function () {
+				function mountNativeDateInput(mountId, hiddenId, defaultValue) {
+					var el = document.getElementById(mountId);
+					if (!el) return;
+
+					el.innerHTML = '';
+					var input = document.createElement('input');
+					input.type = 'date';
+					input.className = 'form-control form-control-sm';
+					input.value = defaultValue || '';
+					input.addEventListener('change', function() {
+						document.getElementById(hiddenId).value = input.value || '';
+					});
+					el.appendChild(input);
+
+					if (defaultValue) {
+						document.getElementById(hiddenId).value = defaultValue;
+					}
+				}
+
+				function mountNativeTimeInput(mountId, hiddenId, defaultValue) {
+					var el = document.getElementById(mountId);
+					if (!el) return;
+
+					el.innerHTML = '';
+					var input = document.createElement('input');
+					input.type = 'time';
+					input.className = 'form-control form-control-sm';
+					input.value = defaultValue || '';
+					input.addEventListener('change', function() {
+						document.getElementById(hiddenId).value = input.value || '';
+					});
+					el.appendChild(input);
+
+					if (defaultValue) {
+						document.getElementById(hiddenId).value = defaultValue;
+					}
+				}
+
+				function mountFallbackPickers(defaults) {
+					mountNativeDateInput('startDateMount', 'startDate', defaults.startDate);
+					mountNativeTimeInput('startTimeMount', 'startTime', defaults.startTime);
+					mountNativeDateInput('endDateMount', 'endDate', defaults.endDate);
+					mountNativeTimeInput('endTimeMount', 'endTime', defaults.endTime);
+					mountNativeDateInput('openRegMount', 'event_openRegistration', '');
+					mountNativeDateInput('closeRegMount', 'event_closeRegistration', '');
+				}
+
+				var hasAntdStack = !!(window.React && window.ReactDOM && window.dayjs && window.antd && window.ReactDOM.createRoot);
+				if (!hasAntdStack) {
+					console.warn('AntD picker dependencies missing. Falling back to native date/time inputs.');
+					mountFallbackPickers({
+						startDate: <?= json_encode($_POST['event_startDate'] ?? '') ?>,
+						endDate: <?= json_encode($_POST['event_endDate']   ?? '') ?>,
+						startTime: <?= json_encode($_POST['event_startTime'] ?? '09:00') ?>,
+						endTime: <?= json_encode($_POST['event_endTime']   ?? '17:00') ?>
+					});
+					return;
+				}
+
 				var _a = antd, DatePicker = _a.DatePicker, TimePicker = _a.TimePicker;
 				var h = React.createElement;
 

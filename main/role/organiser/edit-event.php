@@ -76,10 +76,15 @@ $states = $conn->query("SELECT * FROM att_state");
     <link href="../../../assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="../../../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/antd@5/dist/reset.css" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <!--end::Global Stylesheets Bundle-->
 
     <style>
+        body {
+            background: radial-gradient(circle at 10% -10%, #ffffff 0%, #f3f7fb 40%, #eef2f8 100%);
+        }
+
         .form-label {
             font-weight: 600;
             color: #1a1a1a;
@@ -101,6 +106,37 @@ $states = $conn->query("SELECT * FROM att_state");
 
         .card {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            border: 1px solid #e7ecf3;
+        }
+
+        .event-img-detail {
+            width: 100%;
+            max-width: 680px;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 1px solid #e7ecf3;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 8px 24px rgba(16, 33, 55, 0.1);
+        }
+
+        .picker-mount .form-control {
+            min-height: 48px;
+        }
+
+        .picker-mount .ant-picker {
+            width: 100%;
+            min-height: 48px;
+            border-radius: 10px;
+            border-color: #d6dfeb;
+        }
+
+        .picker-mount .ant-picker:hover,
+        .picker-mount .ant-picker-focused {
+            border-color: rgba(15, 108, 191, 0.5);
+            box-shadow: 0 0 0 0.2rem rgba(15, 108, 191, 0.12);
         }
     </style>
 </head>
@@ -155,7 +191,7 @@ $states = $conn->query("SELECT * FROM att_state");
                                     <!-- Form Card -->
                                     <div class="card shadow-sm">
                                         <div class="card-body p-4">
-                                            <form action="update-event.php" method="POST" id="editEventForm" novalidate>
+                                            <form action="update-event.php" method="POST" id="editEventForm" enctype="multipart/form-data" novalidate>
 
                                                 <!-- Hidden Fields -->
                                                 <input type="hidden" name="event_id" value="<?= htmlspecialchars($event['event_id']) ?>">
@@ -199,6 +235,25 @@ $states = $conn->query("SELECT * FROM att_state");
                                                         </select>
                                                         <div class="invalid-feedback">Please select event type.</div>
                                                     </div>
+
+                                                    <div class="col-12 mb-3">
+                                                        <label for="event_image" class="form-label">Event Image</label>
+
+                                                        <div class="mb-2 text-center">
+                                                            <img id="eventImagePreview"
+                                                                src="<?= !empty($event['event_image']) ? '/sirimace/' . htmlspecialchars($event['event_image']) : '/sirimace/images/custom/no_image.jpg' ?>"
+                                                                data-default-src="<?= !empty($event['event_image']) ? '/sirimace/' . htmlspecialchars($event['event_image']) : '/sirimace/images/custom/no_image.jpg' ?>"
+                                                                alt="Event Image Preview"
+                                                                class="event-img-detail">
+                                                        </div>
+
+                                                        <input type="file"
+                                                            class="form-control form-control-lg"
+                                                            name="event_image"
+                                                            id="event_image"
+                                                            accept="image/*">
+                                                        <small class="form-text text-muted">Optional. Supported: JPG/PNG, max 2 MB.</small>
+                                                    </div>
                                                 </div>
 
                                                 <!-- Event Dates Section -->
@@ -211,10 +266,10 @@ $states = $conn->query("SELECT * FROM att_state");
                                                         <label for="event_startDate" class="form-label ">
                                                             Event Start
                                                         </label>
-                                                        <input type="date"
+                                                        <div id="startDateMount" class="picker-mount"></div>
+                                                        <input type="hidden"
                                                             id="event_startDate"
                                                             name="event_startDate"
-                                                            class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['event_startDate']) ?>"
                                                             required>
                                                         <div class="invalid-feedback">Please select event start date.</div>
@@ -223,13 +278,29 @@ $states = $conn->query("SELECT * FROM att_state");
                                                         <label for="event_endDate" class="form-label">
                                                             Event End
                                                         </label>
-                                                        <input type="date"
+                                                        <div id="endDateMount" class="picker-mount"></div>
+                                                        <input type="hidden"
                                                             id="event_endDate"
                                                             name="event_endDate"
-                                                            class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['event_endDate']) ?>"
                                                             required>
                                                         <div class="invalid-feedback">Please select event end date.</div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="event_startTime" class="form-label">Start Time</label>
+                                                        <div id="startTimeMount" class="picker-mount"></div>
+                                                        <input type="hidden"
+                                                            id="event_startTime"
+                                                            name="event_startTime"
+                                                            value="<?= htmlspecialchars($_POST['event_startTime'] ?? ($event['event_startTime'] ?? '09:00')) ?>">
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="event_endTime" class="form-label">End Time</label>
+                                                        <div id="endTimeMount" class="picker-mount"></div>
+                                                        <input type="hidden"
+                                                            id="event_endTime"
+                                                            name="event_endTime"
+                                                            value="<?= htmlspecialchars($_POST['event_endTime'] ?? ($event['event_endTime'] ?? '17:00')) ?>">
                                                     </div>
                                                 </div>
 
@@ -243,10 +314,10 @@ $states = $conn->query("SELECT * FROM att_state");
                                                         <label for="event_openRegistration" class="form-label">
                                                             Registration Open
                                                         </label>
-                                                        <input type="date"
+                                                        <div id="openRegMount" class="picker-mount"></div>
+                                                        <input type="hidden"
                                                             id="event_openRegistration"
                                                             name="event_openRegistration"
-                                                            class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['event_openRegistration'] ?? '') ?>"
                                                             placeholder="Optional">
                                                         <small class="form-text text-muted">Leave empty if not specified</small>
@@ -255,10 +326,10 @@ $states = $conn->query("SELECT * FROM att_state");
                                                         <label for="event_closeRegistration" class="form-label">
                                                             Registration Close
                                                         </label>
-                                                        <input type="date"
+                                                        <div id="closeRegMount" class="picker-mount"></div>
+                                                        <input type="hidden"
                                                             id="event_closeRegistration"
                                                             name="event_closeRegistration"
-                                                            class="form-control form-control-lg"
                                                             value="<?= htmlspecialchars($event['event_closeRegistration'] ?? '') ?>"
                                                             placeholder="Optional">
                                                         <small class="form-text text-muted">Leave empty if not specified</small>
@@ -401,6 +472,10 @@ $states = $conn->query("SELECT * FROM att_state");
     <!--begin::Javascript-->
     <script src="assets/plugins/global/plugins.bundle.js"></script>
     <script src="assets/js/scripts.bundle.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1/dayjs.min.js"></script>
+    <script src="https://unpkg.com/antd@5/dist/antd.min.js"></script>
     <!--end::Global Javascript Bundle-->
 
     <script>
@@ -409,9 +484,132 @@ $states = $conn->query("SELECT * FROM att_state");
             'use strict';
             const form = document.getElementById('editEventForm');
             const submitBtn = document.getElementById('submitBtn');
+            const eventInput = document.getElementById('event_image');
+            const previewImg = document.getElementById('eventImagePreview');
+            const defaultSrc = previewImg?.dataset?.defaultSrc || previewImg?.getAttribute('src') || '';
+
+            function mountNativeDateInput(mountId, hiddenId, defaultValue) {
+                const el = document.getElementById(mountId);
+                if (!el) return;
+
+                el.innerHTML = '';
+                const input = document.createElement('input');
+                input.type = 'date';
+                input.className = 'form-control form-control-lg';
+                input.value = defaultValue || '';
+                input.addEventListener('change', () => {
+                    document.getElementById(hiddenId).value = input.value || '';
+                });
+                el.appendChild(input);
+                document.getElementById(hiddenId).value = defaultValue || '';
+            }
+
+            function mountNativeTimeInput(mountId, hiddenId, defaultValue) {
+                const el = document.getElementById(mountId);
+                if (!el) return;
+
+                el.innerHTML = '';
+                const input = document.createElement('input');
+                input.type = 'time';
+                input.className = 'form-control form-control-lg';
+                input.value = defaultValue || '';
+                input.addEventListener('change', () => {
+                    document.getElementById(hiddenId).value = input.value || '';
+                });
+                el.appendChild(input);
+                document.getElementById(hiddenId).value = defaultValue || '';
+            }
+
+            function mountPickers() {
+                const defaults = {
+                    startDate: <?= json_encode($event['event_startDate'] ?? '') ?>,
+                    endDate: <?= json_encode($event['event_endDate'] ?? '') ?>,
+                    openReg: <?= json_encode($event['event_openRegistration'] ?? '') ?>,
+                    closeReg: <?= json_encode($event['event_closeRegistration'] ?? '') ?>,
+                    startTime: <?= json_encode($_POST['event_startTime'] ?? ($event['event_startTime'] ?? '09:00')) ?>,
+                    endTime: <?= json_encode($_POST['event_endTime'] ?? ($event['event_endTime'] ?? '17:00')) ?>
+                };
+
+                const hasAntdStack = !!(window.React && window.ReactDOM && window.dayjs && window.antd && window.ReactDOM.createRoot);
+                if (!hasAntdStack) {
+                    mountNativeDateInput('startDateMount', 'event_startDate', defaults.startDate);
+                    mountNativeDateInput('endDateMount', 'event_endDate', defaults.endDate);
+                    mountNativeDateInput('openRegMount', 'event_openRegistration', defaults.openReg);
+                    mountNativeDateInput('closeRegMount', 'event_closeRegistration', defaults.closeReg);
+                    mountNativeTimeInput('startTimeMount', 'event_startTime', defaults.startTime);
+                    mountNativeTimeInput('endTimeMount', 'event_endTime', defaults.endTime);
+                    return;
+                }
+
+                const { DatePicker, TimePicker } = antd;
+                const h = React.createElement;
+
+                function mountDatePicker(mountId, hiddenId, defaultValue) {
+                    const el = document.getElementById(mountId);
+                    if (!el) return;
+                    const defaultVal = defaultValue ? dayjs(defaultValue) : undefined;
+                    const root = ReactDOM.createRoot(el);
+                    root.render(h(DatePicker, {
+                        defaultValue: defaultVal,
+                        style: { width: '100%' },
+                        format: 'DD/MM/YYYY',
+                        onChange: function(dayjsObj) {
+                            document.getElementById(hiddenId).value = dayjsObj ? dayjsObj.format('YYYY-MM-DD') : '';
+                        },
+                        placeholder: 'Select date'
+                    }));
+
+                    document.getElementById(hiddenId).value = defaultValue || '';
+                }
+
+                function mountTimePicker(mountId, hiddenId, defaultValue) {
+                    const el = document.getElementById(mountId);
+                    if (!el) return;
+                    const defaultVal = defaultValue ? dayjs(defaultValue, 'HH:mm') : undefined;
+                    const root = ReactDOM.createRoot(el);
+                    root.render(h(TimePicker, {
+                        defaultValue: defaultVal,
+                        style: { width: '100%' },
+                        format: 'hh:mm A',
+                        showSecond: false,
+                        use12Hours: true,
+                        needConfirm: false,
+                        onChange: function(dayjsObj) {
+                            document.getElementById(hiddenId).value = dayjsObj ? dayjsObj.format('HH:mm') : '';
+                        },
+                        placeholder: 'Select time'
+                    }));
+
+                    document.getElementById(hiddenId).value = defaultValue || '';
+                }
+
+                mountDatePicker('startDateMount', 'event_startDate', defaults.startDate);
+                mountDatePicker('endDateMount', 'event_endDate', defaults.endDate);
+                mountDatePicker('openRegMount', 'event_openRegistration', defaults.openReg);
+                mountDatePicker('closeRegMount', 'event_closeRegistration', defaults.closeReg);
+                mountTimePicker('startTimeMount', 'event_startTime', defaults.startTime);
+                mountTimePicker('endTimeMount', 'event_endTime', defaults.endTime);
+            }
+
+            mountPickers();
+
+            if (eventInput && previewImg) {
+                eventInput.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImg.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    } else if (defaultSrc) {
+                        previewImg.src = defaultSrc;
+                    }
+                });
+            }
 
             form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
+                if (!validateDates() || !form.checkValidity()) {
                     event.preventDefault();
                     event.stopPropagation();
                 } else {
@@ -431,51 +629,39 @@ $states = $conn->query("SELECT * FROM att_state");
             function validateDates() {
                 if (startDate.value && endDate.value) {
                     if (new Date(endDate.value) < new Date(startDate.value)) {
-                        endDate.setCustomValidity('End date must be after start date');
-                        endDate.reportValidity();
+                        alert('End date must be after start date.');
                         return false;
-                    } else {
-                        endDate.setCustomValidity('');
                     }
                 }
 
                 if (openReg.value && closeReg.value) {
                     if (new Date(closeReg.value) < new Date(openReg.value)) {
-                        closeReg.setCustomValidity('Registration close date must be after open date');
-                        closeReg.reportValidity();
+                        alert('Registration close date must be after open date.');
                         return false;
-                    } else {
-                        closeReg.setCustomValidity('');
                     }
                 }
 
                 if (openReg.value && startDate.value) {
                     if (new Date(openReg.value) > new Date(startDate.value)) {
-                        openReg.setCustomValidity('Registration open date cannot be after event start date');
-                        openReg.reportValidity();
+                        alert('Registration open date cannot be after event start date.');
                         return false;
-                    } else {
-                        openReg.setCustomValidity('');
                     }
                 }
 
                 if (closeReg.value && endDate.value) {
                     if (new Date(closeReg.value) > new Date(endDate.value)) {
-                        closeReg.setCustomValidity('Registration close date cannot be after event end date');
-                        closeReg.reportValidity();
+                        alert('Registration close date cannot be after event end date.');
                         return false;
-                    } else {
-                        closeReg.setCustomValidity('');
                     }
                 }
 
                 return true;
             }
 
-            startDate.addEventListener('change', validateDates);
-            endDate.addEventListener('change', validateDates);
-            openReg.addEventListener('change', validateDates);
-            closeReg.addEventListener('change', validateDates);
+            if (startDate) startDate.addEventListener('change', validateDates);
+            if (endDate) endDate.addEventListener('change', validateDates);
+            if (openReg) openReg.addEventListener('change', validateDates);
+            if (closeReg) closeReg.addEventListener('change', validateDates);
         })();
     </script>
 </body>

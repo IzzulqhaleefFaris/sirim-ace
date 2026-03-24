@@ -51,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $event_endDate     = trim($_POST['event_endDate'] ?? '');
     $event_openRegistration  = trim($_POST['event_openRegistration'] ?? '');
     $event_closeRegistration = trim($_POST['event_closeRegistration'] ?? '');
+    $organiser_user_id = trim($_POST['organiser'] ?? '');
     $state_id          = trim($_POST['state_id'] ?? '');
     $location_name     = trim($_POST['location_name'] ?? '');
     $location_buildingName = trim($_POST['location_buildingName'] ?? '');
@@ -61,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $location_room     = trim($_POST['location_room'] ?? '');
     $location_level    = trim($_POST['location_level'] ?? '');
 
-    if ($event_name === '' || $event_type_id === '' || $event_startDate === '' || $event_endDate === '' || $state_id === '' || $location_name === '') {
+    if ($event_name === '' || $event_type_id === '' || $event_startDate === '' || $event_endDate === '' || $organiser_user_id === '' || $state_id === '' || $location_name === '') {
         $_SESSION['msg'] = [
             'type' => 'warning',
             'text' => '⚠️ Please fill all required fields.'
@@ -254,6 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         sendEventCreatedEmail(
             $conn,
+            $organiser_user_id,
             $eventOwnerId,
             $event_id,
             $event_name,

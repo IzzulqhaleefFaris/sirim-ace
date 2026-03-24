@@ -53,6 +53,74 @@ $locStmt->close();
 
 $conn->begin_transaction();
 try {
+    // collect participant ids linked to this event before deleting registrations
+    $participantIds = [];
+    $pidStmt = $conn->prepare("SELECT DISTINCT participant_id FROM att_registration WHERE event_id = ?");
+    if (!$pidStmt) {
+        throw new Exception('DB prepare error: ' . $conn->error);
+    }
+    $pidStmt->bind_param("s", $event_id);
+    $pidStmt->execute();
+    $pidResult = $pidStmt->get_result();
+    if ($pidResult) {
+        while ($pidRow = $pidResult->fetch_assoc()) {
+            $pid = trim((string)($pidRow['participant_id'] ?? ''));
+            if ($pid !== '') {
+                $participantIds[] = $pid;
+            }
+        }
+    }
+    $pidStmt->close();
+
+    // delete linked attendance rows for this event registrations
+    $attStmt = $conn->prepare("DELETE a FROM att_attendance a INNER JOIN att_registration r ON a.registration_id = r.registration_id WHERE r.event_id = ?");
+    if (!$attStmt) {
+        throw new Exception('DB prepare error: ' . $conn->error);
+    }
+    $attStmt->bind_param("s", $event_id);
+    if (!$attStmt->execute()) {
+        throw new Exception('Database error: ' . $attStmt->error);
+    }
+    $attStmt->close();
+
+    // delete linked registrations for this event
+    $regStmt = $conn->prepare("DELETE FROM att_registration WHERE event_id = ?");
+    if (!$regStmt) {
+        throw new Exception('DB prepare error: ' . $conn->error);
+    }
+    $regStmt->bind_param("s", $event_id);
+    if (!$regStmt->execute()) {
+        throw new Exception('Database error: ' . $regStmt->error);
+    }
+    $regStmt->close();
+
+    // cleanup orphan participant rows (walk-in/non-user only)
+    if (!empty($participantIds)) {
+        $cleanupStmt = $conn->prepare("DELETE p
+            FROM att_participant p
+            LEFT JOIN user u ON u.userId = p.participant_id
+            WHERE p.participant_id = ?
+              AND u.userId IS NULL
+              AND NOT EXISTS (
+                SELECT 1
+                FROM att_registration r
+                WHERE r.participant_id = p.participant_id
+              )");
+
+        if (!$cleanupStmt) {
+            throw new Exception('DB prepare error: ' . $conn->error);
+        }
+
+        foreach ($participantIds as $pid) {
+            $cleanupStmt->bind_param("s", $pid);
+            if (!$cleanupStmt->execute()) {
+                throw new Exception('Database error: ' . $cleanupStmt->error);
+            }
+        }
+
+        $cleanupStmt->close();
+    }
+
     // delete event
     $stmt = $conn->prepare("DELETE FROM att_event WHERE event_id = ?");
     if (!$stmt) {

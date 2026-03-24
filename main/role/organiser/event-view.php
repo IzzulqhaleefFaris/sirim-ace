@@ -250,7 +250,7 @@ $chk->close();
                             <div class="row g-0">
                                 <div class="col-12">
                                     <div class="event-cover">
-                                        <img src="/attendance/<?= htmlspecialchars($event['event_image']) ?>"
+                                        <img src="/sirimace/<?= htmlspecialchars($event['event_image']) ?>"
                                             class="event-img-detail"
                                             alt="Event Image">
                                     </div>

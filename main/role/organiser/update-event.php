@@ -78,6 +78,19 @@ $conn->begin_transaction();
 try {
     $totalAffectedRows = 0;
 
+    // Get current image path for replacement cleanup (if new image uploaded)
+    $currentImagePath = null;
+    $oldImgStmt = $conn->prepare("SELECT event_image FROM att_event WHERE event_id = ? LIMIT 1");
+    if ($oldImgStmt) {
+        $oldImgStmt->bind_param("s", $eventId);
+        $oldImgStmt->execute();
+        $oldImgRes = $oldImgStmt->get_result();
+        if ($oldImgRes && ($oldRow = $oldImgRes->fetch_assoc())) {
+            $currentImagePath = $oldRow['event_image'] ?? null;
+        }
+        $oldImgStmt->close();
+    }
+
     // Update location if location_id exists
     if ($locationId !== '' && $location_name !== '') {
         $sqlLoc = "UPDATE att_location
@@ -157,6 +170,61 @@ try {
 
     $totalAffectedRows += $stmt->affected_rows;
     $stmt->close();
+
+    // Handle image update (optional)
+    if (isset($_FILES['event_image']) && $_FILES['event_image']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = __DIR__ . '/../../../images/uploads/events/';
+        $dbPath = 'images/uploads/events/';
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $tmpName = $_FILES['event_image']['tmp_name'];
+        $fileSize = $_FILES['event_image']['size'];
+        $ext = strtolower(pathinfo($_FILES['event_image']['name'], PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png'];
+
+        if (!in_array($ext, $allowed, true)) {
+            throw new Exception('Invalid image format. Only JPG and PNG are allowed.');
+        }
+
+        if ($fileSize > 2 * 1024 * 1024) {
+            throw new Exception('Image size must not exceed 2MB.');
+        }
+
+        if (!getimagesize($tmpName)) {
+            throw new Exception('Uploaded file is not a valid image.');
+        }
+
+        $fileName = $eventId . '.' . $ext;
+        $fullPath = $uploadDir . $fileName;
+        if (!move_uploaded_file($tmpName, $fullPath)) {
+            throw new Exception('Failed to upload event image.');
+        }
+
+        $imagePathForDB = $dbPath . $fileName;
+        $imgStmt = $conn->prepare("UPDATE att_event SET event_image = ? WHERE event_id = ?");
+        if (!$imgStmt) {
+            throw new Exception('Error preparing image update query: ' . $conn->error);
+        }
+
+        $imgStmt->bind_param("ss", $imagePathForDB, $eventId);
+        if (!$imgStmt->execute()) {
+            throw new Exception('Failed to update event image: ' . $imgStmt->error);
+        }
+        $imgStmt->close();
+
+        // Remove old event image file if it exists and is different
+        if (!empty($currentImagePath) && $currentImagePath !== $imagePathForDB && strpos($currentImagePath, 'images/uploads/events/') === 0) {
+            $oldPhysicalPath = __DIR__ . '/../../../' . $currentImagePath;
+            if (is_file($oldPhysicalPath)) {
+                @unlink($oldPhysicalPath);
+            }
+        }
+
+        $totalAffectedRows++;
+    }
 
     // Commit transaction
     $conn->commit();

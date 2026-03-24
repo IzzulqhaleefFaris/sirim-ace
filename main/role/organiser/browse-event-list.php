@@ -252,11 +252,26 @@ if ($searchTerm !== '') {
                                         <div class="card h-100 event-card">
                                             <!-- Event image-->
                                             <?php
-                                            $eventImage = "/sirimace/" . $event['event_image'];
+                                            $rawImagePath = ltrim((string)($event['event_image'] ?? ''), '/');
+                                            $eventImage = '/sirimace/' . $rawImagePath;
+
+                                            // Cache-buster: refresh image when file content changes on disk
+                                            $imageVersion = (string)($event['event_id'] ?? '0');
+                                            if ($rawImagePath !== '') {
+                                                $physicalImagePath = realpath(__DIR__ . '/../../../' . $rawImagePath);
+                                                if ($physicalImagePath && is_file($physicalImagePath)) {
+                                                    $mtime = @filemtime($physicalImagePath);
+                                                    if ($mtime !== false) {
+                                                        $imageVersion = (string)$mtime;
+                                                    }
+                                                }
+                                            }
+
+                                            $eventImageWithVersion = $eventImage . '?v=' . urlencode($imageVersion);
                                             $status = $event['event_status'];
                                             $badgeClass = $statusBadgeClasses[$status] ?? 'badge-light-dark text-dark';
                                             ?>
-                                            <img class="card-img-top event-img" src="<?= htmlspecialchars($eventImage) ?>"
+                                            <img class="card-img-top event-img" src="<?= htmlspecialchars($eventImageWithVersion) ?>"
                                                 alt="Event Image" />
 
                                             <!-- Event details-->
