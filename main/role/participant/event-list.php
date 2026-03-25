@@ -252,7 +252,8 @@ if ($searchTerm !== '') {
                                         <div class="card h-100 event-card">
                                             <!-- Event image-->
                                             <?php
-                                            $eventImage = "/attendance/" . $event['event_image'];
+                                            $rawImagePath = ltrim((string)($event['event_image'] ?? ''), '/');
+                                            $eventImage = '/sirimace/' . $rawImagePath;
                                             $status = $event['event_status'];
                                             $badgeClass = $statusBadgeClasses[$status] ?? 'badge-light-dark text-dark';
                                             ?>
