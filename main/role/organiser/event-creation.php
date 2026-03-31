@@ -49,6 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $event_type_id     = trim($_POST['event_type_id'] ?? '');
     $event_startDate   = trim($_POST['event_startDate'] ?? '');
     $event_endDate     = trim($_POST['event_endDate'] ?? '');
+    $event_startTime   = trim($_POST['event_startTime'] ?? '09:00');
+    $event_endTime     = trim($_POST['event_endTime'] ?? '17:00');
     $event_openRegistration  = trim($_POST['event_openRegistration'] ?? '');
     $event_closeRegistration = trim($_POST['event_closeRegistration'] ?? '');
     $organiser_user_id = trim($_POST['organiser'] ?? '');
@@ -62,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $location_room     = trim($_POST['location_room'] ?? '');
     $location_level    = trim($_POST['location_level'] ?? '');
 
-    if ($event_name === '' || $event_type_id === '' || $event_startDate === '' || $event_endDate === '' || $organiser_user_id === '' || $state_id === '' || $location_name === '') {
+    if ($event_name === '' || $event_type_id === '' || $event_startDate === '' || $event_endDate === '' || $event_startTime === '' || $event_endTime === '' || $organiser_user_id === '' || $state_id === '' || $location_name === '') {
         $_SESSION['msg'] = [
             'type' => 'warning',
             'text' => '⚠️ Please fill all required fields.'
@@ -168,8 +170,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmtEv = $conn->prepare("
                     INSERT INTO att_event (event_id, event_name, event_description, event_type_id, location_id, state_id, 
-                    event_startDate, event_endDate, event_openRegistration, event_closeRegistration, event_status, event_owner_id)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        event_startDate, event_endDate, event_startTime, event_endTime, event_openRegistration, event_closeRegistration, event_status, event_owner_id)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         if (!$stmtEv) {
             die("❌ SQL ERROR (att_event insert): " . $conn->error);
@@ -178,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $eventOwnerId = $_SESSION['userId'];
 
         $stmtEv->bind_param(
-            "ssssssssssss",
+              "ssssssssssssss",
             $event_id,
             $event_name,
             $event_description,
@@ -187,6 +189,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $state_id,
             $event_startDate,
             $event_endDate,
+              $event_startTime,
+              $event_endTime,
             $event_openRegistration,
             $event_closeRegistration,
             $status,

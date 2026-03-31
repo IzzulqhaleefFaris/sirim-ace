@@ -24,6 +24,8 @@ $eventId = trim($_POST['event_id'] ?? '');
 $name = trim($_POST['event_name'] ?? '');
 $start = trim($_POST['event_startDate'] ?? '');
 $end = trim($_POST['event_endDate'] ?? '');
+$startTime = trim($_POST['event_startTime'] ?? '09:00');
+$endTime = trim($_POST['event_endTime'] ?? '17:00');
 $openReg = trim($_POST['event_openRegistration'] ?? '');
 $closeReg = trim($_POST['event_closeRegistration'] ?? '');
 $locationId = trim($_POST['location_id'] ?? '');
@@ -37,7 +39,7 @@ $state_id = trim($_POST['state_id'] ?? '');
 $event_type_id = trim($_POST['event_type_id'] ?? '');
 
 // Validation
-if ($eventId === '' || $name === '' || $start === '' || $end === '') {
+if ($eventId === '' || $name === '' || $start === '' || $end === '' || $startTime === '' || $endTime === '') {
     $_SESSION['msg'] = ['type' => 'warning', 'text' => 'Please complete all required fields.'];
     header("Location: edit-event.php?id=" . urlencode($eventId));
     exit;
@@ -135,6 +137,8 @@ try {
                 event_type_id = ?, 
                 event_startDate = ?, 
                 event_endDate = ?, 
+                event_startTime = ?,
+                event_endTime = ?,
                 event_openRegistration = ?, 
                 event_closeRegistration = ?, 
                 location_id = ?
@@ -151,13 +155,15 @@ try {
     $closeReg = ($closeReg === '') ? null : $closeReg;
     $locationId = ($locationId === '') ? null : $locationId;
 
-    // Bind parameters - 8 parameters total
+    // Bind parameters - 10 parameters total
     $stmt->bind_param(
-        "ssssssss",
+        "ssssssssss",
         $name,
         $event_type_id,
         $start,
         $end,
+        $startTime,
+        $endTime,
         $openReg,
         $closeReg,
         $locationId,
