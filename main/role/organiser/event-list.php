@@ -86,14 +86,40 @@ if (isset($statsStmt)) {
     <!--end::Global Stylesheets Bundle-->
 
     <style>
-        .table thead th {
-            /* text-align: center !important;
-            vertical-align: middle !important; */
-            white-space: nowrap;
+        .event-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #e9ecef;
+            border-radius: 0.75rem;
+            overflow: hidden;
         }
 
-        .table tbody td {
+        .event-table thead th {
+            white-space: nowrap;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: #6c757d;
+            font-weight: 700;
+            padding-top: 0.85rem;
+            padding-bottom: 0.85rem;
+        }
+
+        .event-table tbody td {
             vertical-align: middle !important;
+            padding-top: 0.85rem;
+            padding-bottom: 0.85rem;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .event-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .event-table tbody tr:hover {
+            background: #fcfdff;
         }
 
         .stat-card {
@@ -122,6 +148,20 @@ if (isset($statsStmt)) {
 
         .action-buttons .btn {
             margin: 2px;
+        }
+
+        .col-no,
+        .col-status,
+        .col-actions {
+            text-align: center;
+        }
+
+        .col-no {
+            width: 56px;
+        }
+
+        .col-actions {
+            width: 210px;
         }
     </style>
 </head>
@@ -253,17 +293,19 @@ if (isset($statsStmt)) {
                                         <?php endif; ?>
 
                                         <div class="table-responsive">
-                                            <table id="eventTable" class="table table-hover ">
+                                            <table id="eventTable" class="table table-hover event-table">
                                                 <thead class="table-light">
                                                     <tr>
-                                                        <th style="width: 50px;">No</th>
-                                                        <th><i class="bi bi-calendar-event me-1"></i>Event Name</th>
-                                                        <th><i class="bi bi-geo-alt me-1"></i>Location</th>
-                                                        <th><i class="bi bi-tag me-1"></i>Type</th>
-                                                        <th><i class="bi bi-calendar-check me-1"></i>Start</th>
-                                                        <th><i class="bi bi-calendar-x me-1"></i>End</th>
-                                                        <th style="width: 100px;"><i class="bi bi-info-circle me-1"></i>Status</th>
-                                                        <th style="width: 200px;" class="text-center"><i class="bi bi-gear me-1"></i>Actions</th>
+                                                        <th class="col-no">No</th>
+                                                        <th>Event Name</th>
+                                                        <th>Type</th>
+                                                        <th>Event Date</th>
+                                                        <th>Location</th>
+                                                        <th>State</th>
+                                                        <th>Time</th>
+                                                        <th>Registration Date</th>
+                                                        <th class="col-status">Status</th>
+                                                        <th class="col-actions"><i class="bi bi-gear me-1"></i>Actions</th>
                                                     </tr>
                                                 </thead>
 
@@ -272,14 +314,20 @@ if (isset($statsStmt)) {
                                                     $sql = "SELECT
                                                                 e.event_id,
                                                                 e.event_name,
+                                                                e.event_openRegistration,
+                                                                e.event_closeRegistration,
                                                                 e.event_startDate,
                                                                 e.event_endDate,
+                                                                e.event_startTime,
+                                                                e.event_endTime,
                                                                 e.event_status,
                                                                 t.event_type_name,
-                                                                l.location_name
+                                                                l.location_name,
+                                                                s.state_name
                                                                 FROM att_event e
                                                                 LEFT JOIN att_event_type t ON e.event_type_id = t.event_type_id
-                                                                LEFT JOIN att_location l ON e.location_id = l.location_id";
+                                                                LEFT JOIN att_location l ON e.location_id = l.location_id
+                                                                LEFT JOIN att_state s ON l.state_id = s.state_id";
 
                                                     if (!is_admin() && $hasOwnerColumn) {
                                                         $sql .= " WHERE e.event_owner_id = ?";
@@ -298,9 +346,9 @@ if (isset($statsStmt)) {
 
                                                     //Error handling
                                                     if (!$res) {
-                                                        echo "<tr><td colspan= '8' class='text-danger'> Database Error: " . htmlspecialchars($conn->error) . "</td></tr>";
+                                                        echo "<tr><td colspan='10' class='text-danger'> Database Error: " . htmlspecialchars($conn->error) . "</td></tr>";
                                                     } elseif ($res->num_rows == 0) {
-                                                        echo "<tr><td colspan='8' class='text-center text-muted py-3'>No events found.</td></tr>";
+                                                        echo "<tr><td colspan='10' class='text-center text-muted py-3'>No events found.</td></tr>";
                                                     } else {
                                                         function getStatusBadge($status)
                                                         {
@@ -315,17 +363,66 @@ if (isset($statsStmt)) {
                                                         function formatDate($dateStr)
                                                         {
                                                             if (empty($dateStr)) return '-';
-                                                            $date = DateTime::createFromFormat('Y-m-d', $dateStr);
-                                                            return $date ? $date->format('d M Y') : $dateStr;
+                                                            $ts = strtotime($dateStr);
+                                                            return $ts ? date('d/m/Y', $ts) : $dateStr;
+                                                        }
+
+                                                        function formatDateRange($start, $end)
+                                                        {
+                                                            $startFmt = formatDate($start);
+                                                            $endFmt = formatDate($end);
+
+                                                            if ($startFmt === '-' && $endFmt === '-') {
+                                                                return '-';
+                                                            }
+
+                                                            if ($startFmt === $endFmt || $endFmt === '-') {
+                                                                return $startFmt;
+                                                            }
+
+                                                            if ($startFmt === '-') {
+                                                                return $endFmt;
+                                                            }
+
+                                                            return $startFmt . ' - ' . $endFmt;
+                                                        }
+
+                                                        function formatTimeCompact($timeStr)
+                                                        {
+                                                            if (empty($timeStr)) return '';
+                                                            $ts = strtotime($timeStr);
+                                                            return $ts ? date('Hi', $ts) : '';
+                                                        }
+
+                                                        function formatTimeRange($start, $end)
+                                                        {
+                                                            $startFmt = formatTimeCompact($start);
+                                                            $endFmt = formatTimeCompact($end);
+
+                                                            if ($startFmt !== '' && $endFmt !== '') {
+                                                                return $startFmt . '-' . $endFmt;
+                                                            }
+
+                                                            if ($startFmt !== '') {
+                                                                return $startFmt;
+                                                            }
+
+                                                            if ($endFmt !== '') {
+                                                                return $endFmt;
+                                                            }
+
+                                                            return '-';
                                                         }
 
                                                         $i = 1;
                                                         while ($row = $res->fetch_assoc()) {
                                                             $eventName = htmlspecialchars($row['event_name']);
-                                                            $locationName = htmlspecialchars($row['location_name'] ?? '-');
                                                             $eventType = htmlspecialchars($row['event_type_name'] ?? '-');
-                                                            $startDate = formatDate($row['event_startDate']);
-                                                            $endDate = formatDate($row['event_endDate']);
+                                                            $eventDate = formatDateRange($row['event_startDate'] ?? '', $row['event_endDate'] ?? '');
+                                                            $locationName = htmlspecialchars($row['location_name'] ?? '-');
+                                                            $stateName = htmlspecialchars($row['state_name'] ?? '-');
+                                                            $timeRange = formatTimeRange($row['event_startTime'] ?? '', $row['event_endTime'] ?? '');
+                                                            $registrationDate = formatDateRange($row['event_openRegistration'] ?? '', $row['event_closeRegistration'] ?? '');
                                                             $eventId = htmlspecialchars($row['event_id']);
 
                                                             echo "
@@ -334,10 +431,12 @@ if (isset($statsStmt)) {
                                                                     <td>
                                                                         <div class='event-name'>{$eventName}</div>
                                                                     </td>
-                                                                    <td>{$locationName}</td>
                                                                     <td>{$eventType}</td>
-                                                                    <td class='text-nowrap'>{$startDate}</td>
-                                                                    <td class='text-nowrap'>{$endDate}</td>
+                                                                    <td class='text-nowrap'>{$eventDate}</td>
+                                                                    <td>{$locationName}</td>
+                                                                    <td>{$stateName}</td>
+                                                                    <td class='text-nowrap'>{$timeRange}</td>
+                                                                    <td class='text-nowrap'>{$registrationDate}</td>
                                                                     <td class='text-center'>" . getStatusBadge($row['event_status']) . "</td>
                                                                     <td class='text-center action-buttons'>
                                                                         <a href='event-registration.php?id={$eventId}'

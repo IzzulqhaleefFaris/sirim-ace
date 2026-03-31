@@ -215,7 +215,7 @@ if (!function_exists('formatSimpleTime')) {
                             <div class="py-4 py-lg-8">
                                 <div class="card shadow-sm mb-6 home-section-card">
                                     <div class="card-header border-0 pt-5 pb-0">
-                                        <h3 class="card-title fw-bold">Latest Events</h3>
+                                        <h3 class="card-title fw-bold">Upcoming Events</h3>
                                     </div>
                                     <div class="card-body pt-4">
                                         <?php if (empty($latestEvents)): ?>
@@ -324,9 +324,8 @@ if (!function_exists('formatSimpleTime')) {
                                     <?php endif; ?>
                                 </div>
 
-                                <div class="placeholder-section p-7 text-center">
-                                    <h4 class="fw-bold mb-2">Reserved Section</h4>
-                                    <div class="text-muted">You can add your next homepage content here later.</div>
+                                <div class="section p-7 text-center">
+                                    <!-- Added Section -->
                                 </div>
                             </div>
                         </div>

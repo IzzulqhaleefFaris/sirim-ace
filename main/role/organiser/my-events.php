@@ -122,9 +122,7 @@ function buildQrUrl(string $registrationId): string
                                 <h2 class="fw-bold mb-0">My Events</h2>
                                 <p class="text-muted mb-0">Your QR is available here. Show it to staff for scanning.</p>
                             </div>
-                            <a href="browse-event-list.php" class="btn btn-light border bg-white btn-back-events">
-                                <i class="bi bi-arrow-left me-1"></i> Back to Event List
-                            </a>
+                            <button class="btn btn-light border bg-white btn-back-events" onclick="history.go(-1);"><i class="bi bi-arrow-left me-1"></i>Back </button>
                         </div>
 
                         <?php if ($registrations && $registrations->num_rows > 0): ?>
