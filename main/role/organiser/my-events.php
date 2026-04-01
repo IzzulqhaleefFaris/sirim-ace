@@ -175,7 +175,6 @@ function buildQrUrl(string $registrationId): string
                     <!--end::Post-->
                 </div>
                 <!--end::Content-->
-
                 <!--begin::Footer-->
                 <?php include "../../../include/footer.php"; ?>
                 <!--end::Footer-->

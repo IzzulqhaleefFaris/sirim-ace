@@ -369,8 +369,8 @@ endif;
 															<!-- Image Preview -->
 															<div class="mb-2 text-center">
 																<img id="eventImagePreview"
-																	src="<?= !empty($event['event_image']) ? '/sirimace/' . htmlspecialchars($event['event_image']) : '/sirimace/images/custom/no_image.jpg' ?>"
-																	data-default-src="<?= !empty($event['event_image']) ? '/sirimace/' . htmlspecialchars($event['event_image']) : '/sirimace/images/custom/no_image.jpg' ?>"
+																	src="/sirimace/images/custom/no_image.jpg"
+																	data-default-src="/sirimace/images/custom/no_image.jpg"
 																	alt="Event Image Preview"
 																	class="event-img-detail">
 															</div>
@@ -610,20 +610,16 @@ endif;
 																		<td id="confirmPIC"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">Start Date</th>
-																		<td id="confirmStartDate"></td>
+																		<th class="text-muted">Event Date</th>
+																		<td id="confirmEventDate"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">End Date</th>
-																		<td id="confirmEndDate"></td>
+																		<th class="text-muted">Registration Date</th>
+																		<td id="confirmRegistrationDate"></td>
 																	</tr>
 																	<tr>
-																		<th class="text-muted">Registration Open</th>
-																		<td id="confirmOpenRegistration"></td>
-																	</tr>
-																	<tr>
-																		<th class="text-muted">Registration Close</th>
-																		<td id="confirmCloseRegistration"></td>
+																		<th class="text-muted">Time</th>
+																		<td id="confirmEventTime"></td>
 																	</tr>
 																	<tr>
 																		<th class="text-muted">State</th>
@@ -781,12 +777,46 @@ endif;
 					return `${parts[2]}/${parts[1]}/${parts[0]}`;
 				}
 
+				function formatTimeTo12H(timeStr) {
+					if (!timeStr || typeof timeStr !== 'string') return '';
+					const parts = timeStr.split(':');
+					if (parts.length < 2) return timeStr;
+
+					const hour24 = parseInt(parts[0], 10);
+					const minute = parts[1];
+					if (Number.isNaN(hour24)) return timeStr;
+
+					const suffix = hour24 >= 12 ? 'PM' : 'AM';
+					const hour12 = (hour24 % 12) || 12;
+					return `${String(hour12).padStart(2, '0')}:${minute} ${suffix}`;
+				}
+
+				function formatDateRange(start, end) {
+					const startFormatted = formatDateToDMY(start);
+					const endFormatted = formatDateToDMY(end);
+					if (!startFormatted && !endFormatted) return '';
+					if (!startFormatted) return endFormatted;
+					if (!endFormatted) return startFormatted;
+					return start === end ? startFormatted : `${startFormatted} - ${endFormatted}`;
+				}
+
+				function formatTimeRange(start, end) {
+					const startFormatted = formatTimeTo12H(start);
+					const endFormatted = formatTimeTo12H(end);
+					if (!startFormatted && !endFormatted) return '';
+					if (!startFormatted) return endFormatted;
+					if (!endFormatted) return startFormatted;
+					return `${startFormatted} - ${endFormatted}`;
+				}
+
 				// Collect input values
 				const eventName = document.querySelector('[name="event_name"]').value;
 				const eventType = document.querySelector('#jenisEvent').selectedOptions[0]?.text || '';
 				const pic = document.querySelector('#organiserInput').selectedOptions[0]?.text || '';
 				const startDate = document.querySelector('[name="event_startDate"]').value;
 				const endDate = document.querySelector('[name="event_endDate"]').value;
+				const startTime = document.querySelector('[name="event_startTime"]').value;
+				const endTime = document.querySelector('[name="event_endTime"]').value;
 				const openRegistration = document.querySelector('[name="event_openRegistration"]').value;
 				const closeRegistration = document.querySelector('[name="event_closeRegistration"]').value;
 				const state = document.querySelector('#negeriSelect').selectedOptions[0]?.text || '';
@@ -804,6 +834,8 @@ endif;
 					eventName,
 					startDate,
 					endDate,
+					startTime,
+					endTime,
 					openRegistration,
 					closeRegistration,
 					state,
@@ -853,10 +885,9 @@ endif;
 				document.getElementById('confirmEventName').textContent = eventName;
 				document.getElementById('confirmEventType').textContent = eventType;
 				document.getElementById('confirmPIC').textContent = pic;
-				document.getElementById('confirmStartDate').textContent = formatDateToDMY(startDate);
-				document.getElementById('confirmEndDate').textContent = formatDateToDMY(endDate);
-				document.getElementById('confirmOpenRegistration').textContent = formatDateToDMY(openRegistration);
-				document.getElementById('confirmCloseRegistration').textContent = formatDateToDMY(closeRegistration);
+				document.getElementById('confirmEventDate').textContent = formatDateRange(startDate, endDate);
+				document.getElementById('confirmRegistrationDate').textContent = formatDateRange(openRegistration, closeRegistration);
+				document.getElementById('confirmEventTime').textContent = formatTimeRange(startTime, endTime);
 				document.getElementById('confirmState').textContent = state;
 				document.getElementById('confirmLocationName').textContent = locationName;
 				document.getElementById('confirmBuilding').textContent = building;

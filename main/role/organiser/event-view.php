@@ -253,7 +253,20 @@ $chk->close();
 
                             <div class="col-lg-5">
                                 <div class="simple-card p-3 p-lg-4 mb-3">
-                                    <img src="/sirimace/<?= htmlspecialchars($event['event_image']) ?>" class="event-image" alt="Event Image">
+                                    <?php
+                                    $rawImg = ltrim((string)($event['event_image'] ?? ''), '/');
+                                    $eventImg = '/sirimace/images/custom/no_image.jpg';
+                                    $imgVer = time();
+                                    if ($rawImg !== '') {
+                                        $physImg = __DIR__ . '/../../../' . $rawImg;
+                                        if (is_file($physImg)) {
+                                            $eventImg = '/sirimace/' . $rawImg;
+                                            $imgVer = (string)filemtime($physImg);
+                                        }
+                                    }
+                                    $eventImgUrl = $eventImg . '?v=' . urlencode((string)$imgVer);
+                                    ?>
+                                    <img src="<?= htmlspecialchars($eventImgUrl) ?>" class="event-image" alt="Event Image" onerror="this.onerror=null;this.src='/sirimace/images/custom/no_image.jpg';">
                                 </div>
 
                                 <div class="simple-card p-3 p-lg-4 mb-3">
@@ -313,7 +326,7 @@ $chk->close();
                             </div>
                         </div>
                     </div>
-                    <!--end::Post-->
+                    <!--end::Post
                 </div>
                 <!--end::Content-->
 

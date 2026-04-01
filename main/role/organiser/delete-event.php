@@ -121,6 +121,24 @@ try {
         $cleanupStmt->close();
     }
 
+    // delete event image file from disk
+    $imgStmt = $conn->prepare("SELECT event_image FROM att_event WHERE event_id = ? LIMIT 1");
+    if ($imgStmt) {
+        $imgStmt->bind_param("s", $event_id);
+        $imgStmt->execute();
+        $imgResult = $imgStmt->get_result();
+        if ($imgResult && $imgRow = $imgResult->fetch_assoc()) {
+            $imgPath = trim((string)($imgRow['event_image'] ?? ''));
+            if ($imgPath !== '' && $imgPath !== 'images/custom/no_image.jpg') {
+                $physicalImg = realpath(__DIR__ . '/../../../' . ltrim($imgPath, '/'));
+                if ($physicalImg && is_file($physicalImg)) {
+                    @unlink($physicalImg);
+                }
+            }
+        }
+        $imgStmt->close();
+    }
+
     // delete event
     $stmt = $conn->prepare("DELETE FROM att_event WHERE event_id = ?");
     if (!$stmt) {

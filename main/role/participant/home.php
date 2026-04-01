@@ -165,6 +165,33 @@ if (!function_exists('formatSimpleTime')) {
             border-radius: 12px;
             padding: 0.75rem 1rem;
             display: inline-block;
+            max-width: min(640px, 92%);
+        }
+
+        #latestEventsCarousel .carousel-caption {
+            left: 1.25rem;
+            right: 1.25rem;
+            bottom: 3.4rem;
+        }
+
+        #latestEventsCarousel .carousel-indicators {
+            margin-bottom: 1rem;
+        }
+
+        #latestEventsCarousel .carousel-indicators [data-bs-target] {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 768px) {
+            #latestEventsCarousel .carousel-caption {
+                bottom: 2.9rem;
+            }
+
+            .carousel-caption-box {
+                padding: 0.6rem 0.8rem;
+            }
         }
 
         .search-wrapper {
@@ -222,15 +249,30 @@ if (!function_exists('formatSimpleTime')) {
                                             <div class="text-muted">No event available for the carousel yet.</div>
                                         <?php else: ?>
                                             <div id="latestEventsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4500">
+                                                <div class="carousel-indicators">
+                                                    <?php foreach ($latestEvents as $index => $event): ?>
+                                                        <button type="button" data-bs-target="#latestEventsCarousel" data-bs-slide-to="<?php echo (int)$index; ?>" class="<?php echo $index === 0 ? 'active' : ''; ?>" aria-current="<?php echo $index === 0 ? 'true' : 'false'; ?>" aria-label="Slide <?php echo (int)($index + 1); ?>"></button>
+                                                    <?php endforeach; ?>
+                                                </div>
+
                                                 <div class="carousel-inner">
                                                     <?php foreach ($latestEvents as $index => $event): ?>
                                                         <?php
                                                         $rawImagePath = ltrim((string)($event['event_image'] ?? ''), '/');
-                                                        $eventImage = $rawImagePath !== '' ? '/sirimace/' . $rawImagePath : '/sirimace/images/custom/no_image.jpg';
+                                                        $eventImage = '/sirimace/images/custom/no_image.jpg';
+                                                        $imgVersion = time();
+                                                        if ($rawImagePath !== '') {
+                                                            $physPath = __DIR__ . '/../../../' . $rawImagePath;
+                                                            if (is_file($physPath)) {
+                                                                $eventImage = '/sirimace/' . $rawImagePath;
+                                                                $imgVersion = (string)filemtime($physPath);
+                                                            }
+                                                        }
+                                                        $eventImageUrl = $eventImage . '?v=' . urlencode((string)$imgVersion);
                                                         ?>
                                                         <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
                                                             <a href="event-view.php?id=<?php echo urlencode((string)$event['event_id']); ?>" class="d-block text-white text-decoration-none">
-                                                                <img src="<?php echo htmlspecialchars($eventImage); ?>" class="carousel-image" alt="Event image">
+                                                                <img src="<?php echo htmlspecialchars($eventImageUrl); ?>" class="carousel-image" alt="Event image" onerror="this.onerror=null;this.src='/sirimace/images/custom/no_image.jpg';">
                                                                 <div class="carousel-caption text-start">
                                                                     <div class="carousel-caption-box">
                                                                         <h5 class="mb-1 text-white"><?php echo htmlspecialchars((string)($event['event_name'] ?? '-')); ?></h5>
@@ -300,11 +342,20 @@ if (!function_exists('formatSimpleTime')) {
                                             <?php foreach ($events as $event): ?>
                                                 <?php
                                                 $rawImagePath = ltrim((string)($event['event_image'] ?? ''), '/');
-                                                $eventImage = $rawImagePath !== '' ? '/sirimace/' . $rawImagePath : '/sirimace/images/custom/no_image.jpg';
+                                                $eventImage = '/sirimace/images/custom/no_image.jpg';
+                                                $imgVersion = time();
+                                                if ($rawImagePath !== '') {
+                                                    $physPath = __DIR__ . '/../../../' . $rawImagePath;
+                                                    if (is_file($physPath)) {
+                                                        $eventImage = '/sirimace/' . $rawImagePath;
+                                                        $imgVersion = (string)filemtime($physPath);
+                                                    }
+                                                }
+                                                $eventImageUrl = $eventImage . '?v=' . urlencode((string)$imgVersion);
                                                 ?>
                                                 <div class="col-md-6 col-xl-4">
                                                     <div class="card shadow-sm event-grid-card">
-                                                        <img src="<?php echo htmlspecialchars($eventImage); ?>" class="event-grid-image" alt="Event image">
+                                                        <img src="<?php echo htmlspecialchars($eventImageUrl); ?>" class="event-grid-image" alt="Event image" onerror="this.onerror=null;this.src='/sirimace/images/custom/no_image.jpg';">
                                                         <div class="card-body d-flex flex-column">
                                                             <h5 class="fw-bold mb-3"><?php echo htmlspecialchars((string)($event['event_name'] ?? '-')); ?></h5>
                                                             <div class="event-meta text-muted small mb-3">

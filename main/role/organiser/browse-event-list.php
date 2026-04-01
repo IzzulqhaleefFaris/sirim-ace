@@ -272,7 +272,7 @@ if ($searchTerm !== '') {
                                             $badgeClass = $statusBadgeClasses[$status] ?? 'badge-light-dark text-dark';
                                             ?>
                                             <img class="card-img-top event-img" src="<?= htmlspecialchars($eventImageWithVersion) ?>"
-                                                alt="Event Image" />
+                                                alt="Event Image" onerror="this.onerror=null;this.src='/sirimace/images/custom/no_image.jpg';" />
 
                                             <!-- Event details-->
                                             <div class="card-body p-4">

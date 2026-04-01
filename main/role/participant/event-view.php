@@ -112,100 +112,70 @@ $chk->close();
 
     <style>
         .event-page {
-            max-width: 900px;
+            max-width: 1100px;
         }
 
-        .event-hero {
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        .simple-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
         }
 
-        .event-hero-header {
-            background: linear-gradient(135deg, #4f46e5, #6d28d9);
-            color: #fff;
-            padding: 18px 24px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .event-title {
-            font-size: 1.5rem;
+        .simple-title {
+            font-size: 1.35rem;
             font-weight: 700;
             margin: 0;
         }
 
-        .event-date {
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 0.95rem;
-        }
-
-        .event-description {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
-            margin-top: 8px;
-        }
-
-        .event-cover {
-            max-width: 100%;
-            margin: 0 auto;
-            height: auto;
-            background: #f5f7fb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .event-img-detail {
-            width: 65%;
-            aspect-ratio: 16 / 10;
-            object-fit: cover;
-            border-radius: 16px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .info-section {
-            border: 1px solid #eef1f6;
-            border-radius: 14px;
-            padding: 16px;
-            background: #ffffff;
-            margin-bottom: 14px;
-        }
-
-        .info-section-title {
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 14px;
-        }
-
-        .info-item {
-            background: #f9fafb;
-            border: 1px solid #eef1f6;
-            border-radius: 12px;
-            padding: 10px 12px;
-        }
-
-        .info-label {
-            font-size: 0.75rem;
-            font-weight: 700;
+        .simple-subtitle {
             color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            margin-bottom: 4px;
+            font-size: 0.9rem;
+            margin-top: 4px;
         }
 
-        .info-value {
+        .simple-section-title {
+            font-size: 0.95rem;
             font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .simple-grid {
+            display: grid;
+            grid-template-columns: 170px 1fr;
+            gap: 10px 14px;
+        }
+
+        .simple-label {
+            color: #6b7280;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .simple-value {
             color: #111827;
+            font-size: 0.92rem;
+        }
+
+        .event-image {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            object-fit: cover;
+            aspect-ratio: 16 / 10;
+            background: #f8fafc;
+        }
+
+        .description-box {
+            white-space: pre-line;
+            line-height: 1.55;
+            color: #374151;
+            font-size: 0.92rem;
+        }
+
+        @media (max-width: 768px) {
+            .simple-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -231,114 +201,103 @@ $chk->close();
 
                     <!--begin::Post-->
                     <div class="container event-page my-5">
-                        <div class="card event-hero border-0">
-                            <div class="event-hero-header">
-                                <div>
-                                    <h2 class="event-title mb-1"><?= htmlspecialchars($event['event_name']) ?></h2>
-                                    <div class="event-date">
-                                        <?= $startDate ?> – <?= $endDate ?>
-                                    </div>
-                                    <div class="event-description">
-                                        <?= nl2br(htmlspecialchars($event['event_description'] ?? '-')) ?>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h2 class="simple-title"><?= htmlspecialchars($event['event_name']) ?></h2>
+                            </div>
+                            <button class="btn btn-light border bg-white btn-back-events" onclick="history.go(-1);"><i class="bi bi-arrow-left me-1"></i>Back </button>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-lg-7">
+                                <div class="simple-card p-3 p-lg-4 mb-3">
+                                    <div class="simple-section-title">Event Information</div>
+                                    <div class="simple-grid">
+                                        <div class="simple-label">Event Type</div>
+                                        <div class="simple-value"><?= htmlspecialchars($event['event_type_name'] ?? '-') ?></div>
+
+                                        <div class="simple-label">Status</div>
+                                        <div class="simple-value"><?= htmlspecialchars($event['event_status'] ?? '-') ?></div>
+
+                                        <div class="simple-label">Event Date</div>
+                                        <div class="simple-value"><?= $startDate ?><?= $startDate !== $endDate ? ' - ' . $endDate : '' ?></div>
+
+                                        <div class="simple-label">Registration Date</div>
+                                        <div class="simple-value"><?= $openDate ?><?= $openDate !== $closeDate ? ' - ' . $closeDate : '' ?></div>
                                     </div>
                                 </div>
-                                <a href="event-list.php" class="btn btn-light btn-sm">
-                                    <i class="bi bi-arrow-left me-1"></i> Back
-                                </a>
+
+                                <div class="simple-card p-3 p-lg-4 mb-3">
+                                    <div class="simple-section-title">Location Information</div>
+                                    <div class="simple-grid">
+                                        <div class="simple-label">Location</div>
+                                        <div class="simple-value"><?= htmlspecialchars($event['location_name'] ?? '-') ?></div>
+
+                                        <div class="simple-label">State</div>
+                                        <div class="simple-value"><?= htmlspecialchars($event['state_name'] ?? '-') ?></div>
+
+                                        <div class="simple-label">Building</div>
+                                        <div class="simple-value"><?= htmlspecialchars($event['location_buildingName'] ?? '-') ?></div>
+
+                                        <div class="simple-label">Level</div>
+                                        <div class="simple-value"><?= htmlspecialchars($event['location_level'] ?? '-') ?></div>
+
+                                        <div class="simple-label">Room</div>
+                                        <div class="simple-value"><?= htmlspecialchars($event['location_room'] ?? '-') ?></div>
+
+                                        <div class="simple-label">Address</div>
+                                        <div class="simple-value"><?= htmlspecialchars($fullAddress) ?></div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="row g-0">
-                                <div class="col-12">
-                                    <div class="event-cover">
-                                        <img src="/sirimace/<?= htmlspecialchars($event['event_image']) ?>"
-                                            class="event-img-detail"
-                                            alt="Event Image">
-                                    </div>
+                            <div class="col-lg-5">
+                                <div class="simple-card p-3 p-lg-4 mb-3">
+                                    <?php
+                                    $rawImg = ltrim((string)($event['event_image'] ?? ''), '/');
+                                    $eventImg = '/sirimace/images/custom/no_image.jpg';
+                                    $imgVer = time();
+                                    if ($rawImg !== '') {
+                                        $physImg = __DIR__ . '/../../../' . $rawImg;
+                                        if (is_file($physImg)) {
+                                            $eventImg = '/sirimace/' . $rawImg;
+                                            $imgVer = (string)filemtime($physImg);
+                                        }
+                                    }
+                                    $eventImgUrl = $eventImg . '?v=' . urlencode((string)$imgVer);
+                                    ?>
+                                    <img src="<?= htmlspecialchars($eventImgUrl) ?>" class="event-image" alt="Event Image" onerror="this.onerror=null;this.src='/sirimace/images/custom/no_image.jpg';">
                                 </div>
-                                <div class="col-12">
-                                    <div class="p-4 p-lg-5">
-                                        <div class="info-section">
-                                            <div class="info-section-title">Information</div>
-                                            <div class="info-grid">
-                                                <div class="info-item">
-                                                    <div class="info-label">Event Type</div>
-                                                    <div class="info-value"><?= htmlspecialchars($event['event_type_name'] ?? '-') ?></div>
-                                                </div>
-                                                <div class="info-item">
-                                                    <div class="info-label">Status</div>
-                                                    <div class="info-value"><?= htmlspecialchars($event['event_status'] ?? '-') ?></div>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="info-section">
-                                            <div class="info-section-title">Location & Address</div>
-                                            <div class="info-grid">
-                                                <div class="info-item">
-                                                    <div class="info-label">Location</div>
-                                                    <div class="info-value"> <?= htmlspecialchars($event['location_name'] ?? '-') ?></div>
-                                                </div>
-                                                <div class="info-item">
-                                                    <div class="info-label">Address</div>
-                                                    <div class="info-value"><?= htmlspecialchars($fullAddress) ?></div>
-                                                </div>
-                                                <div class="info-item">
-                                                    <div class="info-label">Building</div>
-                                                    <div class="info-value"><?= htmlspecialchars($event['location_buildingName'] ?? '-') ?></div>
-                                                </div>
-                                                <div class="info-item">
-                                                    <div class="info-label">Level</div>
-                                                    <div class="info-value"><?= htmlspecialchars($event['location_level'] ?? '-') ?></div>
-                                                </div>
-                                                <div class="info-item">
-                                                    <div class="info-label">Room</div>
-                                                    <div class="info-value"><?= htmlspecialchars($event['location_room'] ?? '-') ?></div>
-                                                </div>
-                                                <div class="info-item">
-                                                    <div class="info-label">State</div>
-                                                    <div class="info-value"><?= htmlspecialchars($event['state_name'] ?? '-') ?></div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div class="simple-card p-3 p-lg-4 mb-3">
+                                    <div class="simple-section-title">Description</div>
+                                    <div class="description-box"><?= htmlspecialchars($event['event_description'] ?? '-') ?></div>
+                                </div>
 
-                                        <div class="info-section">
-                                            <div class="info-section-title">Registration</div>
-                                            <div class="info-grid">
-                                                <div class="info-item">
-                                                    <div class="info-label">Opens</div>
-                                                    <div class="info-value">📝 <?= $openDate ?></div>
-                                                </div>
-                                                <div class="info-item">
-                                                    <div class="info-label">Closes</div>
-                                                    <div class="info-value">⛔ <?= $closeDate ?></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="d-flex flex-wrap align-items-center gap-2 mt-4">
-                                            <?php if ($isRegistered): ?>
-                                                <button class="btn btn-secondary btn-lg px-5" disabled>
-                                                    Registered
-                                                </button>
-                                                <small class="text-muted mb-0">
-                                                    You have successfully registered for this event.
-                                                </small>
-                                            <?php elseif ($isRegistrationClosed): ?>
-                                                <button class="btn btn-secondary btn-lg px-5" disabled>
-                                                    Registration Closed
-                                                </button>
-                                                <small class="text-muted mb-0">
-                                                    Registration has closed for this event.
-                                                </small>
-                                            <?php else: ?>
-                                                <button type="button"
-                                                    class="btn btn-primary btn-lg rounded px-5 fw-bold"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#confirmRegisterModal">
-                                                    <i class="bi bi-check-circle me-2"></i> Register
-                                                </button>
-                                            <?php endif; ?>
-                                        </div>
+                                <div class="simple-card p-3 p-lg-4">
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <?php if ($isRegistered): ?>
+                                            <button class="btn btn-secondary" disabled>
+                                                Registered
+                                            </button>
+                                            <small class="text-muted mb-0">
+                                                You have successfully registered for this event.
+                                            </small>
+                                        <?php elseif ($isRegistrationClosed): ?>
+                                            <button class="btn btn-secondary" disabled>
+                                                Registration Closed
+                                            </button>
+                                            <small class="text-muted mb-0">
+                                                Registration has closed for this event.
+                                            </small>
+                                        <?php else: ?>
+                                            <button type="button"
+                                                class="btn btn-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmRegisterModal">
+                                                Register
+                                            </button>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>

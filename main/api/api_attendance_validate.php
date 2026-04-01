@@ -12,6 +12,14 @@ function respond(string $status, string $message, array $extra = []): void
     exit;
 }
 
+// Require login
+if (empty($_SESSION['userId'])) {
+    respond('error', 'You must be logged in to scan attendance.');
+}
+
+$currentUserId = $_SESSION['userId'];
+$currentRoleId = (int)($_SESSION['roleId'] ?? 0);
+
 $registrationId = trim($_POST['registration_id'] ?? $_GET['registration_id'] ?? '');
 
 if ($registrationId === '') {
@@ -27,7 +35,8 @@ $stmt = $conn->prepare("
         e.event_name,
         e.event_startDate,
         e.event_endDate,
-        e.event_status
+        e.event_status,
+        e.event_owner_id
     FROM att_registration r
     JOIN att_event e ON e.event_id = r.event_id
     WHERE r.registration_id = ?
@@ -48,6 +57,25 @@ if (!$res || $res->num_rows === 0) {
 
 $reg = $res->fetch_assoc();
 $stmt->close();
+
+// 1b. Authorization: only admin, event owner, or assigned PIC can scan
+if ($currentRoleId !== 3) { // not admin
+    $isOwner = ($reg['event_owner_id'] === $currentUserId);
+
+    $isPic = false;
+    $picStmt = $conn->prepare("SELECT 1 FROM att_event_pic WHERE event_id = ? AND user_id = ? LIMIT 1");
+    if ($picStmt) {
+        $picStmt->bind_param("ss", $reg['event_id'], $currentUserId);
+        $picStmt->execute();
+        $picStmt->store_result();
+        $isPic = $picStmt->num_rows > 0;
+        $picStmt->close();
+    }
+
+    if (!$isOwner && !$isPic) {
+        respond('error', 'You are not authorised to scan attendance for this event. Only the event creator or assigned Person In Charge (PIC) can scan.');
+    }
+}
 
 // 2. Date window validation
 $tz    = new DateTimeZone('Asia/Kuala_Lumpur');
