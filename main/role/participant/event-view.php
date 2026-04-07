@@ -27,11 +27,14 @@ $sql = "SELECT
     l.address_postcode,
     l.location_room,
     l.location_level,
-    s.state_name
+    s.state_name,
+    u.nama AS owner_name,
+    u.email AS owner_email
     FROM att_event e
     LEFT JOIN att_event_type t ON e.event_type_id = t.event_type_id
     LEFT JOIN att_location l ON e.location_id = l.location_id
     LEFT JOIN att_state s ON l.state_id = s.state_id
+    LEFT JOIN user u ON e.event_owner_id = u.userId
     WHERE e.event_id = ?
     ";
 
@@ -224,6 +227,9 @@ $chk->close();
 
                                         <div class="simple-label">Registration Date</div>
                                         <div class="simple-value"><?= $openDate ?><?= $openDate !== $closeDate ? ' - ' . $closeDate : '' ?></div>
+
+                                        <div class="simple-label">Created By</div>
+                                        <div class="simple-value"><?= htmlspecialchars($event['owner_name'] ?? '-') ?> (<?= htmlspecialchars($event['owner_email'] ?? '-') ?>)</div>
                                     </div>
                                 </div>
 

@@ -8,21 +8,23 @@
 
 function resolveMailConfig(): ?array
 {
-    $apiKey = getenv('SENDGRID_API_KEY');
-    if ($apiKey === false || $apiKey === '') {
-        $envKey = $_ENV['SENDGRID_API_KEY'] ?? '';
-        $apiKey = $envKey !== '' ? $envKey : null;
-    }
+    $host     = getenv('SMTP_HOST')     ?: ($_ENV['SMTP_HOST']     ?? 'smtp.gmail.com');
+    $port     = getenv('SMTP_PORT')     ?: ($_ENV['SMTP_PORT']     ?? 587);
+    $username = getenv('SMTP_USERNAME') ?: ($_ENV['SMTP_USERNAME'] ?? '');
+    $password = getenv('SMTP_PASSWORD') ?: ($_ENV['SMTP_PASSWORD'] ?? '');
 
-    if (!$apiKey) {
-        error_log("SendGrid skipped: missing api key.");
+    if ($username === '' || $password === '') {
+        error_log("PHPMailer skipped: missing SMTP credentials.");
         return null;
     }
 
     return [
-        'apiKey'    => $apiKey,
-        'fromEmail' => getenv('SENDGRID_FROM_EMAIL') ?: 'izzulqhaleef@sirim.my',
-        'fromName'  => getenv('SENDGRID_FROM_NAME')  ?: 'SIRIM Attendance',
+        'host'      => $host,
+        'port'      => (int) $port,
+        'username'  => $username,
+        'password'  => $password,
+        'fromEmail' => getenv('SMTP_FROM_EMAIL') ?: ($_ENV['SMTP_FROM_EMAIL'] ?? $username),
+        'fromName'  => getenv('SMTP_FROM_NAME')  ?: ($_ENV['SMTP_FROM_NAME']  ?? 'SIRIM Attendance'),
     ];
 }
 
@@ -59,7 +61,8 @@ function getEventMetadata(mysqli $conn, string $eventId): array
     $result = [
         'eventType'        => '',
         'eventDescription' => '',
-        'locationSummary'  => '',
+        'locationName'     => '',
+        'address'          => '',
     ];
 
     if ($eventId === '') {
@@ -68,10 +71,13 @@ function getEventMetadata(mysqli $conn, string $eventId): array
 
     $stmt = $conn->prepare(
         "SELECT e.event_description, t.event_type_name,
-                l.location_name, l.location_buildingName, l.location_level, l.location_room
+                l.location_name, l.location_buildingName, l.location_level, l.location_room,
+                l.address_line1, l.address_line2, l.address_city, l.address_postcode,
+                s.state_name
          FROM att_event e
          LEFT JOIN att_event_type t ON t.event_type_id = e.event_type_id
          LEFT JOIN att_location l   ON l.location_id   = e.location_id
+         LEFT JOIN att_state s      ON s.state_id      = l.state_id
          WHERE e.event_id = ?
          LIMIT 1"
     );
@@ -87,23 +93,33 @@ function getEventMetadata(mysqli $conn, string $eventId): array
         $result['eventType'] = (string)($row['event_type_name'] ?? '');
         $result['eventDescription'] = (string)($row['event_description'] ?? '');
 
-        $parts = [];
+        // Location name (building, level, room)
+        $locParts = [];
         foreach (['location_name', 'location_buildingName'] as $col) {
             $val = trim((string)($row[$col] ?? ''));
             if ($val !== '') {
-                $parts[] = $val;
+                $locParts[] = $val;
             }
         }
         $level = trim((string)($row['location_level'] ?? ''));
         $room  = trim((string)($row['location_room']  ?? ''));
         if ($level !== '') {
-            $parts[] = 'Level ' . $level;
+            $locParts[] = 'Level ' . $level;
         }
         if ($room !== '') {
-            $parts[] = 'Room ' . $room;
+            $locParts[] = 'Room ' . $room;
         }
+        $result['locationName'] = implode(', ', $locParts);
 
-        $result['locationSummary'] = implode(', ', $parts);
+        // Full address
+        $addrParts = [];
+        foreach (['address_line1', 'address_line2', 'address_city', 'address_postcode', 'state_name'] as $col) {
+            $val = trim((string)($row[$col] ?? ''));
+            if ($val !== '') {
+                $addrParts[] = $val;
+            }
+        }
+        $result['address'] = implode(', ', $addrParts);
     }
 
     $stmt->close();

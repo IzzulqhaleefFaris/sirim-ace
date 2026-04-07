@@ -1,43 +1,62 @@
 <?php
 /**
- * mail-sender.php — SendGrid transport layer.
+ * mail-sender.php — PHPMailer transport layer.
  *
- * One job: send an email via a SendGrid Dynamic Template.
+ * One job: send an HTML email via SMTP using PHPMailer.
  * Every trigger file includes this to dispatch mail.
  */
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-use SendGrid\Mail\Mail;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
-function sendTemplateEmail(
-    string $apiKey,
-    string $fromEmail,
-    string $fromName,
+/**
+ * Send an HTML email via PHPMailer SMTP.
+ *
+ * @param array  $config   Mail config from resolveMailConfig()
+ * @param string $toEmail  Recipient email
+ * @param string $toName   Recipient name
+ * @param string $subject  Email subject line
+ * @param string $htmlBody Full HTML body
+ * @param string $logLabel Label for error_log messages
+ */
+function sendHtmlEmail(
+    array  $config,
     string $toEmail,
     string $toName,
-    string $templateId,
-    array $dynamicData,
-    string $logSubject
+    string $subject,
+    string $htmlBody,
+    string $logLabel
 ): void {
     if (!filter_var($toEmail, FILTER_VALIDATE_EMAIL)) {
-        error_log('SendGrid skipped invalid recipient email for template ' . $templateId . ': ' . $toEmail);
+        error_log('PHPMailer skipped invalid recipient for ' . $logLabel . ': ' . $toEmail);
         return;
     }
 
-    $mail = new Mail();
-    $mail->setFrom($fromEmail, $fromName);
-    $mail->addTo($toEmail, $toName);
-    $mail->setTemplateId($templateId);
-    $mail->addDynamicTemplateDatas($dynamicData);
+    $mail = new PHPMailer(true);
 
     try {
-        $sendgrid = new \SendGrid($apiKey);
-        $response = $sendgrid->send($mail);
-        if ($response->statusCode() >= 400) {
-            error_log('SendGrid template rejected (' . $response->statusCode() . ') for ' . $logSubject . '. Body: ' . $response->body());
-        }
-    } catch (Exception $mailError) {
-        error_log('SendGrid template error (' . $logSubject . '): ' . $mailError->getMessage());
+        $mail->isSMTP();
+        $mail->Host       = $config['host'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $config['username'];
+        $mail->Password   = $config['password'];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = $config['port'];
+
+        $mail->setFrom($config['fromEmail'], $config['fromName']);
+        $mail->addAddress($toEmail, $toName);
+
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body    = $htmlBody;
+        $mail->AltBody = strip_tags(str_replace(['<br>', '<br/>', '<br />'], "\n", $htmlBody));
+
+        $mail->send();
+        error_log('[EMAIL] Sent OK: ' . $logLabel . ' -> ' . $toEmail);
+    } catch (Exception $e) {
+        error_log('[EMAIL] PHPMailer error (' . $logLabel . '): ' . $mail->ErrorInfo);
     }
 }

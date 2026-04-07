@@ -651,7 +651,13 @@ endif;
 														</div>
 														<div class="modal-footer">
 															<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-															<button type="submit" form="eventForm" class="btn btn-success">Submit</button>
+															<button type="submit" form="eventForm" id="submitEventBtn" class="btn btn-success">
+																<span id="submitBtnText">Submit</span>
+																<span id="submitBtnSpinner" class="d-none">
+																	<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+																	Creating...
+																</span>
+															</button>
 														</div>
 													</div>
 												</div>
@@ -667,7 +673,14 @@ endif;
 													<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
 												</div>
 												<div class="modal-body text-center">
+													<div class="mb-3">
+														<i class="bi bi-check-circle-fill text-success" style="font-size:3rem;"></i>
+													</div>
 													<p id="successMessage" class="fs-5 fw-bold"></p>
+													<p class="text-muted small mb-0">
+														<i class="bi bi-envelope-check me-1"></i>
+														Notification email has been sent to the organiser and PIC.
+													</p>
 												</div>
 												<div class="modal-footer justify-content-center">
 													<button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
@@ -915,6 +928,18 @@ endif;
 					`;
 					successModal.show();
 				<?php endif; ?>
+			});
+		</script>
+
+        <!-- Loading overlay on form submit -->
+		<script>
+			document.getElementById('eventForm').addEventListener('submit', function() {
+				const btn = document.getElementById('submitEventBtn');
+				const btnText = document.getElementById('submitBtnText');
+				const btnSpinner = document.getElementById('submitBtnSpinner');
+				btn.disabled = true;
+				btnText.classList.add('d-none');
+				btnSpinner.classList.remove('d-none');
 			});
 		</script>
 

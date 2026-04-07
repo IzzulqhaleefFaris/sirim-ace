@@ -17,6 +17,11 @@
 ?> 
 
 <?php
+    require_once __DIR__ . '/../vendor/autoload.php';
+
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+    $dotenv->safeLoad();
+
     // $dbhost = '103.117.20.189'; 
     // $dbuser = 'sirimsen_soljar_u';
     // $dbpass = 'pbBEgKE#lL1^kJ^AnhNT{MD%NRrV3aiV';
