@@ -120,18 +120,17 @@ if ($msg) {
                                 <div class="col-10 col-xl-8 py-3">
                                     <div class="text-center">
                                         <a href="index.php" class="d-inline-flex align-items-center justify-content-center">
-                                            <img alt="Logo Attendance"
-                                                src="assets/media/logos/attendance.png"
-                                                class="h-150px me-4" />
-
                                             <img alt="Logo SIRIM"
                                                 src="assets/media/logos/sirim2.png"
                                                 class="h-150px" />
+                                            <img alt="Logo SIRIM Ace"
+                                                src="assets/media/logos/ace.png"
+                                                class="h-150px me-4" />
                                         </a>
                                     </div>
                                     <hr class="border-primary-subtle mb-4">
                                     <h2 class="text-dark mb-5 text-center">
-                                        ATTENDANCE | Advanced Event and Attendance Coordination Engine
+                                        SIRIM Advanced Coordination Engine
                                     </h2><br>
                                     <!-- <p class="lead m-0">We write words, take photos, make videos, and interact with artificial intelligence.</p> -->
                                 </div>
@@ -154,7 +153,7 @@ if ($msg) {
                                         </div>
                                         <div class="col-12">
                                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                                <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email" required>
+                                            <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email" required>
                                         </div>
                                         <div class="col-12">
                                             <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
