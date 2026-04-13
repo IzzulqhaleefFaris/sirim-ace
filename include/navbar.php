@@ -24,15 +24,6 @@ if ($_SESSION["roleId"] == '2') { ?>
         </div>
         <!--end::Home-->
 
-        <!--begin::Senarai Event-->
-        <div class="menu-item me-lg-1">
-            <a class="menu-link py-3" href="/sirimace/main/role/participant/event-list.php" style="text-decoration: none;">
-                <span class="menu-icon"><i class="bi bi-list-task fs-3"></i></span>
-                <span class="menu-title">Browse Events</span>
-            </a>
-        </div>
-        <!--end::Senarai Event-->
-
         <!--begin::My Events & QR-->
         <div class="menu-item me-lg-1">
             <a class="menu-link py-3" href="/sirimace/main/role/participant/my-events.php" style="text-decoration: none;">
@@ -65,12 +56,6 @@ if ($_SESSION["roleId"] == '2') { ?>
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/sirimace/main/role/organiser/create-event.php" style="text-decoration: none;">
                         <span class="menu-icon"><i class="bi bi-calendar2-plus fs-3"></i></span>
                         <span class="menu-title">Create Event</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/sirimace/main/role/organiser/browse-event-list.php" style="text-decoration: none;">
-                        <span class="menu-icon"><i class="bi bi-search fs-3"></i></span>
-                        <span class="menu-title">Browse Event</span>
                     </a>
                 </li>
                 <li>

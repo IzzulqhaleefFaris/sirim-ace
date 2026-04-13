@@ -102,22 +102,10 @@ if (isset($_SESSION['msg'])) {
                         <!-- Gap -->
 
                         <div class="topbar-item cursor-pointer symbol px-3 px-lg-5 me-n3 me-lg-n5 symbol-30px symbol-md-35px" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
-                            <i class="bi bi-person fs-4x"></i>
-                            <div class="d-flex flex-column">
-                                <div class="fw-bolder text-light d-flex align-items-center fs-5"><?php echo htmlspecialchars($userName); ?></div>
-                                <?php if ($_SESSION["roleId"] == '1') { ?>
-                                    <a href="#" class="fw-bold text-light fs-7" style="text-decoration: none;">
-                                        <?php echo htmlspecialchars($email); ?>
-                                    </a>
-                                <?php } else if ($_SESSION["roleId"] == '2') { ?>
-                                    <a href="#" class="fw-bold text-light fs-7" style="text-decoration: none;">
-                                        <?php echo htmlspecialchars($email); ?>
-                                    </a>
-                                <?php } else { ?>
-                                    <a href="#" class="fw-bold text-light fs-7" style="text-decoration: none;">
-                                        <?php echo htmlspecialchars($email); ?>
-                                    </a>
-                                <?php } ?>
+                            <i class="bi bi-person-circle fs-2x"></i>
+                            <div class="d-none d-lg-flex flex-column ms-2">
+                                <div class="fw-bolder text-light d-flex align-items-center fs-7"><?php echo htmlspecialchars($userName); ?></div>
+                                <span class="fw-bold text-light fs-8" style="opacity:0.7;"><?php echo htmlspecialchars($email); ?></span>
                             </div>
                         </div>
                         <!--end::Menu wrapper-->
@@ -230,6 +218,56 @@ if (isset($_SESSION['msg'])) {
         left: 0;
         right: auto;
         transform: none !important;
+    }
+
+    /* ===== Mobile navbar improvements ===== */
+    @media (max-width: 991.98px) {
+        /* Hide clock on small screens */
+        #clock {
+            display: none !important;
+        }
+
+        /* Shrink logo for mobile */
+        #kt_header .h-55px {
+            height: 36px !important;
+        }
+
+        /* Compact the header height */
+        #kt_header {
+            min-height: 50px !important;
+        }
+
+        /* Better touch target for profile icon */
+        #kt_header_user_menu_toggle .topbar-item {
+            padding: 0.25rem 0.5rem !important;
+            margin: 0 !important;
+        }
+
+        /* Better touch target for hamburger */
+        #kt_header_menu_mobile_toggle {
+            padding: 0.4rem;
+        }
+
+        /* Wider mobile drawer */
+        .header-menu.drawer.drawer-end {
+            width: 280px !important;
+        }
+
+        /* Cleaner drawer nav items */
+        .header-menu .menu-item .menu-link {
+            padding: 0.75rem 1rem !important;
+            border-radius: 8px;
+            margin: 2px 8px;
+        }
+
+        .header-menu .menu-item .menu-link:hover,
+        .header-menu .menu-item .menu-link:active {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .header-menu .menu-item .menu-icon {
+            margin-right: 0.5rem;
+        }
     }
 </style>
 

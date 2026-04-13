@@ -10,6 +10,11 @@ updateEventStatuses($conn);
 $searchTerm = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
 $stateFilter = isset($_GET['state']) ? trim((string)$_GET['state']) : '';
 $dateFilter = isset($_GET['date']) ? trim((string)$_GET['date']) : '';
+$statusFilter = isset($_GET['status']) ? trim((string)$_GET['status']) : 'All';
+$allowedStatus = ['All', 'Upcoming', 'Current', 'Completed'];
+if (!in_array($statusFilter, $allowedStatus, true)) {
+    $statusFilter = 'All';
+}
 
 $states = [];
 $latestEvents = [];
@@ -50,6 +55,7 @@ if (isset($conn) && $conn instanceof mysqli) {
             e.event_startDate,
             e.event_startTime,
             e.event_image,
+            e.event_status,
             t.event_type_name,
             l.location_name,
             s.state_name,
@@ -62,6 +68,12 @@ if (isset($conn) && $conn instanceof mysqli) {
 
     $params = [];
     $types = '';
+
+    if ($statusFilter !== 'All') {
+        $eventsSql .= " AND e.event_status = ?";
+        $params[] = $statusFilter;
+        $types .= 's';
+    }
 
     if ($searchTerm !== '') {
         $eventsSql .= " AND (e.event_name LIKE ? OR l.location_name LIKE ? OR s.state_name LIKE ?)";
@@ -149,8 +161,42 @@ if (!function_exists('formatSimpleTime')) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
     <style>
+        :root {
+            --ace-primary: #273a90;
+            --ace-primary-hover: #1a7fe0;
+            --ace-light-bg: #f9fbfd;
+            --ace-badge-bg: #e6f4ff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: var(--ace-badge-bg);
+            color: var(--ace-primary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 0.25rem;
+        }
+
         .home-section-card {
-            border-radius: 1rem;
+            border-radius: 14px;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
         }
 
         .carousel-image {
@@ -195,19 +241,65 @@ if (!function_exists('formatSimpleTime')) {
         }
 
         .search-wrapper {
-            border-radius: 1rem;
+            border-radius: 14px;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .search-wrapper .form-control,
+        .search-wrapper .form-select {
+            background-color: #f5f8fa;
+            border: 1px solid #e4e6ef;
+            border-radius: 8px;
+        }
+
+        .search-wrapper .form-control:focus,
+        .search-wrapper .form-select:focus {
+            border-color: var(--ace-primary);
+            box-shadow: none;
+        }
+
+        .btn-ace {
+            background: var(--ace-primary);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-ace:hover {
+            background: var(--ace-primary-hover);
+            color: #fff;
+        }
+
+        .btn-outline-ace {
+            background: transparent;
+            color: var(--ace-primary);
+            border: 2px solid var(--ace-primary);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-outline-ace:hover {
+            background: var(--ace-badge-bg);
+            color: var(--ace-primary);
         }
 
         .event-grid-card {
-            border-radius: 1rem;
+            border: 1px solid #eee;
+            border-radius: 14px;
             overflow: hidden;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: #fff;
+            transition: box-shadow 0.3s, transform 0.2s;
             height: 100%;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
         }
 
         .event-grid-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--kt-card-box-shadow);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
         }
 
         .event-grid-image {
@@ -220,9 +312,51 @@ if (!function_exists('formatSimpleTime')) {
             min-height: 66px;
         }
 
+        .event-meta i {
+            color: var(--ace-primary);
+            margin-right: 4px;
+        }
+
+        .badge-ace {
+            background: var(--ace-badge-bg);
+            color: var(--ace-primary);
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        .btn-ace-sm {
+            background: var(--ace-primary);
+            color: #fff;
+            border: 2px solid var(--ace-primary);
+            border-radius: 8px;
+            padding: 0.35rem 1rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-ace-sm:hover {
+            background: var(--ace-primary-hover);
+            border-color: var(--ace-primary-hover);
+            color: #fff;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.3rem 0.65rem;
+            border-radius: 20px;
+        }
+
+        .status-upcoming { background: #fff8dd; color: #f5a623; }
+        .status-current { background: #e6f4ff; color: var(--ace-primary); }
+        .status-completed { background: #e8fff3; color: #50cd89; }
+
         .placeholder-section {
             border: 2px dashed #d1d5db;
-            border-radius: 1rem;
+            border-radius: 14px;
             background: #f8fafc;
         }
     </style>
@@ -240,9 +374,12 @@ if (!function_exists('formatSimpleTime')) {
                     <div class="post d-flex flex-column-fluid" id="kt_post">
                         <div id="kt_content_container" class="container">
                             <div class="py-4 py-lg-8">
-                                <div class="card shadow-sm mb-6 home-section-card">
+                                <div class="card mb-6 home-section-card">
                                     <div class="card-header border-0 pt-5 pb-0">
-                                        <h3 class="card-title fw-bold">Upcoming Events</h3>
+                                        <div>
+                                            <span class="section-badge">Latest</span>
+                                            <h3 class="section-title">Upcoming Events</h3>
+                                        </div>
                                     </div>
                                     <div class="card-body pt-4">
                                         <?php if (empty($latestEvents)): ?>
@@ -302,15 +439,16 @@ if (!function_exists('formatSimpleTime')) {
                                     </div>
                                 </div>
 
-                                <div class="card shadow-sm mb-6 search-wrapper">
+                                <div class="card mb-6 search-wrapper">
                                     <div class="card-body py-4">
                                         <form method="GET" class="row g-3 align-items-end">
-                                            <div class="col-lg-6">
-                                                <label class="form-label mb-1">Search</label>
+                                            <input type="hidden" name="status" value="<?php echo htmlspecialchars($statusFilter); ?>">
+                                            <div class="col-lg-5">
+                                                <label class="form-label mb-1 fw-semibold">Search</label>
                                                 <input type="text" name="q" class="form-control" placeholder="Search event, location, or state" value="<?php echo htmlspecialchars($searchTerm); ?>">
                                             </div>
                                             <div class="col-lg-2">
-                                                <label class="form-label mb-1">State</label>
+                                                <label class="form-label mb-1 fw-semibold">State</label>
                                                 <select name="state" class="form-select">
                                                     <option value="">All State</option>
                                                     <?php foreach ($states as $state): ?>
@@ -321,18 +459,38 @@ if (!function_exists('formatSimpleTime')) {
                                                 </select>
                                             </div>
                                             <div class="col-lg-2">
-                                                <label class="form-label mb-1">Date</label>
+                                                <label class="form-label mb-1 fw-semibold">Date</label>
                                                 <input type="date" name="date" class="form-control" value="<?php echo htmlspecialchars($dateFilter); ?>">
                                             </div>
-                                            <div class="col-lg-2 d-grid">
-                                                <button type="submit" class="btn btn-dark">Search</button>
+                                            <div class="col-lg-3 d-grid">
+                                                <button type="submit" class="btn btn-ace">Search</button>
                                             </div>
                                         </form>
+
+                                        <!-- Status filter chips -->
+                                        <div id="filters" class="d-flex flex-wrap gap-2 mt-4">
+                                            <?php
+                                            $statusOptions = ['All', 'Upcoming', 'Current', 'Completed'];
+                                            foreach ($statusOptions as $opt):
+                                                $isActive = ($statusFilter === $opt);
+                                                $chipQuery = http_build_query(['status' => $opt, 'q' => $searchTerm, 'state' => $stateFilter, 'date' => $dateFilter]);
+                                            ?>
+                                                <a href="?<?php echo $chipQuery; ?>" onclick="sessionStorage.setItem('scrollY',window.scrollY)" class="btn btn-sm rounded-pill px-4 <?php echo $isActive ? 'btn-ace' : 'btn-outline-ace'; ?>">
+                                                    <?php echo htmlspecialchars($opt); ?>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <?php if ($searchTerm !== '' || $stateFilter !== '' || $dateFilter !== '' || $statusFilter !== 'All'): ?>
+                                            <div class="mt-3">
+                                                <a href="?" onclick="sessionStorage.setItem('scrollY',window.scrollY)" class="btn btn-danger btn-sm rounded-pill px-4"><i class="fas fa-times me-1"></i>Reset Filter</a>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
 
                                 <div class="mb-6">
-                                    <h2 class="fw-bolder mb-4">Events by SIRIM</h2>
+                                    <span class="section-badge">Browse</span>
+                                    <h2 class="section-title mb-4">Events by SIRIM</h2>
                                     <?php if ($eventsError): ?>
                                         <div class="alert alert-danger mb-0"><?php echo htmlspecialchars($eventsError); ?></div>
                                     <?php elseif (empty($events)): ?>
@@ -354,18 +512,27 @@ if (!function_exists('formatSimpleTime')) {
                                                 $eventImageUrl = $eventImage . '?v=' . urlencode((string)$imgVersion);
                                                 ?>
                                                 <div class="col-md-6 col-xl-4">
-                                                    <div class="card shadow-sm event-grid-card">
+                                                    <div class="card event-grid-card">
                                                         <img src="<?php echo htmlspecialchars($eventImageUrl); ?>" class="event-grid-image" alt="Event image" onerror="this.onerror=null;this.src='/sirimace/images/custom/no_image.jpg';">
                                                         <div class="card-body d-flex flex-column">
                                                             <h5 class="fw-bold mb-3"><?php echo htmlspecialchars((string)($event['event_name'] ?? '-')); ?></h5>
                                                             <div class="event-meta text-muted small mb-3">
-                                                                <div><strong>Location:</strong> <?php echo htmlspecialchars((string)($event['location_name'] ?? '-')); ?><?php echo !empty($event['state_name']) ? ' - ' . htmlspecialchars((string)$event['state_name']) : ''; ?></div>
-                                                                <div><strong>Date:</strong> <?php echo htmlspecialchars(formatSimpleDate((string)($event['event_startDate'] ?? ''))); ?></div>
-                                                                <div><strong>Time:</strong> <?php echo htmlspecialchars(formatSimpleTime((string)($event['event_startTime'] ?? ''))); ?></div>
+                                                                <div><i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars((string)($event['location_name'] ?? '-')); ?><?php echo !empty($event['state_name']) ? ' - ' . htmlspecialchars((string)$event['state_name']) : ''; ?></div>
+                                                                <div><i class="fas fa-calendar"></i> <?php echo htmlspecialchars(formatSimpleDate((string)($event['event_startDate'] ?? ''))); ?></div>
+                                                                <div><i class="fas fa-clock"></i> <?php echo htmlspecialchars(formatSimpleTime((string)($event['event_startTime'] ?? ''))); ?></div>
                                                             </div>
                                                             <div class="d-flex justify-content-between align-items-center mt-auto">
-                                                                <span class="badge badge-dark"><?php echo htmlspecialchars((string)($event['event_type_name'] ?? 'General')); ?></span>
-                                                                <a href="event-view.php?id=<?php echo urlencode((string)$event['event_id']); ?>" class="btn btn-sm btn-dark">View</a>
+                                                                <div class="d-flex align-items-center gap-2">
+                                                                    <span class="badge-ace"><?php echo htmlspecialchars((string)($event['event_type_name'] ?? 'General')); ?></span>
+                                                                    <?php
+                                                                    $evStatus = $event['event_status'] ?? '';
+                                                                    $statusClass = 'status-upcoming';
+                                                                    if ($evStatus === 'Current') $statusClass = 'status-current';
+                                                                    elseif ($evStatus === 'Completed') $statusClass = 'status-completed';
+                                                                    ?>
+                                                                    <span class="status-badge <?php echo $statusClass; ?>"><?php echo htmlspecialchars($evStatus); ?></span>
+                                                                </div>
+                                                                <a href="event-view.php?id=<?php echo urlencode((string)$event['event_id']); ?>" class="btn-ace-sm">View</a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -398,6 +565,15 @@ if (!function_exists('formatSimpleTime')) {
         <script src="../../../assets/js/custom/modals/create-app.js"></script>
         <script src="../../../assets/js/custom/modals/upgrade-plan.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        <script>
+            (function() {
+                var savedY = sessionStorage.getItem('scrollY');
+                if (savedY !== null) {
+                    sessionStorage.removeItem('scrollY');
+                    window.scrollTo(0, parseInt(savedY, 10));
+                }
+            })();
+        </script>
     </div>
 </body>
 

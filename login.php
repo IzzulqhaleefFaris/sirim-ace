@@ -76,7 +76,7 @@ header("Pragma: no-cache");
 		body {
 			height: 100%;
 			margin: 0;
-			overflow: hidden;
+			overflow: auto;
 		}
 
 		.login-split {
@@ -172,6 +172,7 @@ header("Pragma: no-cache");
 			.login-form-side {
 				flex: 1;
 				max-width: 100%;
+				min-height: 100vh;
 			}
 		}
 

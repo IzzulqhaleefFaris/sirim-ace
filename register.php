@@ -218,11 +218,6 @@ if ($msg) {
                 </div>
             </div>
         </section>
-        <!--begin::Footer-->
-        <footer>
-            <?php include "include/footer.php"; ?>
-        </footer>
-        <!--end::Footer-->
     </main>
 
     </div>
