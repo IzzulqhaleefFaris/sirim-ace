@@ -78,7 +78,7 @@ try {
 
     $conn->commit();
 
-    header("Location: index.php?register=success");
+    header("Location: login.php?register=success");
     exit;
 } catch (Exception $e) {
 

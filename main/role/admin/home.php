@@ -36,7 +36,7 @@ if (isset($conn) && $conn instanceof mysqli) {
     <meta charset="utf-8" />
     <title>Admin Dashboard | ATTENDANCE SYSTEM</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="shortcut icon" href="../../../assets/media/logos/soljar_ico.ico" />
+    <link rel="shortcut icon" href="../../../assets/media/logos/ace.png" />
 
     <!-- Global Javascript -->
     <script src="../../../assets/plugins/global/plugins.bundle.js"></script>

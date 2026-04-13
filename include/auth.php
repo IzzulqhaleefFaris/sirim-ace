@@ -6,7 +6,7 @@
 //if the session is not set it redirects the user to the login form/page
 
   if(!isset($_SESSION["userId"])){
-      header("location:index.php");
+      header("location:login.php");
   }*/
 
 ?>

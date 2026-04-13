@@ -51,7 +51,7 @@ function buildQrUrl(string $registrationId): string
     <meta charset="utf-8" />
     <title>My Events | ATTENDANCE SYSTEM</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="shortcut icon" href="../../../assets/media/logos/soljar_ico.ico" />
+    <link rel="shortcut icon" href="../../../assets/media/logos/ace.png" />
 
     <!-- Global Javascript -->
     <script src="../../../assets/plugins/global/plugins.bundle.js"></script>

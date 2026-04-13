@@ -6,7 +6,7 @@ require_once('include/config.php');
 if (!isset($_GET['state']) || !isset($_SESSION['google_oauth_state']) 
     || !hash_equals($_SESSION['google_oauth_state'], $_GET['state'])) {
     $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Invalid OAuth state. Please try again.'];
-    header('Location: index.php');
+    header('Location: login.php');
     exit;
 }
 unset($_SESSION['google_oauth_state']);
@@ -14,13 +14,13 @@ unset($_SESSION['google_oauth_state']);
 // Check for errors from Google
 if (isset($_GET['error'])) {
     $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Google login was cancelled or failed.'];
-    header('Location: index.php');
+    header('Location: login.php');
     exit;
 }
 
 if (!isset($_GET['code'])) {
     $_SESSION['msg'] = ['type' => 'danger', 'text' => 'No authorization code received.'];
-    header('Location: index.php');
+    header('Location: login.php');
     exit;
 }
 
@@ -34,7 +34,7 @@ $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
 
 if (isset($token['error'])) {
     $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Failed to authenticate with Google.'];
-    header('Location: index.php');
+    header('Location: login.php');
     exit;
 }
 
@@ -107,7 +107,7 @@ if ($result->num_rows === 1) {
         } catch (Exception $e) {
             $conn->rollback();
             $_SESSION['msg'] = ['type' => 'danger', 'text' => 'Failed to create account. Please try again.'];
-            header('Location: index.php');
+            header('Location: login.php');
             exit;
         }
 

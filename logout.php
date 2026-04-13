@@ -5,6 +5,6 @@ session_destroy();
 
 setcookie("PHPSESSID", "", time() - 3600, "/");
 
-header("Location: /sirimace/index.php");
+header("Location: /sirimace/login.php");
 exit();
 ?>

@@ -1,401 +1,324 @@
-<?php
-session_start();
-
-// Generate CSRF token if not set
-if (empty($_SESSION['csrf_token'])) {
-	$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
-// Redirect if already logged in — send to role-specific dashboard
-if (isset($_SESSION['userId'])) {
-	$roleId = $_SESSION['roleId'] ?? null;
-	if ($roleId == 1) {
-		header('Location: /sirimace/main/role/organiser/home.php?pg=OFCR');
-		exit;
-	} elseif ($roleId == 2) {
-		header('Location: /sirimace/main/role/participant/home.php?pg=OFCR');
-		exit;
-	} elseif ($roleId == 3) {
-		header('Location: /sirimace/main/role/admin/home.php?pg=ADMIN');
-		exit;
-	}
-	// For unknown roles or no role, show login page
-}
-
-// Handle flash messages
-$msg = $_SESSION['msg'] ?? null;
-if ($msg) {
-	$msgType = is_array($msg) ? ($msg['type'] ?? 'info') : 'info';
-	$msgText = is_array($msg) ? ($msg['text'] ?? '') : $msg;
-	unset($_SESSION['msg']);
-}
-
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-?>
-
 <!DOCTYPE html>
 <html lang="en">
-<!--begin::Head-->
 
 <head>
-	<base href="">
 	<meta charset="utf-8" />
-	<title>ATTENDANCE</title>
+	<title>SIRIM Ace - Event Attendance System</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link rel="shortcut icon" href="assets/media/logos/soljar_ico.ico" />
-	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-	<!--end::Fonts-->
-	<!--begin::Global Stylesheets Bundle(used by all pages)-->
-	<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-	<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-	<!--end::Global Stylesheets Bundle-->
-	<script language="javascript">
-		function checkForm() {
-			var emailField = document.loginForm.email;
-			var passwordField = document.loginForm.user_pass;
-
-			if (emailField.value.trim() === '') {
-				alert('Please enter email.');
-				emailField.focus();
-				return false;
-			} else if (passwordField.value.trim() === '') {
-				alert('Please enter password.');
-				passwordField.focus();
-				return false;
-			}
-			return true;
-		}
-	</script>
-	<style>
-		html,
-		body {
-			height: 100%;
-			margin: 0;
-			overflow: hidden;
-		}
-
-		.login-split {
-			display: flex;
-			min-height: 100vh;
-		}
-
-		.login-image {
-			flex: 1;
-			position: relative;
-			overflow: hidden;
-			background-image: url("assets/media/logos/Sirim-50.jpg");
-			background-size: cover;
-			background-position: center;
-			background-repeat: no-repeat;
-			filter: none;
-		}
-
-		/* Blurred background layer to fill any gaps */
-		.login-image::before {
-			content: '';
-			position: absolute;
-			inset: -20px;
-			background-image: url("assets/media/logos/Sirim-50.jpg");
-			background-size: cover;
-			background-position: center;
-			filter: blur(20px);
-			z-index: 0;
-		}
-
-		/* Sharp image on top, full width, centered vertically */
-		.login-image::after {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background-image: url("assets/media/logos/Sirim-50.jpg");
-			background-size: contain;
-			background-position: center;
-			background-repeat: no-repeat;
-			z-index: 1;
-		}
-
-		.login-form-side {
-			flex: 0 0 50%;
-			max-width: 50%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			background: #fff;
-			padding: 2rem;
-		}
-
-		.login-form-wrapper {
-			width: 100%;
-			max-width: 420px;
-		}
-
-		.login-form-wrapper .form-control {
-			background-color: #f5f8fa;
-			border: 1px solid #e4e6ef;
-			padding: 0.75rem 1rem;
-			font-size: 1rem;
-		}
-
-		.login-form-wrapper .form-control:focus {
-			border-color: #3699ff;
-			box-shadow: none;
-		}
-
-		.btn-login {
-			background-color: #3699ff;
-			border-color: #3699ff;
-			color: #fff;
-			padding: 2rem 2rem;
-			font-weight: 600;
-			border-radius: 0.475rem;
-		}
-
-		.btn-login:hover {
-			background-color: #1a7fe0;
-			border-color: #1a7fe0;
-			color: #fff;
-		}
-
-		@media (max-width: 991.98px) {
-			.login-image {
-				display: none;
-			}
-
-			.login-form-side {
-				flex: 1;
-				max-width: 100%;
-			}
-		}
-
-		/* Loading overlay */
-		.loading-overlay {
-			display: none;
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background: rgba(255, 255, 255, 0.85);
-			z-index: 9999;
-			justify-content: center;
-			align-items: center;
-			flex-direction: column;
-		}
-
-		.loading-overlay.active {
-			display: flex;
-		}
-
-		.loading-spinner {
-			width: 48px;
-			height: 48px;
-			border: 5px solid #e4e6ef;
-			border-top: 5px solid #3699ff;
-			border-radius: 50%;
-			animation: spin 0.8s linear infinite;
-		}
-
-		@keyframes spin {
-			0% { transform: rotate(0deg); }
-			100% { transform: rotate(360deg); }
-		}
-	</style>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+	<link rel="stylesheet" href="assets/css/landing.css" />
 </head>
-<!--end::Head-->
 
-<!--begin::Body-->
+<body>
 
-<body id="kt_body" class="bg-white">
-	<!-- Loading overlay -->
-	<div class="loading-overlay" id="loadingOverlay">
-		<div class="loading-spinner"></div>
-		<p class="text-muted mt-3 fw-semibold" id="loadingText">Signing in...</p>
-	</div>
+	<!-- ===== NAVBAR ===== -->
+	<nav class="navbar-landing">
+		<div class="container d-flex justify-content-between align-items-center">
+			<a href="#" class="text-decoration-none d-flex align-items-center gap-2">
+				<img src="assets/media/logos/ace.png" alt="Logo" height="40" />
+				<img src="assets/media/logos/sirim.jpg" alt="SIRIM" height="40" />
+			</a>
 
-	<?php if (!empty($msgText)): ?>
-		<!-- Flash message modal -->
-		<div class="modal fade" id="sessionMsgModal" tabindex="-1" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header bg-<?= htmlspecialchars($msgType) ?> text-white">
-						<h5 class="modal-title"><?= ($msgType === 'danger' ? 'Error' : 'Notice') ?></h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-					</div>
-					<div class="modal-body">
-						<p><?= htmlspecialchars($msgText) ?></p>
-					</div>
-				</div>
+			<div class="d-none d-md-flex align-items-center">
+				<a href="#hero" class="nav-link active">Home</a>
+				<a href="#about" class="nav-link">About</a>
+				<a href="#how-it-works" class="nav-link">How It Works</a>
+				<!-- <a href="#events" class="nav-link">Events</a>
+				<a href="#venues" class="nav-link">Venues</a> -->
+			</div>
+
+			<div class="d-flex gap-2">
+				<a href="login.php" class="btn btn-signin">Sign In</a>
+				<a href="register.php" class="btn btn-signup">Sign Up</a>
 			</div>
 		</div>
+	</nav>
 
-		<script>
-			document.addEventListener('DOMContentLoaded', function() {
-				var modalEl = document.getElementById('sessionMsgModal');
-				if (modalEl && typeof bootstrap !== 'undefined') {
-					new bootstrap.Modal(modalEl).show();
-				} else if (modalEl) {
-					alert(modalEl.querySelector('.modal-body p').textContent);
-				}
-			});
-		</script>
-	<?php endif; ?>
+	<!-- ===== HERO ===== -->
+	<section class="hero-section" id="hero">
+		<div class="container">
+			<h1>Discover &amp; Connect with <span>SIRIM Events,</span><br><span>Attendance</span> &amp; <span>Venues</span></h1>
+			<p>Track events, manage attendance with QR codes, connect with venues, and sync your calendar &mdash; everything you need in one place to never miss a beat.</p>
+			<div class="d-flex justify-content-center gap-3">
+				<a href="login.php" class="btn btn-primary-landing">Get Started</a>
+				<!-- <a href="#events" class="btn btn-outline-landing">Explore Events</a> -->
+			</div>
+			<div class="mt-4">
+				<img src="images/custom/no_image.jpg" alt="Hero" class="hero-image img-fluid" />
+			</div>
+		</div>
+	</section>
 
-	<!--begin::Split Layout-->
-	<div class="login-split">
-		<!--begin::Left Image-->
-		<div class="login-image"></div>
-		<!--end::Left Image-->
-
-		<!--begin::Right Form-->
-		<div class="login-form-side">
-			<div class="login-form-wrapper">
-				<!--begin::Logo-->
-				<div class="text-center mb-6">
-					<img alt="Logo" src="assets/media/logos/ace.png" class="h-100px" />&nbsp;&nbsp;&nbsp;
-					<img alt="Logo" src="assets/media/logos/sirim.jpg" class="h-100px" />
+	<!-- ===== ABOUT ===== -->
+	<section class="section-padding" id="about">
+		<div class="container">
+			<div class="row align-items-center">
+				<div class="col-lg-6 mb-4 mb-lg-0">
+					<img src="assets/media/logos/ace-horizontal.png" alt="About" class="about-image" />
 				</div>
-				<!--end::Logo-->
+				<div class="col-lg-6">
+					<span class="section-badge">About Us</span>
+					<h2 class="section-title">What is SIRIM Ace?</h2>
+					<p class="text-muted mb-4" style="font-size:0.95rem;">SIRIM Ace is a comprehensive event attendance management system designed to streamline how organisations create, manage, and track events and participants.</p>
 
-				<!--begin::Welcome Text-->
-				<div class="text-center mb-6">
-					<h2 class="fw-bold text-dark mb-2">Welcome to</h2>
-					<h2 class="fw-bold text-dark mb-2">SIRIM Ace System</h2>
-					<p class="text-muted fs-7">Sign in with your existing account to continue.</p>
-				</div>
-				<!--end::Welcome Text-->
-
-				<!--begin::Form-->
-				<form class="form w-100" novalidate="novalidate" id="loginForm" action="loginCode.php" method="post" name="loginForm" runat="server">
-					<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-
-					<!--begin::Email-->
-					<div class="mt-5 mb-4">
-						<label class="form-label fw-semibold text-dark">Email</label>
-						<input class="form-control form-control-lg" type="email" name="email" id="email" autocomplete="off" />
-					</div>
-					<!--end::Email-->
-
-					<!--begin::Password-->
-					<div class="mb-4">
-						<label class="form-label fw-semibold text-dark">Password</label>
-						<div class="position-relative" id="show_hide_password">
-							<input class="form-control form-control-lg" type="password" name="user_pass" id="user_pass" autocomplete="off" />
-							<a class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2" type="button">
-								<i class="fa fa-eye-slash" aria-hidden="true"></i>
-							</a>
+					<div class="about-card">
+						<div class="about-icon" style="background:#3699ff;">
+							<i class="fas fa-calendar-check"></i>
+						</div>
+						<div>
+							<h5>Event Management</h5>
+							<p>Create and organise events effortlessly with full control over details, schedules, and participant limits.</p>
 						</div>
 					</div>
-					<!--end::Password-->
 
-					<!--begin::Remember & Forgot-->
-					<div class="d-flex justify-content-between align-items-center mb-5">
-						<button class="btn btn-login" type="submit" name="login">Login</button>
-						<a href="#" class="text-primary fw-semibold fs-7">Forgot your password?</a>
+					<div class="about-card">
+						<div class="about-icon" style="background:#f5a623;">
+							<i class="fas fa-qrcode"></i>
+						</div>
+						<div>
+							<h5>QR Code Attendance</h5>
+							<p>Scan QR codes for instant check-in — fast, accurate, and paperless attendance tracking.</p>
+						</div>
 					</div>
-				</form>
-				<!--end::Form-->
 
-				<!--begin::Divider-->
-				<div class="d-flex align-items-center mb-5">
-					<div class="border-bottom flex-grow-1"></div>
-					<span class="text-muted px-3 fs-7">or</span>
-					<div class="border-bottom flex-grow-1"></div>
-				</div>
-				<!--end::Divider-->
+					<div class="about-card">
+						<div class="about-icon" style="background:#50cd89;">
+							<i class="fas fa-chart-bar"></i>
+						</div>
+						<div>
+							<h5>Real-Time Analytics</h5>
+							<p>Access live dashboards with attendance statistics, reports, and insights at your fingertips.</p>
+						</div>
+					</div>
 
-				<!--begin::SSO & Google-->
-				<div class="mb-3">
-					<button class="btn btn-light w-100 border py-2" type="button">
-						<img src="assets/media/logos/sirim2.png" alt="SIRIM" width="22" height="26">
-						&nbsp;SIRIM Single Sign On
-					</button>
+					<div class="about-card">
+						<div class="about-icon" style="background:#f1416c;">
+							<i class="fas fa-users"></i>
+						</div>
+						<div>
+							<h5>Role-Based Access</h5>
+							<p>Admins, organisers, and participants each get a tailored experience with role-specific dashboards.</p>
+						</div>
+					</div>
 				</div>
-
-				<div class="mb-5">
-					<a href="google-auth.php" class="btn btn-light w-100 border py-2" id="googleSignInBtn">
-						<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 48 48">
-							<path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" />
-							<path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" />
-							<path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
-							<path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z" />
-						</svg>
-						&nbsp;Sign in with Google
-					</a>
-				</div>
-				<!--end::SSO & Google-->
-
-				<!--begin::Register-->
-				<div>
-					<span class="text-muted">Don't have an account?</span>
-					<a href="register.php" class="text-primary fw-semibold ms-1">Register now</a>
-				</div>
-				<!--end::Register-->
 			</div>
 		</div>
-		<!--end::Right Form-->
-	</div>
-	<!--end::Split Layout-->
+	</section>
 
-	<!--begin::Javascript-->
-	<div>
-		<!--begin::Global Javascript Bundle(used by all pages)-->
-		<script src="assets/plugins/global/plugins.bundle.js"></script>
-		<script src="assets/js/scripts.bundle.js"></script>
-		<!--end::Global Javascript Bundle-->
+	<!-- ===== HOW IT WORKS ===== -->
+	<section class="section-padding section-bg" id="how-it-works">
+		<div class="container text-center">
+			<span class="section-badge">Process</span>
+			<h2 class="section-title">How It Works</h2>
+			<p class="section-subtitle">Get started in just a few simple steps — from registration to attendance tracking.</p>
 
-		<!--begin::Page Custom Javascript(used by this page)-->
-		<script src="assets/js/custom/authentication/sign-in/general.js"></script>
-		<!--end::Page Custom Javascript-->
+			<div class="row">
+				<div class="col-md-3 step-connector">
+					<div class="step-card">
+						<div class="step-number">1</div>
+						<h5>Create Account</h5>
+						<p>Sign up with your email or Google account to get started in seconds.</p>
+					</div>
+				</div>
+				<div class="col-md-3 step-connector">
+					<div class="step-card">
+						<div class="step-number">2</div>
+						<h5>Browse Events</h5>
+						<p>Explore upcoming events, workshops, and conferences available to you.</p>
+					</div>
+				</div>
+				<div class="col-md-3 step-connector">
+					<div class="step-card">
+						<div class="step-number">3</div>
+						<h5>Register &amp; Get QR</h5>
+						<p>Register for events and receive a unique QR code for check-in.</p>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="step-card">
+						<div class="step-number">4</div>
+						<h5>Scan &amp; Attend</h5>
+						<p>Show your QR code at the venue — attendance recorded instantly.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
-		<script>
-			document.addEventListener('DOMContentLoaded', function() {
-				// Login form loading
-				document.getElementById('loginForm').addEventListener('submit', function() {
-					document.getElementById('loadingText').textContent = 'Logging in...';
-					document.getElementById('loadingOverlay').classList.add('active');
-				});
+	<!-- ===== EVENTS ===== -->
+	<!-- <section class="section-padding" id="events">
+		<div class="container text-center">
+			<span class="section-badge">Events</span>
+			<h2 class="section-title">Explore Upcoming Events &amp; Workshops</h2>
+			<p class="section-subtitle">Discover organised events across departments — join, register, and track your participation with ease.</p> -->
 
-				// Google sign-in loading
-				document.getElementById('googleSignInBtn').addEventListener('click', function() {
-					document.getElementById('loadingText').textContent = 'Signing in with Google...';
-					document.getElementById('loadingOverlay').classList.add('active');
-				});
+			<!-- <div class="row g-4"> -->
+				<!-- Event Card 1 -->
+				<!-- <div class="col-md-4">
+					<div class="event-card">
+						<img src="images/custom/no_image.jpg" alt="Event" />
+						<div class="event-card-body">
+							<h5>Technology Workshop</h5>
+							<div class="event-meta"><i class="fas fa-map-marker-alt"></i> SIRIM Auditorium, Shah Alam</div>
+							<div class="event-dates">
+								<div class="date-item"><i class="fas fa-calendar"></i> Start: 15 Apr 2026</div>
+								<div class="date-item"><i class="fas fa-calendar"></i> End: 15 Apr 2026</div>
+							</div>
+							<div class="event-attendees">
+								<div class="avatar" style="background:#3699ff;"></div>
+								<div class="avatar" style="background:#f5a623;"></div>
+								<div class="avatar" style="background:#50cd89;"></div>
+								<div class="avatar" style="background:#f1416c;"></div>
+								<span class="ms-2 text-muted" style="font-size:0.8rem;">+20 attending</span>
+							</div>
+							<button class="btn-event-details">Event Details</button>
+							<button class="btn-event-register">Register Now</button>
+						</div>
+					</div>
+				</div> -->
 
-				const toggle = document.querySelector("#show_hide_password a");
-				const input = document.querySelector("#show_hide_password input");
-				const icon = document.querySelector("#show_hide_password i");
+				<!-- Event Card 2 -->
+				<!-- <div class="col-md-4">
+					<div class="event-card">
+						<img src="images/custom/no_image.jpg" alt="Event" />
+						<div class="event-card-body">
+							<h5>Quality Assurance Seminar</h5>
+							<div class="event-meta"><i class="fas fa-map-marker-alt"></i> SIRIM Conference Hall, KL</div>
+							<div class="event-dates">
+								<div class="date-item"><i class="fas fa-calendar"></i> Start: 22 Apr 2026</div>
+								<div class="date-item"><i class="fas fa-calendar"></i> End: 22 Apr 2026</div>
+							</div>
+							<div class="event-attendees">
+								<div class="avatar" style="background:#3699ff;"></div>
+								<div class="avatar" style="background:#f5a623;"></div>
+								<div class="avatar" style="background:#50cd89;"></div>
+								<div class="avatar" style="background:#f1416c;"></div>
+								<span class="ms-2 text-muted" style="font-size:0.8rem;">+15 attending</span>
+							</div>
+							<button class="btn-event-details">Event Details</button>
+							<button class="btn-event-register">Register Now</button>
+						</div>
+					</div>
+				</div> -->
 
-				toggle.addEventListener('click', function(e) {
-					e.preventDefault();
-					if (input.type === "password") {
-						input.type = "text";
-						icon.classList.remove("fa-eye-slash");
-						icon.classList.add("fa-eye");
-					} else {
-						input.type = "password";
-						icon.classList.add("fa-eye-slash");
-						icon.classList.remove("fa-eye");
-					}
-				});
-			});
-		</script>
+				<!-- Event Card 3 -->
+				<!-- <div class="col-md-4">
+					<div class="event-card">
+						<img src="images/custom/no_image.jpg" alt="Event" />
+						<div class="event-card-body">
+							<h5>Innovation Summit 2026</h5>
+							<div class="event-meta"><i class="fas fa-map-marker-alt"></i> SIRIM Main Hall, Shah Alam</div>
+							<div class="event-dates">
+								<div class="date-item"><i class="fas fa-calendar"></i> Start: 5 May 2026</div>
+								<div class="date-item"><i class="fas fa-calendar"></i> End: 6 May 2026</div>
+							</div>
+							<div class="event-attendees">
+								<div class="avatar" style="background:#3699ff;"></div>
+								<div class="avatar" style="background:#f5a623;"></div>
+								<div class="avatar" style="background:#50cd89;"></div>
+								<div class="avatar" style="background:#f1416c;"></div>
+								<span class="ms-2 text-muted" style="font-size:0.8rem;">+32 attending</span>
+							</div>
+							<button class="btn-event-details">Event Details</button>
+							<button class="btn-event-register">Register Now</button>
+						</div>
+					</div>
+				</div>
+			</div> -->
 
-		<?php if (isset($_GET['register']) && $_GET['register'] == 'success'): ?>
-			<script>
-				alert("Registration successful! Please sign in.");
-			</script>
-		<?php endif; ?>
-	</div>
-	<!--end::Javascript-->
+			<!-- <div class="mt-5">
+				<a href="#" class="btn btn-outline-landing">Explore More Events</a>
+			</div>
+		</div>
+	</section> -->
+
+	<!-- ===== VENUES =====
+	<section class="section-padding section-bg" id="venues">
+		<div class="container text-center">
+			<span class="section-badge">Venues</span>
+			<h2 class="section-title">Popular Venues in Your Area</h2>
+			<p class="section-subtitle">Explore top-rated venues where events and workshops are held — find the perfect space for your next gathering.</p>
+
+			<div class="row g-4">
+				<div class="col-md-4">
+					<div class="venue-card">
+						<img src="images/custom/no_image.jpg" alt="Venue" />
+						<div class="venue-card-body">
+							<h6>SIRIM Auditorium</h6>
+							<div class="venue-rating"><i class="fas fa-star"></i> 4.8</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="venue-card">
+						<img src="images/custom/no_image.jpg" alt="Venue" />
+						<div class="venue-card-body">
+							<h6>Conference Centre KL</h6>
+							<div class="venue-rating"><i class="fas fa-star"></i> 4.6</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="venue-card">
+						<img src="images/custom/no_image.jpg" alt="Venue" />
+						<div class="venue-card-body">
+							<h6>Innovation Hub</h6>
+							<div class="venue-rating"><i class="fas fa-star"></i> 4.9</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section> -->
+
+	<!-- ===== FOOTER ===== -->
+	<footer class="footer-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4 mb-4">
+					<div class="d-flex align-items-center gap-2 mb-3">
+						<img src="assets/media/logos/ace.png" alt="Logo" height="36" />
+						<img src="assets/media/logos/sirim.jpg" alt="SIRIM" height="36" />
+					</div>
+					<p style="font-size:0.9rem;">SIRIM Ace is a comprehensive event attendance management platform designed for seamless event tracking and participation.</p>
+				</div>
+				<div class="col-md-2 mb-4">
+					<h5>Quick Links</h5>
+					<ul class="footer-links">
+						<li><a href="#hero">Home</a></li>
+						<li><a href="#about">About</a></li>
+						<li><a href="#how-it-works">How It Works</a></li>
+						<li><a href="#events">Events</a></li>
+					</ul>
+				</div>
+				<div class="col-md-3 mb-4">
+					<h5>Resources</h5>
+					<ul class="footer-links">
+						<li><a href="#">Help Centre</a></li>
+						<li><a href="#">Privacy Policy</a></li>
+						<li><a href="#">Terms of Service</a></li>
+						<li><a href="#">Contact Us</a></li>
+					</ul>
+				</div>
+				<div class="col-md-3 mb-4">
+					<h5>Contact</h5>
+					<ul class="footer-links">
+						<li><i class="fas fa-envelope me-2" style="color:#3699ff;"></i> sirimace@sirim.my</li>
+						<li><i class="fas fa-phone me-2" style="color:#3699ff;"></i> +603-5544 6000</li>
+						<li><i class="fas fa-map-marker-alt me-2" style="color:#3699ff;"></i> Shah Alam, Selangor</li>
+					</ul>
+				</div>
+			</div>
+			<div class="footer-bottom">
+				&copy; 2026 SIRIM Ace. All rights reserved.
+			</div>
+		</div>
+	</footer>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
-<!--end::Body-->
 
 </html>

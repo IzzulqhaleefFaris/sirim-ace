@@ -22,6 +22,6 @@ if (ini_get("session.use_cookies")) {
 }
 
 session_destroy();
-header('Location: /sirimace/index.php');
+header('Location: /sirimace/login.php');
 exit;
 ?>

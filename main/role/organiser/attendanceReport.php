@@ -14,7 +14,7 @@ require_manage_events();
 		<meta charset="utf-8" />
 		<title>Attendance Report | ATTENDANCE</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="shortcut icon" href="../../../assets/media/logos/soljar_ico.ico" />
+		<link rel="shortcut icon" href="../../../assets/media/logos/ace.png" />
 		<!--begin::Fonts-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 		<!--end::Fonts-->

@@ -247,7 +247,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
     <meta charset="utf-8" />
     <title>Walk-in Registration | ATTENDANCE SYSTEM</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="shortcut icon" href="/sirimace/assets/media/logos/soljar_ico.ico" />
+    <link rel="shortcut icon" href="/sirimace/assets/media/logos/ace.png" />
     <link href="/sirimace/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="/sirimace/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 </head>

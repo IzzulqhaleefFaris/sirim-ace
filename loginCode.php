@@ -12,7 +12,7 @@ if (
         'type' => 'danger',
         'text' => 'Invalid request (CSRF).'
     ];
-    header('Location: index.php');
+    header('Location: login.php');
     exit;
 }
 
@@ -71,7 +71,7 @@ if(isset($_POST['login']))
                 'type' => 'danger',
                 'text' => 'Incorrect email or password.'
             ];
-            header('Location: index.php');
+            header('Location: login.php');
             exit;
         }
     } else {
@@ -79,7 +79,7 @@ if(isset($_POST['login']))
             'type' => 'danger',
             'text' => 'Please enter email and password.'
         ];
-        header('location:index.php');
+        header('location:login.php');
         exit;
     }
 }
@@ -87,7 +87,7 @@ if(isset($_POST['login']))
 if(isset($_GET['logout']) && $_GET['logout'] == true)
 {
     session_destroy();
-    header("location:index.php");
+    header("location:login.php");
     exit;
 }
 

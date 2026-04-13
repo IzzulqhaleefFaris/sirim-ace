@@ -140,7 +140,7 @@ if (!function_exists('formatSimpleTime')) {
     <meta charset="utf-8" />
     <title>Home | ATTENDANCE SYSTEM</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="shortcut icon" href="../../../assets/media/logos/soljar_ico.ico" />
+    <link rel="shortcut icon" href="../../../assets/media/logos/ace.png" />
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 

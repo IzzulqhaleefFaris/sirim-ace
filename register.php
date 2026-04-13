@@ -119,7 +119,7 @@ if ($msg) {
                             <div class="d-flex align-items-center justify-content-center h-100">
                                 <div class="col-10 col-xl-8 py-3">
                                     <div class="text-center">
-                                        <a href="index.php" class="d-inline-flex align-items-center justify-content-center">
+                                        <a href="login.php" class="d-inline-flex align-items-center justify-content-center">
                                             <img alt="Logo SIRIM"
                                                 src="assets/media/logos/sirim2.png"
                                                 class="h-150px" />
@@ -184,7 +184,7 @@ if ($msg) {
                                 <div class="row">
                                     <div class="col-12">
                                         <hr class="mt-5 mb-4 border-secondary-subtle">
-                                        <p class="m-0 text-dark text-center">Already have an account? <a href="/sirimace/" class="link-primary">Sign In</a></p>
+                                        <p class="m-0 text-dark text-center">Already have an account? <a href="/sirimace/login.php" class="text-primary fw-semibold ms-1">Sign In</a></p>
                                     </div>
                                 </div>
                                 <!-- <div class="row">
