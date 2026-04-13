@@ -259,8 +259,8 @@ header("Pragma: no-cache");
 			<div class="login-form-wrapper">
 				<!--begin::Logo-->
 				<div class="text-center mb-6">
-					<img alt="Logo" src="assets/media/logos/ace.png" class="h-100px" />&nbsp;&nbsp;&nbsp;
-					<img alt="Logo" src="assets/media/logos/sirim.jpg" class="h-100px" />
+					<a href="index.php"><img alt="Logo" src="assets/media/logos/ace.png" class="h-100px" /></a>&nbsp;&nbsp;&nbsp;
+					<a href="index.php"><img alt="Logo" src="assets/media/logos/sirim.jpg" class="h-100px" /></a>
 				</div>
 				<!--end::Logo-->
 

@@ -26,9 +26,9 @@
 <!--begin::Footer-->
 <div class="footer-fixed">
     <div class="footer-content">
-        &copy; 2025 - <?php echo date("Y"); ?>, ATTENDANCE. Hakcipta Terpelihara.
+        &copy; 2025 - <?php echo date("Y"); ?>, SIRIM Ace. Hakcipta Terpelihara.
         Dibangun dan diselenggarakan oleh SIRIM Berhad. | Version 1.0
-    </div>
+    </div>  
 </div>
 <!--end::Footer-->
 
