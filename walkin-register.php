@@ -258,11 +258,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
         <div class="card shadow-sm">
             <div class="card-body p-6">
                 <h2 class="fw-bold mb-2">Walk-in Registration</h2>
-
+                <br>
                 <?php if ($event): ?>
                     <div class="text-muted mb-4">
-                        <div class="fw-semibold text-gray-800"><?= htmlspecialchars($event['event_name']) ?></div>
-                        <div><?= htmlspecialchars($event['event_startDate']) ?> - <?= htmlspecialchars($event['event_endDate']) ?></div>
+                        <div class="fw-semibold text-gray-800 fs-3"><?= htmlspecialchars($event['event_name']) ?></div>
+                        <div>
+                            Event Date:
+                            <?php
+                                // Format event dates as dd/mm/yyyy and show single date when start==end
+                                $rawStart = $event['event_startDate'] ?? '';
+                                $rawEnd = $event['event_endDate'] ?? '';
+
+                                function formatDateDMY($raw) {
+                                    if (empty($raw)) return '';
+                                    try {
+                                        $dt = new DateTime($raw);
+                                        return $dt->format('d/m/Y');
+                                    } catch (Exception $e) {
+                                        return $raw;
+                                    }
+                                }
+
+                                $startOnly = '';
+                                $endOnly = '';
+                                try {
+                                    if (!empty($rawStart)) $startOnly = (new DateTime($rawStart))->format('Y-m-d');
+                                    if (!empty($rawEnd)) $endOnly = (new DateTime($rawEnd))->format('Y-m-d');
+                                } catch (Exception $e) {
+                                    // ignore and fall back to raw values
+                                }
+
+                                if ($startOnly && $endOnly && $startOnly === $endOnly) {
+                                    echo htmlspecialchars(formatDateDMY($rawStart));
+                                } else {
+                                    $outStart = formatDateDMY($rawStart);
+                                    $outEnd = formatDateDMY($rawEnd);
+                                    echo htmlspecialchars(trim($outStart . ($outStart && $outEnd ? ' - ' : '') . $outEnd));
+                                }
+                            ?>
+                        </div>
                         <div>Status: <span class="badge <?= ($event['event_status'] === 'Current') ? 'bg-success' : 'bg-secondary' ?>"><?= htmlspecialchars($event['event_status']) ?></span></div>
                     </div>
                 <?php endif; ?>
@@ -314,7 +348,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                         </div>
                     </form>
                 <?php elseif ($event): ?>
-                    <div class="alert alert-warning mb-0">Walk-in is only available when the event status is Current.</div>
+                    <div class="alert alert-warning mb-0">Walk-in is only available when the event is started.</div>
                 <?php endif; ?>
             </div>
         </div>
