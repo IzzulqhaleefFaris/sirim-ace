@@ -1,6 +1,7 @@
 <?php
 session_start();
 include "../../../include/config.php";
+/** @var mysqli $conn */
 include "../../../include/permissions.php";
 error_reporting(E_ALL);
 ini_set('display_errors', 1);

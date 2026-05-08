@@ -1,6 +1,6 @@
 <?php
 	//include("auth.php"); //include auth.php file on all secure pages
-    include "include/config.php";
+    require_once __DIR__ . '/config.php';
 	ini_set('max_execution_time', 300);
     error_reporting(0);
 	if (!isset($_SESSION))

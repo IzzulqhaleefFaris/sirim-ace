@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once('include/config.php');
+/** @var mysqli $conn */
 
 // Verify state parameter to prevent CSRF
 if (!isset($_GET['state']) || !isset($_SESSION['google_oauth_state']) 

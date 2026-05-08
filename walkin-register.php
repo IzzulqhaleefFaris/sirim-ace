@@ -1,6 +1,7 @@
 <?php
 session_start();
 include "include/config.php";
+/** @var mysqli $conn */
 include "include/updateEventStatus.php";
 require_once __DIR__ . '/vendor/autoload.php';
 

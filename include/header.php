@@ -1,6 +1,7 @@
 <?php
 //include("auth.php"); //include auth.php file on all secure pages
 include __DIR__ . "/config.php";
+/** @var mysqli $conn */
 ini_set('max_execution_time', 300);
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -13,6 +14,7 @@ $nama = $_SESSION['nama'] ?? null;
 
 <?php
 include __DIR__ . '/config.php';
+/** @var mysqli $conn */
 $userId = $_SESSION["userId"];
 $sql = "SELECT * FROM user WHERE userId = '$userId'";
 $query = mysqli_query($conn, $sql);
@@ -71,7 +73,7 @@ if (isset($_SESSION['msg'])) {
 
         <!--begin::Logo-->
         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0 me-lg-10">
-            <a><img alt="Logo" src="/sirimace/assets/media/logos/attendance.png" class="h-55px" /></a>
+            <a><img alt="Logo" src="/sirimace/assets/media/logos/ace.png" class="h-55px" /></a>
         </div>
         <!--end::Logo-->
 
@@ -139,7 +141,7 @@ if (isset($_SESSION['msg'])) {
                             <!--begin::Menu item-->
                             <div class="menu-item px-5 text-center">
                                 <?php
-                                include __DIR__ . 'config.php';
+                                include __DIR__ . '/config.php';
                                 $sql = "SELECT * FROM useraccess WHERE userId = '$user' AND tarikhKeluar IS NULL ORDER BY tarikhMasuk DESC LIMIT 1;";
                                 $query = mysqli_query($conn, $sql);
                                 $rows = mysqli_fetch_array($query, MYSQLI_ASSOC);

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once('include/config.php');
+/** @var mysqli $conn */
 
 $client = new Google_Client();
 $client->setClientId($_ENV['GOOGLE_CLIENT_ID']);

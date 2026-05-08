@@ -18,8 +18,9 @@
 	<nav class="navbar-landing">
 		<div class="container d-flex justify-content-between align-items-center">
 			<a href="#" class="text-decoration-none d-flex align-items-center gap-2">
-				<img src="assets/media/logos/ace.png" alt="Logo" height="40" />
 				<img src="assets/media/logos/sirim.jpg" alt="SIRIM" height="40" />
+				<img src="assets/media/logos/ace.png" alt="Logo" height="40" />
+				
 			</a>
 
 			<div class="d-none d-md-flex align-items-center">
@@ -46,9 +47,9 @@
 				<a href="login.php" class="btn btn-primary-landing">Get Started</a>
 				<!-- <a href="#events" class="btn btn-outline-landing">Explore Events</a> -->
 			</div>
-			<div class="mt-4">
-				<img src="images/custom/no_image.jpg" alt="Hero" class="hero-image img-fluid" />
-			</div>
+		</div>
+		<div class="hero-image-wrapper">
+			<img src="images/custom/integrated.png" alt="Hero" class="hero-image" />
 		</div>
 	</section>
 
@@ -280,8 +281,8 @@
 			<div class="row">
 				<div class="col-md-4 mb-4">
 					<div class="d-flex align-items-center gap-2 mb-3">
-						<img src="assets/media/logos/ace.png" alt="Logo" height="36" />
 						<img src="assets/media/logos/sirim.jpg" alt="SIRIM" height="36" />
+						<img src="assets/media/logos/ace.png" alt="Logo" height="36" />
 					</div>
 					<p style="font-size:0.9rem;">SIRIM Ace is a comprehensive event attendance management platform designed for seamless event tracking and participation.</p>
 				</div>

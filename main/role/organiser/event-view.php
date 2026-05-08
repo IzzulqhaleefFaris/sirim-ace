@@ -1,6 +1,7 @@
 <?php
 session_start();
 include "../../../include/config.php";
+/** @var mysqli $conn */
 
 // Redirect to login if not logged in
 if (!isset($_SESSION['userId'])) {

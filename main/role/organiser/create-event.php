@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 
 session_start();
 include "../../../include/config.php";
+/** @var mysqli $conn */
 include "../../../include/updateEventStatus.php";
 include "../../../include/permissions.php";
 
@@ -82,210 +83,7 @@ endif;
 	<!--end::Global Stylesheets Bundle-->
 
 	<!-- Custom Styling -->
-	<style>
-		:root {
-			--page-bg-1: #f3f7fb;
-			--page-bg-2: #eef2f8;
-			--card-bg: #ffffff;
-			--soft-border: #e7ecf3;
-			--ink-900: #122033;
-			--ink-700: #3d4e63;
-			--ink-500: #73839a;
-			--brand: #0f6cbf;
-			--brand-deep: #0b4f8d;
-		}
-
-		body {
-			font-family: "Manrope", sans-serif;
-			background: radial-gradient(circle at 10% -10%, #ffffff 0%, var(--page-bg-1) 40%, var(--page-bg-2) 100%);
-		}
-
-		.modern-page {
-			padding-top: 1rem;
-			padding-bottom: 2rem;
-		}
-
-		.modern-event-card {
-			background: var(--card-bg);
-			border: 1px solid var(--soft-border);
-			border-radius: 20px;
-			overflow: hidden;
-			box-shadow: 0 20px 45px rgba(16, 33, 55, 0.08);
-		}
-
-		.modern-card-header {
-			padding: 1.5rem 1.75rem 1rem;
-			border-bottom: 1px solid var(--soft-border);
-			background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-		}
-
-		.modern-card-title {
-			margin: 0;
-			font-size: 1.3rem;
-			font-weight: 800;
-			letter-spacing: -0.02em;
-			color: var(--ink-900);
-		}
-
-		.modern-card-subtitle {
-			margin-top: 0.35rem;
-			font-size: 0.9rem;
-			color: var(--ink-500);
-		}
-
-		.modern-card-body {
-			padding: 1.5rem 1.75rem;
-		}
-
-		.modern-section {
-			background: #fcfdff;
-			border: 1px solid var(--soft-border);
-			border-radius: 14px;
-			padding: 1rem 1rem 0.5rem;
-		}
-
-		.modern-section-title {
-			font-size: 1rem;
-			font-weight: 800;
-			color: var(--ink-900);
-			margin-bottom: 0.25rem;
-		}
-
-		.modern-section-note {
-			font-size: 0.82rem;
-			color: var(--ink-500);
-			margin-bottom: 0.75rem;
-		}
-
-		.form-control,
-		.form-select,
-		textarea.form-control {
-			border: 1px solid var(--soft-border);
-			border-radius: 10px;
-			padding-top: 0.55rem;
-			padding-bottom: 0.55rem;
-			font-size: 0.93rem;
-			color: var(--ink-900);
-			box-shadow: none;
-			transition: border-color 0.2s ease, box-shadow 0.2s ease;
-		}
-
-		.choices__inner {
-			min-height: 38px;
-			border: 1px solid var(--soft-border);
-			border-radius: 10px;
-			font-size: 0.93rem;
-			padding: 0.32rem 0.55rem;
-			background: #fff;
-		}
-
-		.is-focused .choices__inner,
-		.is-open .choices__inner {
-			border-color: rgba(15, 108, 191, 0.5);
-			box-shadow: 0 0 0 0.2rem rgba(15, 108, 191, 0.12);
-		}
-
-		.choices__list--dropdown,
-		.choices__list[aria-expanded] {
-			border: 1px solid var(--soft-border);
-			border-radius: 10px;
-		}
-
-		.form-control:focus,
-		.form-select:focus,
-		textarea.form-control:focus {
-			border-color: rgba(15, 108, 191, 0.5);
-			box-shadow: 0 0 0 0.2rem rgba(15, 108, 191, 0.12);
-		}
-
-		.form-label {
-			font-weight: 600;
-			color: var(--ink-700);
-			margin-bottom: 0.35rem;
-		}
-
-		.event-mode-btn {
-			border-radius: 999px !important;
-			padding: 0.4rem 1rem;
-			font-weight: 700;
-		}
-
-		.event-mode-btn.active {
-			background-color: var(--brand);
-			border-color: var(--brand) !important;
-			color: #fff;
-		}
-
-		.event-img-detail {
-			width: 100%;
-			max-width: 640px;
-			aspect-ratio: 16 / 9;
-			object-fit: cover;
-			border-radius: 14px;
-			border: 1px solid var(--soft-border);
-			display: block;
-			margin: 0 auto;
-			box-shadow: 0 8px 24px rgba(16, 33, 55, 0.1);
-		}
-
-		.alert {
-			position: fixed !important;
-			top: 60px;
-			right: 18px;
-			left: auto;
-			transform: none;
-			z-index: 11000 !important;
-			min-width: 320px;
-			max-width: 460px;
-			border-radius: 12px;
-			box-shadow: 0 12px 32px rgba(16, 33, 55, 0.2);
-		}
-
-		.separator {
-			opacity: 0.8;
-		}
-
-		.modern-actions {
-			padding: 1.2rem 1.5rem;
-			border-top: 1px solid var(--soft-border);
-			background: #fbfdff;
-		}
-
-		@media (max-width: 768px) {
-
-			.modern-card-header,
-			.modern-card-body,
-			.modern-actions {
-				padding-left: 1rem;
-				padding-right: 1rem;
-			}
-
-			.alert {
-				left: 12px;
-				right: 12px;
-				min-width: 0;
-				max-width: none;
-			}
-		}
-
-		.alert-danger {
-			background-color: #f8d7da;
-			border-color: #f5c6cb;
-			color: #721c24;
-		}
-
-		.alert-warning {
-			background-color: #fff3cd;
-			border-color: #ffeeba;
-			color: #856404;
-		}
-
-		.alert-success {
-			background-color: #d4edda;
-			border-color: #c3e6cb;
-			color: #155724;
-		}
-	</style>
+	<link rel="stylesheet" href="styles/create-event.css" />
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -447,11 +245,9 @@ endif;
 													<div class="separator my-7 separator-dotted border-muted"></div>
 													<div class="container modern-section">
 														<!--begin::Tarikh & Masa-->
-														<h5 class="modern-section-title">Date & Time</h5>
-														<?php include('userErrors.php'); ?>
-
-														<div class="mb-4">
-															<div class="mb-4 pt-4 d-flex gap-2">
+														<h5 class="modern-section-title">Event Date & Time</h5>
+														<div class="mb-4"><br>
+															<!-- <div class="mb-4 pt-4 d-flex gap-2">
 																<button type="button"
 																	class="btn btn-outline-dark event-mode-btn active"
 																	id="singleEventBtn">
@@ -466,7 +262,7 @@ endif;
 															<input type="hidden" name="eventType" id="eventTypeInput" value="single">
 														</div>
 
-														<p class="modern-section-note">Single event happens once and can span multiple days.</p>
+														<p class="modern-section-note">Single event happens once and can span multiple days.</p> -->
 														
 														<div class="row g-2 py-2">
 															<!-- Start Date -->
@@ -774,6 +570,27 @@ endif;
 			// 	document.getElementById('eventTypeInput').value = 'recurring';
 			// });
 
+			function showError(msg) {
+				const existing = document.getElementById('jsErrorAlert');
+				if (existing) existing.remove();
+				const div = document.createElement('div');
+				div.id = 'jsErrorAlert';
+				div.className = 'alert alert-danger alert-dismissible fade show';
+				div.role = 'alert';
+				div.innerHTML = msg + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+				document.body.prepend(div);
+				setTimeout(() => { try { new bootstrap.Alert(div).close(); } catch(e) { div.remove(); } }, 5000);
+			}
+
+			function scrollToError(el) {
+				if (!el) return;
+				el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				el.classList.add('field-error-highlight');
+				const clear = () => el.classList.remove('field-error-highlight');
+				el.addEventListener('input', clear, { once: true });
+				el.addEventListener('change', clear, { once: true });
+			}
+
 			//confirm button
 			document.getElementById('confirmBtn').addEventListener('click', function() {
 				function formatDateToDMY(dateStr) {
@@ -848,11 +665,30 @@ endif;
 					locationName
 				});
 
-				// ✅ Validation check before showing modal
-				if (!eventName || !pic || !startDate || !endDate || !state || !locationName) {
-					console.error('❌ VALIDATION FAILED');
-					showError('Please fill all required fields before confirming.');
-					return; // 🔴 STOP execution here
+				// ✅ Validation: scroll to first unfilled required field
+				const picEl = document.getElementById('organiserInput');
+				const picScrollEl = picEl?.closest('.choices') || picEl;
+
+				const requiredChecks = [
+					{ value: eventName,                                             el: document.getElementById('event_name') },
+					{ value: document.getElementById('jenisEvent').value,           el: document.getElementById('jenisEvent') },
+					{ value: document.getElementById('organiserInput').value,       el: picScrollEl },
+					{ value: startDate,                                             el: document.getElementById('startDateMount') },
+					{ value: endDate,                                               el: document.getElementById('endDateMount') },
+					{ value: openRegistration,                                      el: document.getElementById('openRegMount') },
+					{ value: closeRegistration,                                     el: document.getElementById('closeRegMount') },
+					{ value: locationName,                                          el: document.getElementById('location_name') },
+					{ value: addressLine1,                                          el: document.getElementById('address_line1') },
+					{ value: addressCity,                                           el: document.getElementById('address_city') },
+					{ value: addressPostcode,                                       el: document.getElementById('address_postcode') },
+					{ value: document.getElementById('negeriSelect').value,         el: document.getElementById('negeriSelect') },
+				];
+
+				for (const check of requiredChecks) {
+					if (!check.value || !String(check.value).trim()) {
+						scrollToError(check.el);
+						return;
+					}
 				}
 
 				// Additional client-side date validation

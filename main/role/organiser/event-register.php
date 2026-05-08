@@ -1,6 +1,7 @@
 <?php
 session_start();
 include "../../../include/config.php";
+/** @var mysqli $conn */
 include "../../../include/qrEmail.php";
 
 // Must be logged in

@@ -1,6 +1,7 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 include "../../../include/config.php";
+/** @var mysqli $conn */
 include "../../../include/updateEventStatus.php";
 include "../../../include/permissions.php";
 

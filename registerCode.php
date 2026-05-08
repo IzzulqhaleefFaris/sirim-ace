@@ -3,6 +3,7 @@
 session_start();
 
 require_once('include/config.php');
+/** @var mysqli $conn */
 require_once('include/aes7.php');
 
 $conn->begin_transaction();

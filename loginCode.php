@@ -17,6 +17,7 @@ if (
 }
 
 require_once('include/config.php');
+/** @var mysqli $conn */
 require_once('include/aes7.php');
  
 if(isset($_POST['login']))

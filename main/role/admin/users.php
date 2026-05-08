@@ -1,6 +1,7 @@
 <?php
 session_start();
 include "../../../include/config.php";
+/** @var mysqli $conn */
 include "../../../include/permissions.php";
 
 require_admin();

@@ -1,6 +1,7 @@
 <?php
 //include("auth.php"); //include auth.php file on all secure pages
 include __DIR__ . "/config.php";
+/** @var mysqli $conn */
 ini_set('max_execution_time', 300);
 error_reporting(0);
 if (!isset($_SESSION)) {

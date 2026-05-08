@@ -17,6 +17,8 @@
 ?> 
 
 <?php
+    if (isset($conn)) return; // guard: only run once
+
     require_once __DIR__ . '/../vendor/autoload.php';
 
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
@@ -32,11 +34,15 @@
     $dbpass = '';
     $dbname = 'sirimsen_soljar';
 
+    /** @var mysqli $conn */
     $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
 
     if (!$conn) {
         die("Database connection failed: " . mysqli_connect_error());
     }
+
+    // make available in $GLOBALS for any callers expecting it
+    $GLOBALS['conn'] = $conn;
 
     mysqli_set_charset($conn, "utf8mb4");
 
