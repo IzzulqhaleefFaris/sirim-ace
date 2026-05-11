@@ -39,6 +39,7 @@ function sendHtmlEmail(
 
     try {
         $mail->isSMTP();
+        $mail->CharSet   = PHPMailer::CHARSET_UTF8;
         $mail->Host       = $config['host'];
         $mail->SMTPAuth   = true;
         $mail->Username   = $config['username'];
@@ -47,7 +48,9 @@ function sendHtmlEmail(
         $mail->Port       = $config['port'];
 
         $mail->setFrom($config['fromEmail'], $config['fromName']);
+        $mail->addReplyTo($config['fromEmail'], $config['fromName']);
         $mail->addAddress($toEmail, $toName);
+        $mail->XMailer = 'SIRIM ACE Mailer';
 
         $mail->isHTML(true);
         $mail->Subject = $subject;

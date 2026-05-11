@@ -3,88 +3,13 @@ session_start();
 include "include/config.php";
 /** @var mysqli $conn */
 include "include/updateEventStatus.php";
-require_once __DIR__ . '/vendor/autoload.php';
-
-use SendGrid\Mail\Mail;
-
-function sendWalkInQrEmail(string $recipientEmail, string $recipientName, string $registrationId, string $eventId, string $eventName, string $qrUrl, ?string &$failureReason = null): bool
-{
-    $failureReason = null;
-
-    $apiKey = getenv('SENDGRID_API_KEY');
-    if ($apiKey === false || $apiKey === '') {
-        $envKey = $_ENV['SENDGRID_API_KEY'] ?? '';
-        $apiKey = $envKey !== '' ? $envKey : null;
-    }
-
-    if (!$apiKey) {
-        $failureReason = 'SENDGRID_API_KEY is not set on the server.';
-        return false;
-    }
-
-    if (!$recipientEmail) {
-        $failureReason = 'Recipient email address is empty.';
-        return false;
-    }
-
-    $fromEmail = getenv('SENDGRID_FROM_EMAIL') ?: 'izzulqhaleef@sirim.my';
-    $fromName = getenv('SENDGRID_FROM_NAME') ?: 'SIRIM Attendance';
-
-    if (!$fromEmail) {
-        $failureReason = 'SENDGRID_FROM_EMAIL is not set.';
-        return false;
-    }
-
-    $mail = new Mail();
-    $mail->setFrom($fromEmail, $fromName);
-    $mail->setSubject('Walk-in QR Registration - ' . $eventName);
-    $mail->addTo($recipientEmail, $recipientName !== '' ? $recipientName : 'Participant');
-
-    $textContent = "Walk-in registration successful.\n" .
-        "Event: {$eventName} ({$eventId})\n" .
-        "Registration ID: {$registrationId}\n" .
-        "QR Link: {$qrUrl}\n";
-
-    $htmlContent = "
-        <h3>Walk-in Registration Successful</h3>
-        <p><strong>Event:</strong> {$eventName} ({$eventId})</p>
-        <p><strong>Registration ID:</strong> {$registrationId}</p>
-        <p>Please show this QR to the staff for scanning:</p>
-        <p><img src=\"{$qrUrl}\" alt=\"Walk-in QR\" style=\"max-width:240px;border:1px solid #ddd;padding:8px;border-radius:8px;\"></p>
-        <p>If the image is not displayed, use this link: <a href=\"{$qrUrl}\">View QR</a></p>
-    ";
-
-    $mail->addContent('text/plain', $textContent);
-    $mail->addContent('text/html', $htmlContent);
-
-    try {
-        $sendgrid = new \SendGrid($apiKey);
-        $response = $sendgrid->send($mail);
-
-        if ($response->statusCode() >= 400) {
-            $failureReason = 'SendGrid rejected the request (HTTP ' . $response->statusCode() . ').';
-            error_log('SendGrid walk-in email rejected: HTTP ' . $response->statusCode() . ' | Body: ' . $response->body());
-            return false;
-        }
-
-        return true;
-    } catch (Exception $mailError) {
-        error_log('SendGrid walk-in email error: ' . $mailError->getMessage());
-        $failureReason = $mailError->getMessage();
-        return false;
-    }
-}
-
 updateEventStatuses($conn);
 
 $eventId = trim($_GET['event'] ?? $_POST['event'] ?? '');
 $event = null;
 $error = null;
 $success = null;
-$qrUrl = null;
 $registrationId = null;
-$emailInfo = null;
-
 if ($eventId === '') {
     $error = 'Invalid event.';
 } else {
@@ -148,23 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                         $existing = $dupRes->fetch_assoc();
                         $registrationId = $existing['registration_id'];
                         $success = 'Anda sudah berdaftar sebagai walk-in untuk event ini.';
-                        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' . urlencode($registrationId);
-
-                        if ($walkinEmail !== '') {
-                            $mailReason = null;
-                            $sent = sendWalkInQrEmail(
-                                $walkinEmail,
-                                $walkinName,
-                                $registrationId,
-                                $eventId,
-                                $event['event_name'] ?? 'Event',
-                                $qrUrl,
-                                $mailReason
-                            );
-                            $emailInfo = $sent
-                                ? 'The QR has also been sent to your email.'
-                                : 'QR could not be sent to email: ' . ($mailReason ?: 'Unknown error') . ' Please use the QR on this page.';
-                        }
                     }
                     $dupStmt->close();
                 }
@@ -214,22 +122,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                 if ($insertStmt->execute()) {
                     $registrationId = $newCode;
                     $success = 'Walk-in registration successful.';
-                    $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' . urlencode($registrationId);
-
-                    if ($walkinEmail !== '') {
-                        $mailReason = null;
-                        $sent = sendWalkInQrEmail(
-                            $walkinEmail,
-                            $walkinName,
-                            $registrationId,
-                            $eventId,
-                            $event['event_name'] ?? 'Event',
-                            $qrUrl,
-                            $mailReason
-                        );
-                        $emailInfo = $sent
-                            ? 'The QR has also been sent to your email.'
-                            : 'QR could not be sent to email: ' . ($mailReason ?: 'Unknown error') . ' Please use the QR on this page.';
+                    // Mark attendance as Present immediately
+                    $attNextId = 'ATT0001';
+                    $attLast = $conn->query("SELECT attendance_id FROM att_attendance ORDER BY attendance_id DESC LIMIT 1");
+                    if ($attLast && $attRow = $attLast->fetch_assoc()) {
+                        $attLastNum = (int) substr($attRow['attendance_id'], 3);
+                        $attNextId = 'ATT' . str_pad($attLastNum + 1, 4, '0', STR_PAD_LEFT);
+                    }
+                    $attInsert = $conn->prepare("
+                        INSERT INTO att_attendance
+                            (attendance_id, registration_id, event_id, participant_id, check_in_time, attendance_status)
+                        VALUES (?, ?, ?, ?, NOW(), 'Present')
+                    ");
+                    if ($attInsert) {
+                        $attInsert->bind_param("ssss", $attNextId, $registrationId, $eventId, $walkinParticipantId);
+                        $attInsert->execute();
+                        $attInsert->close();
                     }
                 } else {
                     $error = 'Registration failed. Please try again.';
@@ -309,17 +217,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                     <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
                 <?php endif; ?>
 
-                <?php if ($emailInfo): ?>
-                    <div class="alert alert-info"><?= htmlspecialchars($emailInfo) ?></div>
-                <?php endif; ?>
-
                 <?php if ($registrationId): ?>
                     <div class="text-center mb-5">
                         <div class="fw-bold mb-2">Registration ID: <?= htmlspecialchars($registrationId) ?></div>
-                        <?php if ($qrUrl): ?>
-                            <img src="<?= htmlspecialchars($qrUrl) ?>" alt="Walk-in QR" class="img-fluid border rounded p-2 bg-white" style="max-width: 260px;">
-                        <?php endif; ?>
-                        <div class="small text-muted mt-2">Show this QR to staff for scanning.</div>
                     </div>
                 <?php endif; ?>
 

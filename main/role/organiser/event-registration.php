@@ -340,9 +340,12 @@ unset($_SESSION['msg']);
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
                                     <div class="fw-bold">Registrations & Attendance</div>
-                                    <div class="d-flex align-items-center gap-2">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <button id="sendQrBlastBtn" type="button" class="btn btn-sm btn-warning d-none">
+                                            <i class="bi bi-envelope-fill me-1"></i>Send QR Email (<span id="blastCount">0</span>)
+                                        </button>
                                         <label class="text-muted small mb-0">Filter:</label>
                                         <select id="statusFilter" class="form-select form-select-sm" style="width: 180px;">
                                             <option value="">All</option>
@@ -358,6 +361,7 @@ unset($_SESSION['msg']);
                                             <table id="regTable" class="table table-hover align-middle">
                                                 <thead class="table-light">
                                                     <tr>
+                                                        <th style="width:36px;"><input type="checkbox" id="selectAllChk" title="Select all"></th>
                                                         <th>No</th>
                                                         <th>Registration ID</th>
                                                         <th>Participant ID</th>
@@ -373,13 +377,19 @@ unset($_SESSION['msg']);
                                                 <tbody>
                                                     <?php $i = 1; ?>
                                                     <?php foreach ($all as $r): ?>
-                                                        <tr>
+                                                        <tr data-status="<?= htmlspecialchars($r['_status']) ?>">
+                                                            <td class="text-center">
+                                                                <input type="checkbox" class="reg-chk"
+                                                                    data-id="<?= htmlspecialchars($r['registration_id']) ?>"
+                                                                    data-email="<?= htmlspecialchars($r['participant_email'] ?? '') ?>"
+                                                                    data-name="<?= htmlspecialchars($r['participant_name'] ?? '') ?>">
+                                                            </td>
                                                             <td class="text-center"><?= $i++ ?></td>
                                                             <td><?= htmlspecialchars($r['registration_id']) ?></td>
                                                             <td><?= htmlspecialchars($r['participant_id']) ?></td>
                                                             <td>
                                                                 <?php $source = strtolower($r['registration_source'] ?? 'account'); ?>
-                                                                <span class="badge <?= $source === 'walk_in' ? 'bg-info' : 'bg-dark' ?>">
+                                                                <span class="badge <?= $source === 'walk_in' ? 'bg-primary' : 'bg-secondary' ?>">
                                                                     <?= $source === 'walk_in' ? 'Walk-in' : 'Account' ?>
                                                                 </span>
                                                             </td>
@@ -405,6 +415,16 @@ unset($_SESSION['msg']);
                                     <?php else: ?>
                                         <div class="alert alert-light border text-center mb-0">No registrations found for this event</div>
                                     <?php endif; ?>
+                                </div>
+                                <div class="card-footer bg-white border-top-0 pt-0 pb-3 px-4">
+                                    <small class="text-muted me-3 fw-semibold">Status:</small>
+                                    <span class="badge bg-warning text-dark me-2">Registered</span>
+                                    <span class="badge bg-success me-2">Present</span>
+                                    <span class="badge bg-danger me-2">Absent</span>
+                                    <span class="text-muted mx-2">|</span>
+                                    <small class="text-muted fw-semibold me-2">Source:</small>
+                                    <span class="badge bg-secondary me-2">Account</span>
+                                    <span class="badge bg-primary me-2">Walk-in</span>
                                 </div>
                             </div>
 
@@ -538,7 +558,10 @@ unset($_SESSION['msg']);
                 table = window.jQuery('#regTable').DataTable({
                     pageLength: 25,
                     order: [
-                        [0, 'asc']
+                        [1, 'asc']
+                    ],
+                    columnDefs: [
+                        { orderable: false, targets: 0 }
                     ],
                     language: {
                         search: 'Search:',
@@ -557,7 +580,7 @@ unset($_SESSION['msg']);
                 statusFilter.addEventListener('change', function() {
                     if (!table) return;
                     const val = this.value;
-                    table.column(8).search(val ? val : '', true, false).draw();
+                    table.column(9).search(val ? val : '', true, false).draw();
                 });
             }
 
@@ -711,8 +734,148 @@ unset($_SESSION['msg']);
             });
 
             setMode('staff');
+
+            // ── QR Email Blast ───────────────────────────────────────────
+            const selectAllChk   = document.getElementById('selectAllChk');
+            const sendQrBlastBtn = document.getElementById('sendQrBlastBtn');
+            const blastCountEl   = document.getElementById('blastCount');
+
+            function getCheckedBoxes() {
+                return Array.from(document.querySelectorAll('.reg-chk:checked'));
+            }
+
+            function updateBlastToolbar() {
+                const checked = getCheckedBoxes();
+                if (checked.length > 0) {
+                    sendQrBlastBtn.classList.remove('d-none');
+                    blastCountEl.textContent = checked.length;
+                } else {
+                    sendQrBlastBtn.classList.add('d-none');
+                    blastCountEl.textContent = '0';
+                }
+            }
+
+            if (selectAllChk) {
+                selectAllChk.addEventListener('change', function () {
+                    document.querySelectorAll('.reg-chk').forEach(function (chk) {
+                        chk.checked = selectAllChk.checked;
+                    });
+                    updateBlastToolbar();
+                });
+            }
+
+            document.addEventListener('change', function (e) {
+                if (!e.target.classList.contains('reg-chk')) return;
+                // Sync select-all state
+                const all     = document.querySelectorAll('.reg-chk');
+                const checked = document.querySelectorAll('.reg-chk:checked');
+                if (selectAllChk) {
+                    selectAllChk.checked       = all.length > 0 && all.length === checked.length;
+                    selectAllChk.indeterminate = checked.length > 0 && checked.length < all.length;
+                }
+                updateBlastToolbar();
+            });
+
+            const qrBlastModal    = document.getElementById('qrBlastModal')    ? new bootstrap.Modal(document.getElementById('qrBlastModal'))    : null;
+            const qrBlastSendBtn  = document.getElementById('qrBlastSendBtn');
+            const blastRecipient  = document.getElementById('blastRecipientCount');
+            const blastWarning    = document.getElementById('blastNoEmailWarning');
+            const blastInstructions = document.getElementById('blastInstructions');
+
+            if (sendQrBlastBtn) {
+                sendQrBlastBtn.addEventListener('click', function () {
+                    const checked = getCheckedBoxes();
+                    if (checked.length === 0) return;
+
+                    const withoutEmail = checked.filter(function (c) { return !c.dataset.email || c.dataset.email === '-' || c.dataset.email === ''; }).length;
+
+                    if (blastRecipient) blastRecipient.textContent = checked.length;
+                    if (blastWarning) {
+                        if (withoutEmail > 0) {
+                            blastWarning.textContent = withoutEmail + ' participant(s) have no email address and will be skipped.';
+                            blastWarning.style.display = '';
+                        } else {
+                            blastWarning.style.display = 'none';
+                        }
+                    }
+                    if (blastInstructions) blastInstructions.value = '';
+
+                    if (qrBlastModal) qrBlastModal.show();
+                });
+            }
+
+            if (qrBlastSendBtn) {
+                qrBlastSendBtn.addEventListener('click', function () {
+                    const checked = getCheckedBoxes();
+                    if (checked.length === 0) return;
+
+                    qrBlastSendBtn.disabled = true;
+                    qrBlastSendBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Sending…';
+
+                    const formData = new FormData();
+                    formData.append('event_id', <?= json_encode($eventId) ?>);
+                    formData.append('instructions', blastInstructions ? blastInstructions.value : '');
+                    checked.forEach(function (chk) {
+                        formData.append('registration_ids[]', chk.dataset.id);
+                    });
+
+                    fetch('../../api/send-qr-blast.php', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    })
+                    .then(function (res) { return res.json(); })
+                    .then(function (data) {
+                        if (qrBlastModal) qrBlastModal.hide();
+                        let msg = 'Sent: ' + data.sent + '  |  Failed: ' + data.failed;
+                        if (data.errors && data.errors.length > 0) {
+                            msg += '\n\nDetails:\n' + data.errors.map(function (e) {
+                                return '• ' + e.id + ': ' + e.reason;
+                            }).join('\n');
+                        }
+                        alert(msg);
+                    })
+                    .catch(function (err) {
+                        alert('Request failed: ' + err.message);
+                    })
+                    .finally(function () {
+                        qrBlastSendBtn.disabled = false;
+                        qrBlastSendBtn.innerHTML = '<i class="bi bi-send me-1"></i>Send Email';
+                        sendQrBlastBtn.innerHTML = '<i class="bi bi-envelope-fill me-1"></i>Send QR Email (<span id="blastCount">' + getCheckedBoxes().length + '</span>)';
+                        blastCountEl && (blastCountEl.textContent = getCheckedBoxes().length);
+                    });
+                });
+            }
         });
     </script>
+<!-- QR Blast Instructions Modal -->
+<div class="modal fade" id="qrBlastModal" tabindex="-1" aria-labelledby="qrBlastModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qrBlastModalLabel"><i class="bi bi-envelope-fill me-2"></i>Send QR Email</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-1">Sending to <strong><span id="blastRecipientCount">0</span> participant(s)</strong>.</p>
+                <div id="blastNoEmailWarning" class="alert alert-warning py-2 small mb-3" style="display:none;"></div>
+                <div class="mb-3">
+                    <label for="blastInstructions" class="form-label fw-semibold">Instructions <span class="text-muted fw-normal">(optional)</span></label>
+                    <textarea id="blastInstructions" class="form-control" rows="5"
+                        placeholder="Enter any instructions to include in the email, e.g. parking info, dress code, items to bring..."></textarea>
+                    <div class="form-text">This text will appear in an &ldquo;Instructions&rdquo; section inside the email.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="qrBlastSendBtn" class="btn btn-warning fw-semibold">
+                    <i class="bi bi-send me-1"></i>Send Email
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 
 </html>
