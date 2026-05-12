@@ -346,6 +346,9 @@ unset($_SESSION['msg']);
                                         <button id="sendQrBlastBtn" type="button" class="btn btn-sm btn-warning d-none">
                                             <i class="bi bi-envelope-fill me-1"></i>Send QR Email (<span id="blastCount">0</span>)
                                         </button>
+                                        <button id="deleteSelectedBtn" type="button" class="btn btn-sm btn-danger d-none">
+                                            <i class="bi bi-trash me-1"></i>Delete Selected (<span id="deleteCount">0</span>)
+                                        </button>
                                         <label class="text-muted small mb-0">Filter:</label>
                                         <select id="statusFilter" class="form-select form-select-sm" style="width: 180px;">
                                             <option value="">All</option>
@@ -428,7 +431,32 @@ unset($_SESSION['msg']);
                                 </div>
                             </div>
 
-                            <div class="modal fade" id="walkInQrModal" tabindex="-1" aria-labelledby="walkInQrModalLabel" aria-hidden="true">
+                            <!-- Delete Participants Confirmation Modal -->
+            <div class="modal fade" id="deleteParticipantsModal" tabindex="-1" aria-labelledby="deleteParticipantsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteParticipantsModalLabel"><i class="bi bi-trash me-2"></i>Delete Participants</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-danger py-2 small mb-3">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                This will permanently remove the selected participant(s) from the list. This action cannot be undone.
+                            </div>
+                            <p class="mb-0">Are you sure you want to delete <strong><span id="deleteModalCount">0</span> participant(s)</strong>?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" id="confirmDeleteBtn" class="btn btn-danger fw-semibold">
+                                <i class="bi bi-trash me-1"></i>Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="walkInQrModal" tabindex="-1" aria-labelledby="walkInQrModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -761,6 +789,9 @@ unset($_SESSION['msg']);
                         chk.checked = selectAllChk.checked;
                     });
                     updateBlastToolbar();
+                    const checked2 = getCheckedBoxes();
+                    deleteSelectedBtn && deleteSelectedBtn.classList.toggle('d-none', checked2.length === 0);
+                    if (deleteCountEl) deleteCountEl.textContent = checked2.length;
                 });
             }
 
@@ -774,7 +805,76 @@ unset($_SESSION['msg']);
                     selectAllChk.indeterminate = checked.length > 0 && checked.length < all.length;
                 }
                 updateBlastToolbar();
+                deleteSelectedBtn && deleteSelectedBtn.classList.toggle('d-none', checked.length === 0);
+                if (deleteCountEl) deleteCountEl.textContent = checked.length;
             });
+
+            // ── Delete Participants ──────────────────────────────────────────
+            const deleteSelectedBtn   = document.getElementById('deleteSelectedBtn');
+            const deleteCountEl       = document.getElementById('deleteCount');
+            const deleteParticipantsModal = document.getElementById('deleteParticipantsModal') ? new bootstrap.Modal(document.getElementById('deleteParticipantsModal')) : null;
+            const deleteModalCountEl  = document.getElementById('deleteModalCount');
+            const confirmDeleteBtn    = document.getElementById('confirmDeleteBtn');
+
+            const origUpdateBlastToolbar = updateBlastToolbar;
+            function updateAllToolbars() {
+                origUpdateBlastToolbar();
+                const checked = getCheckedBoxes();
+                if (checked.length > 0) {
+                    deleteSelectedBtn && deleteSelectedBtn.classList.remove('d-none');
+                    if (deleteCountEl) deleteCountEl.textContent = checked.length;
+                } else {
+                    deleteSelectedBtn && deleteSelectedBtn.classList.add('d-none');
+                    if (deleteCountEl) deleteCountEl.textContent = '0';
+                }
+            }
+
+            if (deleteSelectedBtn) {
+                deleteSelectedBtn.addEventListener('click', function () {
+                    const checked = getCheckedBoxes();
+                    if (checked.length === 0) return;
+                    if (deleteModalCountEl) deleteModalCountEl.textContent = checked.length;
+                    if (deleteParticipantsModal) deleteParticipantsModal.show();
+                });
+            }
+
+            if (confirmDeleteBtn) {
+                confirmDeleteBtn.addEventListener('click', function () {
+                    const checked = getCheckedBoxes();
+                    if (checked.length === 0) return;
+
+                    confirmDeleteBtn.disabled = true;
+                    confirmDeleteBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Deleting…';
+
+                    const formData = new FormData();
+                    formData.append('event_id', <?= json_encode($eventId) ?>);
+                    checked.forEach(function (chk) {
+                        formData.append('registration_ids[]', chk.dataset.id);
+                    });
+
+                    fetch('../../api/delete-participants.php', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    })
+                    .then(function (res) { return res.json(); })
+                    .then(function (data) {
+                        if (deleteParticipantsModal) deleteParticipantsModal.hide();
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            alert('Delete failed: ' + (data.message || 'Unknown error'));
+                        }
+                    })
+                    .catch(function (err) {
+                        alert('Request failed: ' + err.message);
+                    })
+                    .finally(function () {
+                        confirmDeleteBtn.disabled = false;
+                        confirmDeleteBtn.innerHTML = '<i class="bi bi-trash me-1"></i>Delete';
+                    });
+                });
+            }
 
             const qrBlastModal    = document.getElementById('qrBlastModal')    ? new bootstrap.Modal(document.getElementById('qrBlastModal'))    : null;
             const qrBlastSendBtn  = document.getElementById('qrBlastSendBtn');
