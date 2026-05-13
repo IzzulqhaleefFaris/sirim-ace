@@ -22,7 +22,7 @@ if (!function_exists('wrapEmailLayout')) {
 <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:8px;overflow:hidden;">
 <tr><td align="center" style="padding:20px;font-size:26px;font-weight:bold;color:#2d336b;">SIRIM ACE</td></tr>
-<tr><td><img src="https://www.businesstoday.com.my/wp-content/uploads/2022/12/SIRIM.jpg" width="100%" style="display:block;"></td></tr>
+<tr><td><img src="cid:banner_img" width="100%" style="display:block;"></td></tr>
 <tr><td style="padding:30px;color:#333;">{$innerHtml}</td></tr>
 <tr><td align="center" style="padding:20px;font-size:12px;color:#999;">This is an automated email from SIRIM ACE. Please do not reply.</td></tr>
 </table>
@@ -186,6 +186,15 @@ function sendQrBlastEmail(
 
     // Build embedded images list for PHPMailer CID attachment
     $embeddedImages = [];
+    $bannerPath = __DIR__ . '/../../../../images/custom/Sirim-50.jpg';
+    if (file_exists($bannerPath)) {
+        $embeddedImages[] = [
+            'path' => $bannerPath,
+            'cid'  => 'banner_img',
+            'name' => 'Sirim-50.jpg',
+            'type' => 'image/jpeg',
+        ];
+    }
     if ($agendaImagePath !== '' && file_exists($agendaImagePath)) {
         $mime = (new finfo(FILEINFO_MIME_TYPE))->file($agendaImagePath);
         $embeddedImages[] = [
