@@ -51,7 +51,16 @@ if (empty($regIds)) {
 }
 
 // ── Verify event exists & caller has access ───────────────────────────────
-$evStmt = $conn->prepare("SELECT event_id, event_name, event_startDate, event_endDate, event_owner_id FROM att_event WHERE event_id = ? LIMIT 1");
+$evStmt = $conn->prepare("
+    SELECT e.event_id, e.event_name, e.event_startDate, e.event_endDate,
+           e.event_startTime, e.event_endTime, e.event_owner_id,
+           l.location_name, l.location_buildingName, l.location_level, l.location_room,
+           l.address_line1, l.address_line2, l.address_city, l.address_postcode,
+           s.state_name
+    FROM att_event e
+    LEFT JOIN att_location l ON l.location_id = e.location_id
+    LEFT JOIN att_state s    ON s.state_id    = l.state_id
+    WHERE e.event_id = ? LIMIT 1");
 if (!$evStmt) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Server error.']);
@@ -135,6 +144,26 @@ foreach ($rows as $row) {
         continue;
     }
 
+    // Build venue string from location fields
+    $locParts = [];
+    foreach (['location_name', 'location_buildingName'] as $col) {
+        $val = trim((string)($event[$col] ?? ''));
+        if ($val !== '') $locParts[] = $val;
+    }
+    $level = trim((string)($event['location_level'] ?? ''));
+    $room  = trim((string)($event['location_room']  ?? ''));
+    if ($level !== '') $locParts[] = 'Level ' . $level;
+    if ($room  !== '') $locParts[] = 'Room '  . $room;
+    $venueStr = implode(', ', $locParts);
+
+    // Build address string
+    $addrParts = [];
+    foreach (['address_line1', 'address_line2', 'address_city', 'address_postcode', 'state_name'] as $col) {
+        $val = trim((string)($event[$col] ?? ''));
+        if ($val !== '') $addrParts[] = $val;
+    }
+    $addressStr = implode(', ', $addrParts);
+
     $result = sendQrBlastEmail(
         $email,
         $name,
@@ -145,7 +174,11 @@ foreach ($rows as $row) {
         $event['event_endDate'],
         trim($row['phone']   ?? ''),
         trim($row['company'] ?? ''),
-        $instructions
+        $instructions,
+        (string)($event['event_startTime'] ?? ''),
+        (string)($event['event_endTime']   ?? ''),
+        $venueStr,
+        $addressStr
     );
 
     if ($result['sent']) {

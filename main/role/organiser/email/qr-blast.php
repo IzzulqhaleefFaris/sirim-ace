@@ -44,6 +44,9 @@ function buildQrBlastHtml(array $vars): string
     $phoneRow   = ($vars['phone']   !== '') ? "<tr><td style=\"padding:6px 0;width:160px;\"><strong>Phone:</strong></td><td>{$v['phone']}</td></tr>" : '';
     $companyRow = ($vars['company'] !== '') ? "<tr><td style=\"padding:6px 0;width:160px;\"><strong>Company:</strong></td><td>{$v['company']}</td></tr>" : '';
     $emailRow   = ($vars['email']   !== '') ? "<tr><td style=\"padding:6px 0;width:160px;\"><strong>Email:</strong></td><td>{$v['email']}</td></tr>" : '';
+    $timeRow    = ($vars['event_time'] !== '') ? "<tr><td style=\"padding:6px 0;width:160px;\"><strong>Time:</strong></td><td>{$v['event_time']}</td></tr>" : '';
+    $venueRow   = ($vars['venue']      !== '') ? "<tr><td style=\"padding:6px 0;width:160px;\"><strong>Venue:</strong></td><td>{$v['venue']}</td></tr>" : '';
+    $addressRow = ($vars['address']    !== '') ? "<tr><td style=\"padding:6px 0;width:160px;\"><strong>Address:</strong></td><td>{$v['address']}</td></tr>" : '';
 
     // Instructions block — only shown when provided
     $instructionsBlock = '';
@@ -62,6 +65,9 @@ INST;
 <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;font-size:15px;">
 <tr><td style="padding:6px 0;width:160px;"><strong>Event Name:</strong></td><td>{$v['event_name']}</td></tr>
 <tr><td style="padding:6px 0;width:160px;"><strong>Event Date:</strong></td><td>{$v['event_date']}</td></tr>
+{$timeRow}
+{$venueRow}
+{$addressRow}
 <tr><td style="padding:6px 0;width:160px;"><strong>Name:</strong></td><td>{$v['participant_name']}</td></tr>
 {$emailRow}
 {$phoneRow}
@@ -96,7 +102,11 @@ function sendQrBlastEmail(
     string $eventEndDate,
     string $phone = '',
     string $company = '',
-    string $instructions = ''
+    string $instructions = '',
+    string $eventStartTime = '',
+    string $eventEndTime = '',
+    string $venue = '',
+    string $address = ''
 ): array {
     $config = resolveMailConfig();
     if (!$config) {
@@ -130,11 +140,28 @@ function sendQrBlastEmail(
         ? $startFormatted
         : trim($startFormatted . ($startFormatted && $endFormatted ? ' - ' : '') . $endFormatted);
 
+    // Build time string
+    $eventTime = '';
+    try {
+        $tStart = $eventStartTime ? (new DateTime($eventStartTime))->format('h:i A') : '';
+        $tEnd   = $eventEndTime   ? (new DateTime($eventEndTime))->format('h:i A')   : '';
+        if ($tStart && $tEnd) {
+            $eventTime = $tStart . ' – ' . $tEnd;
+        } elseif ($tStart) {
+            $eventTime = $tStart;
+        }
+    } catch (Exception $e) {
+        $eventTime = trim($eventStartTime . ($eventEndTime ? ' – ' . $eventEndTime : ''));
+    }
+
     $vars = [
         'participant_name' => $toName ?: 'Participant',
         'email'            => $toEmail,
         'event_name'       => $eventName,
         'event_date'       => $eventDate,
+        'event_time'       => $eventTime,
+        'venue'            => $venue,
+        'address'          => $address,
         'phone'            => $phone,
         'company'          => $company,
         'instructions'     => $instructions,
