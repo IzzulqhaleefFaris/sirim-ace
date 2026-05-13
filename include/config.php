@@ -24,15 +24,10 @@
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
     $dotenv->safeLoad();
 
-    // $dbhost = '103.117.20.189'; 
-    // $dbuser = 'sirimsen_soljar_u';
-    // $dbpass = 'pbBEgKE#lL1^kJ^AnhNT{MD%NRrV3aiV';
-    // $dbname = 'sirimsen_soljar';
-
-    $dbhost = 'localhost'; 
-    $dbuser = 'root';
-    $dbpass = '';
-    $dbname = 'sirimsen_soljar';
+    $dbhost = $_ENV['DB_HOST'];
+    $dbuser = $_ENV['DB_USER'];
+    $dbpass = $_ENV['DB_PASS'];
+    $dbname = $_ENV['DB_NAME'];
 
     /** @var mysqli $conn */
     $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
