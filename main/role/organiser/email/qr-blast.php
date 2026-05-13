@@ -58,6 +58,17 @@ function buildQrBlastHtml(array $vars): string
 INST;
     }
 
+    // Agenda image block — only shown when provided (uses CID embed)
+    $agendaBlock = '';
+    if (!empty($vars['agenda_image_path']) && file_exists($vars['agenda_image_path'])) {
+        $agendaBlock = <<<AGENDA
+<h3 style="margin-top:25px;font-size:18px;color:#2d336b;">Agenda</h3>
+<div style="text-align:center;margin-top:10px;">
+  <img src="cid:agenda_img" alt="Agenda" style="max-width:100%;height:auto;border-radius:6px;border:1px solid #eee;">
+</div>
+AGENDA;
+    }
+
     $inner = <<<HTML
 <h2 style="margin-top:0;color:#2f4f4f;">Your Event Registration QR Code</h2>
 <p>Hello {$v['participant_name']},</p>
@@ -74,6 +85,7 @@ INST;
 {$companyRow}
 </table>
 {$instructionsBlock}
+{$agendaBlock}
 <h3 style="margin-top:25px;font-size:18px;color:#2d336b;">Your QR Code</h3>
 <table cellpadding="0" cellspacing="0" align="center" style="margin:16px auto;">
 <tr><td align="center" style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:12px;">
@@ -106,7 +118,8 @@ function sendQrBlastEmail(
     string $eventStartTime = '',
     string $eventEndTime = '',
     string $venue = '',
-    string $address = ''
+    string $address = '',
+    string $agendaImagePath = ''
 ): array {
     $config = resolveMailConfig();
     if (!$config) {
@@ -164,11 +177,24 @@ function sendQrBlastEmail(
         'address'          => $address,
         'phone'            => $phone,
         'company'          => $company,
-        'instructions'     => $instructions,
-        'qr_url'           => $qrUrl,
+        'instructions'      => $instructions,
+        'agenda_image_path'  => $agendaImagePath,
+        'qr_url'             => $qrUrl,
     ];
 
     $html = buildQrBlastHtml($vars);
+
+    // Build embedded images list for PHPMailer CID attachment
+    $embeddedImages = [];
+    if ($agendaImagePath !== '' && file_exists($agendaImagePath)) {
+        $mime = (new finfo(FILEINFO_MIME_TYPE))->file($agendaImagePath);
+        $embeddedImages[] = [
+            'path' => $agendaImagePath,
+            'cid'  => 'agenda_img',
+            'name' => 'agenda.' . strtolower(pathinfo($agendaImagePath, PATHINFO_EXTENSION) ?: 'jpg'),
+            'type' => $mime ?: 'image/jpeg',
+        ];
+    }
 
     ob_start();
     sendHtmlEmail(
@@ -177,7 +203,8 @@ function sendQrBlastEmail(
         $toName ?: 'Participant',
         'QR Code – ' . $eventName,
         $html,
-        'QR Blast [' . $registrationId . ']'
+        'QR Blast [' . $registrationId . ']',
+        $embeddedImages
     );
     ob_end_clean();
 

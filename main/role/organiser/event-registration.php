@@ -899,6 +899,10 @@ unset($_SESSION['msg']);
                         }
                     }
                     if (blastInstructions) blastInstructions.value = '';
+                    const blastAgenda = document.getElementById('blastAgenda');
+                    if (blastAgenda) blastAgenda.value = '';
+                    const blastAgendaError = document.getElementById('blastAgendaError');
+                    if (blastAgendaError) blastAgendaError.style.display = 'none';
 
                     if (qrBlastModal) qrBlastModal.show();
                 });
@@ -915,6 +919,28 @@ unset($_SESSION['msg']);
                     const formData = new FormData();
                     formData.append('event_id', <?= json_encode($eventId) ?>);
                     formData.append('instructions', blastInstructions ? blastInstructions.value : '');
+
+                    const blastAgendaFile = document.getElementById('blastAgenda');
+                    if (blastAgendaFile && blastAgendaFile.files[0]) {
+                        const agendaFile = blastAgendaFile.files[0];
+                        const agendaError = document.getElementById('blastAgendaError');
+                        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                        if (!allowedTypes.includes(agendaFile.type)) {
+                            if (agendaError) { agendaError.textContent = 'Agenda must be an image (JPEG, PNG, GIF, WEBP).'; agendaError.style.display = ''; }
+                            qrBlastSendBtn.disabled = false;
+                            qrBlastSendBtn.innerHTML = '<i class="bi bi-send me-1"></i>Send Email';
+                            return;
+                        }
+                        if (agendaFile.size > 10 * 1024 * 1024) {
+                            if (agendaError) { agendaError.textContent = 'Agenda image must be under 10 MB.'; agendaError.style.display = ''; }
+                            qrBlastSendBtn.disabled = false;
+                            qrBlastSendBtn.innerHTML = '<i class="bi bi-send me-1"></i>Send Email';
+                            return;
+                        }
+                        if (agendaError) agendaError.style.display = 'none';
+                        formData.append('agenda', agendaFile);
+                    }
+
                     checked.forEach(function (chk) {
                         formData.append('registration_ids[]', chk.dataset.id);
                     });
@@ -964,6 +990,12 @@ unset($_SESSION['msg']);
                     <textarea id="blastInstructions" class="form-control" rows="5"
                         placeholder="Enter any instructions to include in the email, e.g. parking info, dress code, items to bring..."></textarea>
                     <div class="form-text">This text will appear in an &ldquo;Instructions&rdquo; section inside the email.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="blastAgenda" class="form-label fw-semibold">Agenda <span class="text-muted fw-normal">(optional)</span></label>
+                    <input type="file" id="blastAgenda" class="form-control" accept="image/jpeg,image/png,image/gif,image/webp">
+                    <div class="form-text">Upload an agenda image (JPEG, PNG, GIF or WEBP &mdash; max 10 MB). It will appear in the email below the instructions.</div>
+                    <div id="blastAgendaError" class="text-danger small mt-1" style="display:none;"></div>
                 </div>
             </div>
             <div class="modal-footer">

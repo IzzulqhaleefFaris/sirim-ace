@@ -50,6 +50,35 @@ if (empty($regIds)) {
     exit;
 }
 
+// ── Optional agenda image upload ────────────────────────────────────────────
+$agendaUrl = '';
+if (!empty($_FILES['agenda']['tmp_name']) && $_FILES['agenda']['error'] === UPLOAD_ERR_OK) {
+    $agFile   = $_FILES['agenda'];
+    $allowed  = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    $finfo    = new finfo(FILEINFO_MIME_TYPE);
+    $mime     = $finfo->file($agFile['tmp_name']);
+    if (!in_array($mime, $allowed, true)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Agenda must be an image (JPEG, PNG, GIF, WEBP).']);
+        exit;
+    }
+    if ($agFile['size'] > 10 * 1024 * 1024) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Agenda image must be under 10 MB.']);
+        exit;
+    }
+    $uploadDir = __DIR__ . '/../../images/uploads/agenda/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+    $ext      = strtolower(pathinfo($agFile['name'], PATHINFO_EXTENSION) ?: 'jpg');
+    $ext      = preg_replace('/[^a-z0-9]/', '', $ext);
+    $filename = 'agenda_' . preg_replace('/[^a-zA-Z0-9_\-]/', '', $eventId) . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
+    if (move_uploaded_file($agFile['tmp_name'], $uploadDir . $filename)) {
+        $agendaUrl = $uploadDir . $filename; // physical path — embedded as CID, no URL needed
+    }
+}
+
 // ── Verify event exists & caller has access ───────────────────────────────
 $evStmt = $conn->prepare("
     SELECT e.event_id, e.event_name, e.event_startDate, e.event_endDate,
@@ -178,7 +207,8 @@ foreach ($rows as $row) {
         (string)($event['event_startTime'] ?? ''),
         (string)($event['event_endTime']   ?? ''),
         $venueStr,
-        $addressStr
+        $addressStr,
+        $agendaUrl  // physical file path for CID embedding
     );
 
     if ($result['sent']) {
