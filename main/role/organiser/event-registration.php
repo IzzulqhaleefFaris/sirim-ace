@@ -345,6 +345,11 @@ unset($_SESSION['msg']);
                                     <div class="fw-bold">Registrations & Attendance</div>
                                     <div class="d-flex align-items-center gap-2 flex-wrap">
                                         <input type="text" id="tableSearch" class="form-control form-control-sm" placeholder="Search..." style="width:180px;">
+                                        <select id="rowsPerPage" class="form-select form-select-sm" style="width:100px;">
+                                            <option value="10" selected>10 rows</option>
+                                            <option value="20">20 rows</option>
+                                            <option value="-1">All</option>
+                                        </select>
                                         <button id="sendQrBlastBtn" type="button" class="btn btn-sm btn-warning d-none">
                                             <i class="bi bi-envelope-fill me-1"></i>Send QR Email (<span id="blastCount">0</span>)
                                         </button>
@@ -590,7 +595,7 @@ unset($_SESSION['msg']);
             if (typeof jQuery !== 'undefined' && jQuery.fn && typeof jQuery.fn.DataTable === 'function' && jQuery('#regTable').length) {
                 table = jQuery('#regTable').DataTable({
                     pageLength: 10,
-                    order: [[1, 'asc']],
+                    order: [[1, 'desc']],
                     columnDefs: [
                         { orderable: false, targets: [0, 10] }
                     ],
@@ -610,6 +615,14 @@ unset($_SESSION['msg']);
                 if (tableSearch) {
                     tableSearch.addEventListener('input', function () {
                         table.search(this.value).draw();
+                    });
+                }
+
+                // Wire rows-per-page dropdown
+                const rowsPerPage = document.getElementById('rowsPerPage');
+                if (rowsPerPage) {
+                    rowsPerPage.addEventListener('change', function () {
+                        table.page.len(parseInt(this.value, 10)).draw();
                     });
                 }
             }
@@ -787,7 +800,11 @@ unset($_SESSION['msg']);
             const blastCountEl   = document.getElementById('blastCount');
 
             function getCheckedBoxes() {
-                return Array.from(document.querySelectorAll('.reg-chk:checked'));
+                // Must collect from ALL pages, not just the currently visible page
+                const source = table
+                    ? Array.from(table.rows().nodes()).map(function(n){ return n.querySelector('.reg-chk'); }).filter(Boolean)
+                    : Array.from(document.querySelectorAll('.reg-chk'));
+                return source.filter(function(c){ return c.checked; });
             }
 
             function updateBlastToolbar() {
@@ -803,9 +820,17 @@ unset($_SESSION['msg']);
 
             if (selectAllChk) {
                 selectAllChk.addEventListener('change', function () {
+                    // Check/uncheck ALL rows in ALL pages, not just visible ones
                     document.querySelectorAll('.reg-chk').forEach(function (chk) {
                         chk.checked = selectAllChk.checked;
                     });
+                    // If DataTables is active, also update rows on other pages via API
+                    if (table) {
+                        table.rows().nodes().each(function (node) {
+                            const chk = node.querySelector('.reg-chk');
+                            if (chk) chk.checked = selectAllChk.checked;
+                        });
+                    }
                     updateBlastToolbar();
                     const checked2 = getCheckedBoxes();
                     deleteSelectedBtn && deleteSelectedBtn.classList.toggle('d-none', checked2.length === 0);
@@ -815,16 +840,18 @@ unset($_SESSION['msg']);
 
             document.addEventListener('change', function (e) {
                 if (!e.target.classList.contains('reg-chk')) return;
-                // Sync select-all state
-                const all     = document.querySelectorAll('.reg-chk');
-                const checked = document.querySelectorAll('.reg-chk:checked');
+                // Count ALL rows across all pages
+                const allChks     = table
+                    ? Array.from(table.rows().nodes()).map(function(n){ return n.querySelector('.reg-chk'); }).filter(Boolean)
+                    : Array.from(document.querySelectorAll('.reg-chk'));
+                const checkedChks = allChks.filter(function(c){ return c.checked; });
                 if (selectAllChk) {
-                    selectAllChk.checked       = all.length > 0 && all.length === checked.length;
-                    selectAllChk.indeterminate = checked.length > 0 && checked.length < all.length;
+                    selectAllChk.checked       = allChks.length > 0 && allChks.length === checkedChks.length;
+                    selectAllChk.indeterminate = checkedChks.length > 0 && checkedChks.length < allChks.length;
                 }
                 updateBlastToolbar();
-                deleteSelectedBtn && deleteSelectedBtn.classList.toggle('d-none', checked.length === 0);
-                if (deleteCountEl) deleteCountEl.textContent = checked.length;
+                deleteSelectedBtn && deleteSelectedBtn.classList.toggle('d-none', checkedChks.length === 0);
+                if (deleteCountEl) deleteCountEl.textContent = checkedChks.length;
             });
 
             // ── Delete Participants ──────────────────────────────────────────
