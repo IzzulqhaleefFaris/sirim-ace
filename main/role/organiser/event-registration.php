@@ -147,6 +147,7 @@ unset($_SESSION['msg']);
 	<link href="../../../assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
 	<!--end::Global Stylesheets Bundle-->
 
     <style>
@@ -343,6 +344,7 @@ unset($_SESSION['msg']);
                                 <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
                                     <div class="fw-bold">Registrations & Attendance</div>
                                     <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <input type="text" id="tableSearch" class="form-control form-control-sm" placeholder="Search..." style="width:180px;">
                                         <button id="sendQrBlastBtn" type="button" class="btn btn-sm btn-warning d-none">
                                             <i class="bi bi-envelope-fill me-1"></i>Send QR Email (<span id="blastCount">0</span>)
                                         </button>
@@ -577,38 +579,54 @@ unset($_SESSION['msg']);
     <script src="assets/plugins/global/plugins.bundle.js"></script>
     <script src="assets/js/scripts.bundle.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // DataTable is optional; modal logic should still work without it.
+            // DataTable
             let table = null;
-            if (window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.DataTable === 'function' && window.jQuery('#regTable').length) {
-                table = window.jQuery('#regTable').DataTable({
-                    pageLength: 25,
-                    order: [
-                        [1, 'asc']
-                    ],
+            if (typeof jQuery !== 'undefined' && jQuery.fn && typeof jQuery.fn.DataTable === 'function' && jQuery('#regTable').length) {
+                table = jQuery('#regTable').DataTable({
+                    pageLength: 10,
+                    order: [[1, 'asc']],
                     columnDefs: [
-                        { orderable: false, targets: 0 }
+                        { orderable: false, targets: [0, 10] }
                     ],
+                    dom: 'tip',
                     language: {
-                        search: 'Search:',
-                        lengthMenu: 'Show _MENU_ records',
                         info: 'Showing _START_ to _END_ of _TOTAL_ records',
                         infoEmpty: 'Showing 0 to 0 of 0 records',
                         infoFiltered: '(filtered from _MAX_ total records)',
                         zeroRecords: 'No matching records found',
-                        emptyTable: 'No data available in table'
+                        emptyTable: 'No data available in table',
+                        paginate: { previous: '&laquo;', next: '&raquo;' }
                     }
                 });
+
+                // Wire search input
+                const tableSearch = document.getElementById('tableSearch');
+                if (tableSearch) {
+                    tableSearch.addEventListener('input', function () {
+                        table.search(this.value).draw();
+                    });
+                }
             }
 
             const statusFilter = document.getElementById('statusFilter');
             if (statusFilter) {
-                statusFilter.addEventListener('change', function() {
-                    if (!table) return;
-                    const val = this.value;
-                    table.column(9).search(val ? val : '', true, false).draw();
+                statusFilter.addEventListener('change', function () {
+                    if (!table) {
+                        // Fallback: plain row show/hide when DataTables not active
+                        const val = this.value.toLowerCase();
+                        document.querySelectorAll('#regTable tbody tr').forEach(function (row) {
+                            row.style.display = (!val || (row.dataset.status || '').toLowerCase() === val) ? '' : 'none';
+                        });
+                        return;
+                    }
+                    // DataTables: filter on Status column (index 9)
+                    table.column(9).search(this.value ? '^' + this.value + '$' : '', true, false).draw();
                 });
             }
 
