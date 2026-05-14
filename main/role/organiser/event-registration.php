@@ -386,6 +386,7 @@ unset($_SESSION['msg']);
                                                         <th>Company</th>
                                                         <th>Status</th>
                                                         <th>Check-in Time</th>
+                                                        <th>QR</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -421,6 +422,14 @@ unset($_SESSION['msg']);
                                                                 <span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($r['_status']) ?></span>
                                                             </td>
                                                             <td><?= htmlspecialchars($r['check_in_time'] ?? '-') ?></td>
+                                                            <td class="text-center">
+                                                                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 show-qr-btn"
+                                                                    data-reg-id="<?= htmlspecialchars($r['registration_id']) ?>"
+                                                                    data-name="<?= htmlspecialchars($r['participant_name'] ?? '') ?>"
+                                                                    title="Show QR Code">
+                                                                    <i class="bi bi-qr-code"></i>
+                                                                </button>
+                                                            </td>
                                                         </tr>
                                                     <?php endforeach; ?>
                                                 </tbody>
@@ -601,7 +610,7 @@ unset($_SESSION['msg']);
                     pageLength: 10,
                     order: [[1, 'desc']],
                     columnDefs: [
-                        { orderable: false, targets: [0, 10] }
+                        { orderable: false, targets: [0, 10, 11] }
                     ],
                     dom: 'tip',
                     language: {
@@ -1023,6 +1032,53 @@ unset($_SESSION['msg']);
             }
         });
     </script>
+<!-- QR Preview Modal -->
+<div class="modal fade" id="qrPreviewModal" tabindex="-1" aria-labelledby="qrPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:320px;">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title fw-bold" id="qrPreviewModalLabel"><i class="bi bi-qr-code me-2"></i><span id="qrPreviewName"></span></h6>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-3">
+                <p class="text-muted small mb-2" id="qrPreviewRegId"></p>
+                <img id="qrPreviewImg" src="" alt="QR Code"
+                     style="width:220px;height:220px;border:1px solid #ddd;border-radius:8px;">
+            </div>
+            <div class="modal-footer justify-content-center py-2">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a id="qrPreviewDownload" href="#" class="btn btn-primary">
+                    <i class="bi bi-download me-1"></i>Download PNG
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- QR Preview JS -->
+<script>
+    (function () {
+        const qrPreviewModal = new bootstrap.Modal(document.getElementById('qrPreviewModal'));
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.show-qr-btn');
+            if (!btn) return;
+            const regId = btn.dataset.regId;
+            const name  = btn.dataset.name || regId;
+            const url   = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(regId);
+            document.getElementById('qrPreviewName').textContent  = name;
+            document.getElementById('qrPreviewRegId').textContent = regId;
+            document.getElementById('qrPreviewImg').src           = url;
+            document.getElementById('qrPreviewDownload').dataset.regId = regId;
+            qrPreviewModal.show();
+        });
+
+        document.getElementById('qrPreviewDownload').addEventListener('click', function (e) {
+            e.preventDefault();
+            const regId = this.dataset.regId;
+            window.location.href = '../../api/qr-download.php?data=' + encodeURIComponent(regId);
+        });
+    })();
+</script>
+
 <!-- QR Blast Instructions Modal -->
 <div class="modal fade" id="qrBlastModal" tabindex="-1" aria-labelledby="qrBlastModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
