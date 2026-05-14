@@ -23,6 +23,8 @@ use PHPMailer\PHPMailer\Exception;
  * @param string $logLabel       Label for error_log messages
  * @param array  $embeddedImages Optional list of images to embed as CID.
  *                               Each entry: ['path'=>string, 'cid'=>string, 'name'=>string, 'type'=>string]
+ * @param PHPMailer|null $sharedMailer Optional pre-configured PHPMailer instance for connection reuse (SMTPKeepAlive).
+ * @return bool True on success, false on failure.
  */
 function sendHtmlEmail(
     array  $config,
@@ -31,24 +33,32 @@ function sendHtmlEmail(
     string $subject,
     string $htmlBody,
     string $logLabel,
-    array  $embeddedImages = []
-): void {
+    array  $embeddedImages = [],
+    ?PHPMailer $sharedMailer = null
+): bool {
     if (!filter_var($toEmail, FILTER_VALIDATE_EMAIL)) {
         error_log('PHPMailer skipped invalid recipient for ' . $logLabel . ': ' . $toEmail);
-        return;
+        return false;
     }
 
-    $mail = new PHPMailer(true);
+    $mail = $sharedMailer ?? new PHPMailer(true);
 
-    try {
+    // Only configure transport when using a fresh instance
+    if ($sharedMailer === null) {
         $mail->isSMTP();
-        $mail->CharSet   = PHPMailer::CHARSET_UTF8;
+        $mail->CharSet    = PHPMailer::CHARSET_UTF8;
         $mail->Host       = $config['host'];
         $mail->SMTPAuth   = true;
         $mail->Username   = $config['username'];
         $mail->Password   = $config['password'];
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = $config['port'];
+        $mail->SMTPKeepAlive = true;
+    }
+
+    try {
+        $mail->clearAddresses();
+        $mail->clearAttachments();
 
         $mail->setFrom($config['fromEmail'], $config['fromName']);
         $mail->addReplyTo($config['fromEmail'], $config['fromName']);
@@ -74,7 +84,9 @@ function sendHtmlEmail(
 
         $mail->send();
         error_log('[EMAIL] Sent OK: ' . $logLabel . ' -> ' . $toEmail);
+        return true;
     } catch (Exception $e) {
         error_log('[EMAIL] PHPMailer error (' . $logLabel . '): ' . $mail->ErrorInfo);
+        return false;
     }
 }

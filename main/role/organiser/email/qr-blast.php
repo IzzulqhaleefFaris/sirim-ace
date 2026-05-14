@@ -119,7 +119,8 @@ function sendQrBlastEmail(
     string $eventEndTime = '',
     string $venue = '',
     string $address = '',
-    string $agendaImagePath = ''
+    string $agendaImagePath = '',
+    ?\PHPMailer\PHPMailer\PHPMailer $sharedMailer = null
 ): array {
     $config = resolveMailConfig();
     if (!$config) {
@@ -206,16 +207,20 @@ function sendQrBlastEmail(
     }
 
     ob_start();
-    sendHtmlEmail(
+    $sent = sendHtmlEmail(
         $config,
         $toEmail,
         $toName ?: 'Participant',
         'QR Code – ' . $eventName,
         $html,
         'QR Blast [' . $registrationId . ']',
-        $embeddedImages
+        $embeddedImages,
+        $sharedMailer
     );
     ob_end_clean();
 
-    return ['sent' => true, 'reason' => ''];
+    if ($sent) {
+        return ['sent' => true, 'reason' => ''];
+    }
+    return ['sent' => false, 'reason' => 'SMTP delivery failed — check server error log.'];
 }

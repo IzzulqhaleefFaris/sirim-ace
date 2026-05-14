@@ -13,6 +13,11 @@ session_start();
 ob_start();
 header('Content-Type: application/json');
 
+// Sending bulk emails can take a long time — remove the execution time cap
+// and keep the script alive even if the browser disconnects.
+set_time_limit(0);
+ignore_user_abort(true);
+
 require_once __DIR__ . '/../../include/config.php';
 /** @var mysqli $conn */
 require_once __DIR__ . '/../../include/permissions.php';
@@ -162,6 +167,23 @@ $sentCount  = 0;
 $failCount  = 0;
 $errors     = [];
 
+// Create a single shared PHPMailer instance with SMTPKeepAlive so all emails
+// reuse one TCP connection instead of opening a new one for each recipient.
+$blastMailer = null;
+$blastConfig = \resolveMailConfig();
+if ($blastConfig) {
+    $blastMailer = new \PHPMailer\PHPMailer\PHPMailer(true);
+    $blastMailer->isSMTP();
+    $blastMailer->CharSet       = \PHPMailer\PHPMailer\PHPMailer::CHARSET_UTF8;
+    $blastMailer->Host          = $blastConfig['host'];
+    $blastMailer->SMTPAuth      = true;
+    $blastMailer->Username      = $blastConfig['username'];
+    $blastMailer->Password      = $blastConfig['password'];
+    $blastMailer->SMTPSecure    = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+    $blastMailer->Port          = $blastConfig['port'];
+    $blastMailer->SMTPKeepAlive = true;
+}
+
 foreach ($rows as $row) {
     $rid   = $row['registration_id'];
     $email = trim($row['email'] ?? '');
@@ -208,7 +230,8 @@ foreach ($rows as $row) {
         (string)($event['event_endTime']   ?? ''),
         $venueStr,
         $addressStr,
-        $agendaUrl  // physical file path for CID embedding
+        $agendaUrl,   // physical file path for CID embedding
+        $blastMailer  // shared SMTP connection
     );
 
     if ($result['sent']) {
@@ -217,6 +240,11 @@ foreach ($rows as $row) {
         $failCount++;
         $errors[] = ['id' => $rid, 'reason' => $result['reason']];
     }
+}
+
+// Close the shared SMTP connection after all emails are sent
+if ($blastMailer !== null) {
+    $blastMailer->smtpClose();
 }
 
 // Registrations requested but not found in DB (wrong event / invalid ID)
