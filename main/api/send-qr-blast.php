@@ -170,16 +170,16 @@ $errors     = [];
 // Create a single shared PHPMailer instance with SMTPKeepAlive so all emails
 // reuse one TCP connection instead of opening a new one for each recipient.
 $blastMailer = null;
-$blastConfig = \resolveMailConfig();
+$blastConfig = resolveMailConfig();
 if ($blastConfig) {
-    $blastMailer = new \PHPMailer\PHPMailer\PHPMailer(true);
+    $blastMailer = new PHPMailer\PHPMailer\PHPMailer(true);
     $blastMailer->isSMTP();
-    $blastMailer->CharSet       = \PHPMailer\PHPMailer\PHPMailer::CHARSET_UTF8;
+    $blastMailer->CharSet       = PHPMailer\PHPMailer\PHPMailer::CHARSET_UTF8;
     $blastMailer->Host          = $blastConfig['host'];
     $blastMailer->SMTPAuth      = true;
     $blastMailer->Username      = $blastConfig['username'];
     $blastMailer->Password      = $blastConfig['password'];
-    $blastMailer->SMTPSecure    = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+    $blastMailer->SMTPSecure    = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
     $blastMailer->Port          = $blastConfig['port'];
     $blastMailer->SMTPKeepAlive = true;
 }
