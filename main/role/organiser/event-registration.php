@@ -303,6 +303,10 @@ unset($_SESSION['msg']);
                                         href="event-registrations-export.php?id=<?= urlencode($eventId) ?>">
                                         <i class="bi bi-download me-1"></i>Export CSV (Excel)
                                     </a>
+                                    <a class="btn btn-secondary"
+                                        href="email-log.php?event_id=<?= urlencode($eventId) ?>">
+                                        <i class="bi bi-envelope-open me-1"></i>Email Log
+                                    </a>
                                 </div>
                             </div>
 

@@ -240,6 +240,20 @@ foreach ($rows as $row) {
         $failCount++;
         $errors[] = ['id' => $rid, 'reason' => $result['reason']];
     }
+
+    // ── Write to email log ────────────────────────────────────────────────
+    $logStatus = $result['sent'] ? 'sent' : 'failed';
+    $logReason = $result['sent'] ? null : $result['reason'];
+    $logSubject = 'QR Code – ' . $event['event_name'];
+    $logStmt = $conn->prepare("
+        INSERT INTO att_email_log (event_id, registration_id, recipient_email, recipient_name, subject, status, fail_reason)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ");
+    if ($logStmt) {
+        $logStmt->bind_param('sssssss', $eventId, $rid, $email, $name, $logSubject, $logStatus, $logReason);
+        $logStmt->execute();
+        $logStmt->close();
+    }
 }
 
 // Close the shared SMTP connection after all emails are sent
