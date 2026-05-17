@@ -243,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error && $walkinType !== null) {
                         <input type="hidden" name="event" value="<?= htmlspecialchars($eventId) ?>">
                         <input type="hidden" name="type" value="<?= htmlspecialchars($walkinType) ?>">
                         <div class="col-12">
-                            <label class="form-label"><?= $walkinType === 'sirim' ? 'Full Name' : 'Name' ?> <span class="text-danger">*</span></label>
+                            <label class="form-label"><?= $walkinType === 'sirim' ? 'Full Name' : 'Full Name' ?> <span class="text-danger">*</span></label>
                             <input type="text" name="walkin_name" class="form-control" required>
                         </div>
                         <?php if ($walkinType === 'sirim'): ?>
