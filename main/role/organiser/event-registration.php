@@ -114,6 +114,17 @@ if ($rows) {
 }
 $stmt->close();
 
+// Split registrations: SIRIM (account + walk_in_sirim) vs External (walk_in only)
+$sirimAll = [];
+$externalAll = [];
+foreach ($all as $r) {
+    if (($r['registration_source'] ?? 'account') === 'walk_in') {
+        $externalAll[] = $r;
+    } else {
+        $sirimAll[] = $r;
+    }
+}
+
 $flashMsg = $_SESSION['msg'] ?? null;
 unset($_SESSION['msg']);
 ?>
@@ -345,9 +356,20 @@ unset($_SESSION['msg']);
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                    <div class="fw-bold">Registrations & Attendance</div>
-                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <div class="card-header bg-white">
+                                    <ul class="nav nav-tabs card-header-tabs mb-2" id="regTabs" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active fw-semibold" id="sirim-tab" data-bs-toggle="tab" data-bs-target="#sirim-pane" type="button" role="tab">
+                                                SIRIM Participants <span class="badge bg-secondary ms-1"><?= count($sirimAll) ?></span>
+                                            </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link fw-semibold" id="external-tab" data-bs-toggle="tab" data-bs-target="#external-pane" type="button" role="tab">
+                                                External Participants <span class="badge bg-secondary ms-1"><?= count($externalAll) ?></span>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap mt-1">
                                         <input type="text" id="tableSearch" class="form-control form-control-sm" placeholder="Search..." style="width:180px;">
                                         <select id="rowsPerPage" class="form-select form-select-sm" style="width:100px;">
                                             <option value="10" selected>10 rows</option>
@@ -370,74 +392,154 @@ unset($_SESSION['msg']);
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <?php if (!empty($all)): ?>
-                                        <div class="table-responsive">
-                                            <table id="regTable" class="table table-hover align-middle">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th style="width:36px;"><input type="checkbox" id="selectAllChk" title="Select all"></th>
-                                                        <th>No</th>
-                                                        <th>Registration ID</th>
-                                                        <th>Participant ID</th>
-                                                        <th>Source</th>
-                                                        <th>Name</th>
-                                                        <th>Email</th>
-                                                        <th>Phone</th>
-                                                        <th>Company</th>
-                                                        <th>Status</th>
-                                                        <th>Check-in Time</th>
-                                                        <th>QR</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php $i = 1; ?>
-                                                    <?php foreach ($all as $r): ?>
-                                                        <tr data-status="<?= htmlspecialchars($r['_status']) ?>">
-                                                            <td class="text-center">
-                                                                <input type="checkbox" class="reg-chk"
-                                                                    data-id="<?= htmlspecialchars($r['registration_id']) ?>"
-                                                                    data-email="<?= htmlspecialchars($r['participant_email'] ?? '') ?>"
-                                                                    data-name="<?= htmlspecialchars($r['participant_name'] ?? '') ?>">
-                                                            </td>
-                                                            <td class="text-center"><?= $i++ ?></td>
-                                                            <td><?= htmlspecialchars($r['registration_id']) ?></td>
-                                                            <td><?= htmlspecialchars($r['participant_id']) ?></td>
-                                                            <td>
-                                                                <?php $source = strtolower($r['registration_source'] ?? 'account'); ?>
-                                                                <span class="badge <?= $source === 'walk_in' ? 'bg-primary' : 'bg-secondary' ?>">
-                                                                    <?= $source === 'walk_in' ? 'Walk-in' : 'Account' ?>
-                                                                </span>
-                                                            </td>
-                                                            <td><?= htmlspecialchars($r['participant_name'] ?? '-') ?></td>
-                                                            <td><?= htmlspecialchars($r['participant_email'] ?? '-') ?></td>
-                                                            <td><?= htmlspecialchars($r['participant_phone'] ?? '-') ?></td>
-                                                            <td><?= htmlspecialchars($r['participant_company'] ?? '-') ?></td>
-                                                            <td>
-                                                                <?php
-                                                                $badgeClass = 'bg-secondary';
-                                                                if ($r['_status'] === 'Present') $badgeClass = 'bg-success';
-                                                                if ($r['_status'] === 'Absent') $badgeClass = 'bg-danger';
-                                                                if ($r['_status'] === 'Registered') $badgeClass = 'bg-warning text-dark';
-                                                                ?>
-                                                                <span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($r['_status']) ?></span>
-                                                            </td>
-                                                            <td><?= htmlspecialchars($r['check_in_time'] ?? '-') ?></td>
-                                                            <td class="text-center">
-                                                                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 show-qr-btn"
-                                                                    data-reg-id="<?= htmlspecialchars($r['registration_id']) ?>"
-                                                                    data-name="<?= htmlspecialchars($r['participant_name'] ?? '') ?>"
-                                                                    title="Show QR Code">
-                                                                    <i class="bi bi-qr-code"></i>
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                </tbody>
-                                            </table>
+                                    <div class="tab-content" id="regTabContent">
+                                        <!-- SIRIM Participants Pane -->
+                                        <div class="tab-pane fade show active" id="sirim-pane" role="tabpanel">
+                                            <?php if (!empty($sirimAll)): ?>
+                                                <div class="table-responsive">
+                                                    <table id="sirimTable" class="table table-hover align-middle">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th style="width:36px;"><input type="checkbox" class="tab-select-all" data-table="sirimTable" title="Select all"></th>
+                                                                <th>No</th>
+                                                                <th>Registration ID</th>
+                                                                <th>Participant ID</th>
+                                                                <th>Source</th>
+                                                                <th>Name</th>
+                                                                <th>Email</th>
+                                                                <th>Phone</th>
+                                                                <th>Department/Section</th>
+                                                                <th>Status</th>
+                                                                <th>Check-in Time</th>
+                                                                <th>QR</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <?php $i = 1; ?>
+                                                            <?php foreach ($sirimAll as $r): ?>
+                                                                <tr data-status="<?= htmlspecialchars($r['_status']) ?>">
+                                                                    <td class="text-center">
+                                                                        <input type="checkbox" class="reg-chk"
+                                                                            data-id="<?= htmlspecialchars($r['registration_id']) ?>"
+                                                                            data-email="<?= htmlspecialchars($r['participant_email'] ?? '') ?>"
+                                                                            data-name="<?= htmlspecialchars($r['participant_name'] ?? '') ?>">
+                                                                    </td>
+                                                                    <td class="text-center"><?= $i++ ?></td>
+                                                                    <td><?= htmlspecialchars($r['registration_id']) ?></td>
+                                                                    <td><?= htmlspecialchars($r['participant_id']) ?></td>
+                                                                    <td>
+                                                                        <?php $src = $r['registration_source'] ?? 'account'; ?>
+                                                                        <?php if ($src === 'walk_in_sirim'): ?>
+                                                                            <span class="badge bg-info text-dark">SIRIM Walk-in</span>
+                                                                        <?php else: ?>
+                                                                            <span class="badge bg-secondary">Account</span>
+                                                                        <?php endif; ?>
+                                                                    </td>
+                                                                    <td><?= htmlspecialchars($r['participant_name'] ?? '-') ?></td>
+                                                                    <td><?= htmlspecialchars($r['participant_email'] ?? '-') ?></td>
+                                                                    <td><?= htmlspecialchars($r['participant_phone'] ?? '-') ?></td>
+                                                                    <td><?= htmlspecialchars($r['participant_company'] ?? '-') ?></td>
+                                                                    <td>
+                                                                        <?php
+                                                                        $badgeClass = 'bg-secondary';
+                                                                        if ($r['_status'] === 'Present') $badgeClass = 'bg-success';
+                                                                        if ($r['_status'] === 'Absent') $badgeClass = 'bg-danger';
+                                                                        if ($r['_status'] === 'Registered') $badgeClass = 'bg-warning text-dark';
+                                                                        ?>
+                                                                        <span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($r['_status']) ?></span>
+                                                                    </td>
+                                                                    <td><?= htmlspecialchars($r['check_in_time'] ?? '-') ?></td>
+                                                                    <td class="text-center">
+                                                                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 show-qr-btn"
+                                                                            data-reg-id="<?= htmlspecialchars($r['registration_id']) ?>"
+                                                                            data-name="<?= htmlspecialchars($r['participant_name'] ?? '') ?>"
+                                                                            title="Show QR Code">
+                                                                            <i class="bi bi-qr-code"></i>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            <?php else: ?>
+                                                <div class="alert alert-light border text-center mb-0">No SIRIM participants registered for this event</div>
+                                            <?php endif; ?>
                                         </div>
-                                    <?php else: ?>
-                                        <div class="alert alert-light border text-center mb-0">No registrations found for this event</div>
-                                    <?php endif; ?>
+                                        <!-- External Participants Pane -->
+                                        <div class="tab-pane fade" id="external-pane" role="tabpanel">
+                                            <?php if (!empty($externalAll)): ?>
+                                                <div class="table-responsive">
+                                                    <table id="extTable" class="table table-hover align-middle">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th style="width:36px;"><input type="checkbox" class="tab-select-all" data-table="extTable" title="Select all"></th>
+                                                                <th>No</th>
+                                                                <th>Registration ID</th>
+                                                                <th>Participant ID</th>
+                                                                <th>Source</th>
+                                                                <th>Name</th>
+                                                                <th>Email</th>
+                                                                <th>Phone</th>
+                                                                <th>Company</th>
+                                                                <th>Status</th>
+                                                                <th>Check-in Time</th>
+                                                                <th>QR</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <?php $i = 1; ?>
+                                                            <?php foreach ($externalAll as $r): ?>
+                                                                <tr data-status="<?= htmlspecialchars($r['_status']) ?>">
+                                                                    <td class="text-center">
+                                                                        <input type="checkbox" class="reg-chk"
+                                                                            data-id="<?= htmlspecialchars($r['registration_id']) ?>"
+                                                                            data-email="<?= htmlspecialchars($r['participant_email'] ?? '') ?>"
+                                                                            data-name="<?= htmlspecialchars($r['participant_name'] ?? '') ?>">
+                                                                    </td>
+                                                                    <td class="text-center"><?= $i++ ?></td>
+                                                                    <td><?= htmlspecialchars($r['registration_id']) ?></td>
+                                                                    <td><?= htmlspecialchars($r['participant_id']) ?></td>
+                                                                    <td>
+                                                                        <?php
+                                                                        $src = $r['registration_source'] ?? 'account';
+                                                                        if ($src === 'walk_in') echo '<span class="badge bg-primary">External Walk-in</span>';
+                                                                        elseif ($src === 'walk_in_sirim') echo '<span class="badge bg-info text-dark">SIRIM Walk-in</span>';
+                                                                        else echo '<span class="badge bg-secondary">Account</span>';
+                                                                        ?>
+                                                                    </td>
+                                                                    <td><?= htmlspecialchars($r['participant_name'] ?? '-') ?></td>
+                                                                    <td><?= htmlspecialchars($r['participant_email'] ?? '-') ?></td>
+                                                                    <td><?= htmlspecialchars($r['participant_phone'] ?? '-') ?></td>
+                                                                    <td><?= htmlspecialchars($r['participant_company'] ?? '-') ?></td>
+                                                                    <td>
+                                                                        <?php
+                                                                        $badgeClass = 'bg-secondary';
+                                                                        if ($r['_status'] === 'Present') $badgeClass = 'bg-success';
+                                                                        if ($r['_status'] === 'Absent') $badgeClass = 'bg-danger';
+                                                                        if ($r['_status'] === 'Registered') $badgeClass = 'bg-warning text-dark';
+                                                                        ?>
+                                                                        <span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($r['_status']) ?></span>
+                                                                    </td>
+                                                                    <td><?= htmlspecialchars($r['check_in_time'] ?? '-') ?></td>
+                                                                    <td class="text-center">
+                                                                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 show-qr-btn"
+                                                                            data-reg-id="<?= htmlspecialchars($r['registration_id']) ?>"
+                                                                            data-name="<?= htmlspecialchars($r['participant_name'] ?? '') ?>"
+                                                                            title="Show QR Code">
+                                                                            <i class="bi bi-qr-code"></i>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            <?php else: ?>
+                                                <div class="alert alert-light border text-center mb-0">No external participants registered for this event</div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-footer bg-white border-top-0 pt-0 pb-3 px-4">
                                     <small class="text-muted me-3 fw-semibold">Status:</small>
@@ -447,7 +549,8 @@ unset($_SESSION['msg']);
                                     <span class="text-muted mx-2">|</span>
                                     <small class="text-muted fw-semibold me-2">Source:</small>
                                     <span class="badge bg-secondary me-2">Account</span>
-                                    <span class="badge bg-primary me-2">Walk-in</span>
+                                    <span class="badge bg-info text-dark me-2">SIRIM Walk-in</span>
+                                    <span class="badge bg-primary me-2">External Walk-in</span>
                                 </div>
                             </div>
 
@@ -485,7 +588,7 @@ unset($_SESSION['msg']);
                                         </div>
                                         <div class="modal-body text-center">
                                             <img src="<?= htmlspecialchars($walkInQr) ?>" alt="Walk-in QR" class="img-fluid border rounded p-2 bg-white" style="max-width: 280px;">
-                                            <p class="text-muted small mt-3 mb-2">Scan to open public walk-in registration page.</p>
+                                            <p class="text-muted small mt-3 mb-2">Scan to open the walk-in registration page. Participants will be asked to select their type (External or SIRIM Staff).</p>
                                             <a href="<?= htmlspecialchars($walkInUrl) ?>" target="_blank" class="btn btn-sm btn-light-primary">Open Link</a>
                                         </div>
                                     </div>
@@ -603,59 +706,103 @@ unset($_SESSION['msg']);
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // DataTable
-            let table = null;
-            if (typeof jQuery !== 'undefined' && jQuery.fn && typeof jQuery.fn.DataTable === 'function' && jQuery('#regTable').length) {
-                table = jQuery('#regTable').DataTable({
-                    pageLength: 10,
-                    order: [[1, 'desc']],
-                    columnDefs: [
-                        { orderable: false, targets: [0, 10, 11] }
-                    ],
-                    dom: 'tip',
-                    language: {
-                        info: 'Showing _START_ to _END_ of _TOTAL_ records',
-                        infoEmpty: 'Showing 0 to 0 of 0 records',
-                        infoFiltered: '(filtered from _MAX_ total records)',
-                        zeroRecords: 'No matching records found',
-                        emptyTable: 'No data available in table',
-                        paginate: { previous: '&laquo;', next: '&raquo;' }
-                    }
+            // ── DataTable instances ──────────────────────────────────────
+            let tableS = null; // SIRIM Participants
+            let tableE = null; // External Participants
+
+            function getActiveTable() {
+                const activePane = document.querySelector('#regTabContent .tab-pane.active');
+                if (!activePane) return null;
+                return activePane.id === 'sirim-pane' ? tableS : tableE;
+            }
+
+            if (typeof jQuery !== 'undefined' && jQuery.fn && typeof jQuery.fn.DataTable === 'function') {
+                if (jQuery('#sirimTable').length) {
+                    tableS = jQuery('#sirimTable').DataTable({
+                        pageLength: 10,
+                        order: [[1, 'asc']],
+                        columnDefs: [{ orderable: false, targets: [0, 11] }],
+                        dom: 'tip',
+                        language: {
+                            info: 'Showing _START_ to _END_ of _TOTAL_ records',
+                            infoEmpty: 'Showing 0 to 0 of 0 records',
+                            infoFiltered: '(filtered from _MAX_ total records)',
+                            zeroRecords: 'No matching records found',
+                            emptyTable: 'No data available in table',
+                            paginate: { previous: '&laquo;', next: '&raquo;' }
+                        }
+                    });
+                }
+                if (jQuery('#extTable').length) {
+                    tableE = jQuery('#extTable').DataTable({
+                        pageLength: 10,
+                        order: [[1, 'asc']],
+                        columnDefs: [{ orderable: false, targets: [0, 11] }],
+                        dom: 'tip',
+                        language: {
+                            info: 'Showing _START_ to _END_ of _TOTAL_ records',
+                            infoEmpty: 'Showing 0 to 0 of 0 records',
+                            infoFiltered: '(filtered from _MAX_ total records)',
+                            zeroRecords: 'No matching records found',
+                            emptyTable: 'No data available in table',
+                            paginate: { previous: '&laquo;', next: '&raquo;' }
+                        }
+                    });
+                }
+            }
+
+            // ── Shared toolbar controls ──────────────────────────────────
+            const tableSearch = document.getElementById('tableSearch');
+            if (tableSearch) {
+                tableSearch.addEventListener('input', function () {
+                    const t = getActiveTable();
+                    if (t) t.search(this.value).draw();
                 });
+            }
 
-                // Wire search input
-                const tableSearch = document.getElementById('tableSearch');
-                if (tableSearch) {
-                    tableSearch.addEventListener('input', function () {
-                        table.search(this.value).draw();
-                    });
-                }
-
-                // Wire rows-per-page dropdown
-                const rowsPerPage = document.getElementById('rowsPerPage');
-                if (rowsPerPage) {
-                    rowsPerPage.addEventListener('change', function () {
-                        table.page.len(parseInt(this.value, 10)).draw();
-                    });
-                }
+            const rowsPerPage = document.getElementById('rowsPerPage');
+            if (rowsPerPage) {
+                rowsPerPage.addEventListener('change', function () {
+                    const len = parseInt(this.value, 10);
+                    if (tableS) tableS.page.len(len).draw();
+                    if (tableE) tableE.page.len(len).draw();
+                });
             }
 
             const statusFilter = document.getElementById('statusFilter');
             if (statusFilter) {
                 statusFilter.addEventListener('change', function () {
-                    if (!table) {
-                        // Fallback: plain row show/hide when DataTables not active
-                        const val = this.value.toLowerCase();
-                        document.querySelectorAll('#regTable tbody tr').forEach(function (row) {
-                            row.style.display = (!val || (row.dataset.status || '').toLowerCase() === val) ? '' : 'none';
+                    const val = this.value;
+                    // SIRIM table: Status at column index 9
+                    if (tableS) {
+                        tableS.column(9).search(val ? '^' + val + '$' : '', true, false).draw();
+                    } else {
+                        document.querySelectorAll('#sirimTable tbody tr').forEach(function (row) {
+                            row.style.display = (!val || (row.dataset.status || '').toLowerCase() === val.toLowerCase()) ? '' : 'none';
                         });
-                        return;
                     }
-                    // DataTables: filter on Status column (index 9)
-                    table.column(9).search(this.value ? '^' + this.value + '$' : '', true, false).draw();
+                    // External table: Status at column index 9
+                    if (tableE) {
+                        tableE.column(9).search(val ? '^' + val + '$' : '', true, false).draw();
+                    } else {
+                        document.querySelectorAll('#extTable tbody tr').forEach(function (row) {
+                            row.style.display = (!val || (row.dataset.status || '').toLowerCase() === val.toLowerCase()) ? '' : 'none';
+                        });
+                    }
                 });
             }
 
+            // Reset search when switching tabs
+            document.querySelectorAll('#regTabs .nav-link').forEach(function (btn) {
+                btn.addEventListener('shown.bs.tab', function () {
+                    if (tableSearch) tableSearch.value = '';
+                    if (tableS) tableS.search('').draw();
+                    if (tableE) tableE.search('').draw();
+                    updateAllToolbars();
+                });
+            });
+
+            // ── Register modal (Staff / External) ───────────────────────
             const registerForm = document.querySelector('#organiserRegisterModal form');
             const registerModeInput = document.getElementById('registerModeInput');
             const staffModeBtn = document.getElementById('staffModeBtn');
@@ -668,224 +815,168 @@ unset($_SESSION['msg']);
             const selectedStaffInputs = document.getElementById('selectedStaffInputs');
             const externalNameField = document.getElementById('externalNameField');
 
-            if (!registerForm || !registerModeInput || !staffModeBtn || !externalModeBtn || !staffSection || !externalSection || !staffPicker || !addStaffBtn || !selectedStaffList || !selectedStaffInputs || !externalNameField) {
-                return;
-            }
+            if (registerForm && registerModeInput && staffModeBtn && externalModeBtn && staffSection && externalSection && staffPicker && addStaffBtn && selectedStaffList && selectedStaffInputs && externalNameField) {
+                const selectedStaffMap = new Map();
 
-            const selectedStaffMap = new Map();
-
-            let staffChoices = null;
-            if (typeof Choices !== 'undefined') {
-                staffChoices = new Choices(staffPicker, {
-                    searchEnabled: true,
-                    itemSelectText: '',
-                    shouldSort: false,
-                    placeholder: true,
-                    placeholderValue: 'Search staff name or email'
-                });
-            }
-
-            function setMode(mode) {
-                const isStaff = mode === 'staff';
-                registerModeInput.value = isStaff ? 'staff' : 'external';
-
-                staffSection.classList.toggle('d-none', !isStaff);
-                externalSection.classList.toggle('d-none', isStaff);
-
-                staffModeBtn.classList.toggle('btn-primary', isStaff);
-                staffModeBtn.classList.toggle('btn-outline-primary', !isStaff);
-                externalModeBtn.classList.toggle('btn-primary', !isStaff);
-                externalModeBtn.classList.toggle('btn-outline-primary', isStaff);
-
-                externalNameField.required = !isStaff;
-            }
-
-            function renderSelectedStaff() {
-                selectedStaffList.innerHTML = '';
-                selectedStaffInputs.innerHTML = '';
-
-                if (selectedStaffMap.size === 0) {
-                    return;
+                let staffChoices = null;
+                if (typeof Choices !== 'undefined') {
+                    staffChoices = new Choices(staffPicker, {
+                        searchEnabled: true,
+                        itemSelectText: '',
+                        shouldSort: false,
+                        placeholder: true,
+                        placeholderValue: 'Search staff name or email'
+                    });
                 }
 
-                const list = document.createElement('ul');
-                list.className = 'list-group';
+                function setMode(mode) {
+                    const isStaff = mode === 'staff';
+                    registerModeInput.value = isStaff ? 'staff' : 'external';
+                    staffSection.classList.toggle('d-none', !isStaff);
+                    externalSection.classList.toggle('d-none', isStaff);
+                    staffModeBtn.classList.toggle('btn-primary', isStaff);
+                    staffModeBtn.classList.toggle('btn-outline-primary', !isStaff);
+                    externalModeBtn.classList.toggle('btn-primary', !isStaff);
+                    externalModeBtn.classList.toggle('btn-outline-primary', isStaff);
+                    externalNameField.required = !isStaff;
+                }
 
-                selectedStaffMap.forEach(function(label, userId) {
-                    const item = document.createElement('li');
-                    item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                function renderSelectedStaff() {
+                    selectedStaffList.innerHTML = '';
+                    selectedStaffInputs.innerHTML = '';
+                    if (selectedStaffMap.size === 0) return;
+                    const list = document.createElement('ul');
+                    list.className = 'list-group';
+                    selectedStaffMap.forEach(function (label, userId) {
+                        const item = document.createElement('li');
+                        item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        const labelSpan = document.createElement('span');
+                        labelSpan.textContent = label;
+                        item.appendChild(labelSpan);
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'btn btn-sm btn-light-danger';
+                        removeBtn.setAttribute('data-remove', userId);
+                        removeBtn.setAttribute('aria-label', 'Remove');
+                        removeBtn.textContent = 'Remove';
+                        item.appendChild(removeBtn);
+                        list.appendChild(item);
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = 'staff_ids[]';
+                        hidden.value = userId;
+                        selectedStaffInputs.appendChild(hidden);
+                    });
+                    selectedStaffList.appendChild(list);
+                }
 
-                    const labelSpan = document.createElement('span');
-                    labelSpan.textContent = label;
-                    item.appendChild(labelSpan);
-
-                    const removeBtn = document.createElement('button');
-                    removeBtn.type = 'button';
-                    removeBtn.className = 'btn btn-sm btn-light-danger';
-                    removeBtn.setAttribute('data-remove', userId);
-                    removeBtn.setAttribute('aria-label', 'Remove');
-                    removeBtn.textContent = 'Remove';
-                    item.appendChild(removeBtn);
-
-                    list.appendChild(item);
-
-                    const hidden = document.createElement('input');
-                    hidden.type = 'hidden';
-                    hidden.name = 'staff_ids[]';
-                    hidden.value = userId;
-                    selectedStaffInputs.appendChild(hidden);
-                });
-
-                selectedStaffList.appendChild(list);
-            }
-
-            function getSelectedStaffLabel(userId) {
-                const options = staffPicker.options || [];
-                for (let i = 0; i < options.length; i++) {
-                    if (options[i].value === userId) {
-                        return options[i].text;
+                function getSelectedStaffLabel(userId) {
+                    const options = staffPicker.options || [];
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].value === userId) return options[i].text;
                     }
+                    return userId;
                 }
-                return userId;
+
+                addStaffBtn.addEventListener('click', function () {
+                    if (!staffPicker.value) return;
+                    const userId = staffPicker.value;
+                    const selectedOption = Array.from(staffPicker.options).find(function (opt) { return opt.value === userId; });
+                    if (selectedOption && selectedOption.disabled) return;
+                    const label = getSelectedStaffLabel(userId);
+                    if (!selectedStaffMap.has(userId)) {
+                        selectedStaffMap.set(userId, label);
+                        renderSelectedStaff();
+                    }
+                    if (staffChoices) staffChoices.removeActiveItems();
+                    else staffPicker.value = '';
+                });
+
+                selectedStaffList.addEventListener('click', function (e) {
+                    const btn = e.target.closest('button[data-remove]');
+                    if (!btn) return;
+                    selectedStaffMap.delete(btn.getAttribute('data-remove'));
+                    renderSelectedStaff();
+                });
+
+                staffModeBtn.addEventListener('click', function () { setMode('staff'); });
+                externalModeBtn.addEventListener('click', function () { setMode('external'); });
+
+                registerForm.addEventListener('submit', function (e) {
+                    if (registerModeInput.value === 'staff' && selectedStaffMap.size === 0) {
+                        e.preventDefault();
+                        alert('Please select at least one staff member.');
+                        return;
+                    }
+                    if (registerModeInput.value === 'external' && !externalNameField.value.trim()) {
+                        e.preventDefault();
+                        alert('Please fill in external participant name.');
+                    }
+                });
+
+                setMode('staff');
             }
 
-            addStaffBtn.addEventListener('click', function() {
-                if (!staffPicker.value) {
-                    return;
-                }
-
-                const userId = staffPicker.value;
-                const selectedOption = Array.from(staffPicker.options).find(function(opt) {
-                    return opt.value === userId;
+            // ── Checkbox helpers ─────────────────────────────────────────
+            function getAllChkNodes() {
+                const nodes = [];
+                [{ t: tableS, id: 'sirimTable' }, { t: tableE, id: 'extTable' }].forEach(function (item) {
+                    if (item.t) {
+                        item.t.rows().nodes().each(function (node) {
+                            const c = node.querySelector('.reg-chk');
+                            if (c) nodes.push(c);
+                        });
+                    } else {
+                        document.querySelectorAll('#' + item.id + ' .reg-chk').forEach(function (c) { nodes.push(c); });
+                    }
                 });
-                if (selectedOption && selectedOption.disabled) {
-                    return;
-                }
-                const label = getSelectedStaffLabel(userId);
-
-                if (!selectedStaffMap.has(userId)) {
-                    selectedStaffMap.set(userId, label);
-                    renderSelectedStaff();
-                }
-
-                if (staffChoices) {
-                    staffChoices.removeActiveItems();
-                } else {
-                    staffPicker.value = '';
-                }
-            });
-
-            selectedStaffList.addEventListener('click', function(e) {
-                const btn = e.target.closest('button[data-remove]');
-                if (!btn) return;
-
-                const userId = btn.getAttribute('data-remove');
-                selectedStaffMap.delete(userId);
-                renderSelectedStaff();
-            });
-
-            staffModeBtn.addEventListener('click', function() {
-                setMode('staff');
-            });
-
-            externalModeBtn.addEventListener('click', function() {
-                setMode('external');
-            });
-
-            registerForm.addEventListener('submit', function(e) {
-                if (registerModeInput.value === 'staff' && selectedStaffMap.size === 0) {
-                    e.preventDefault();
-                    alert('Please select at least one staff member.');
-                    return;
-                }
-
-                if (registerModeInput.value === 'external' && !externalNameField.value.trim()) {
-                    e.preventDefault();
-                    alert('Please fill in external participant name.');
-                }
-            });
-
-            setMode('staff');
-
-            // ── QR Email Blast ───────────────────────────────────────────
-            const selectAllChk   = document.getElementById('selectAllChk');
-            const sendQrBlastBtn = document.getElementById('sendQrBlastBtn');
-            const blastCountEl   = document.getElementById('blastCount');
+                return nodes;
+            }
 
             function getCheckedBoxes() {
-                // Must collect from ALL pages, not just the currently visible page
-                const source = table
-                    ? Array.from(table.rows().nodes()).map(function(n){ return n.querySelector('.reg-chk'); }).filter(Boolean)
-                    : Array.from(document.querySelectorAll('.reg-chk'));
-                return source.filter(function(c){ return c.checked; });
+                return getAllChkNodes().filter(function (c) { return c.checked; });
             }
 
-            function updateBlastToolbar() {
-                const checked = getCheckedBoxes();
-                if (checked.length > 0) {
-                    sendQrBlastBtn.classList.remove('d-none');
-                    blastCountEl.textContent = checked.length;
-                } else {
-                    sendQrBlastBtn.classList.add('d-none');
-                    blastCountEl.textContent = '0';
-                }
-            }
-
-            if (selectAllChk) {
-                selectAllChk.addEventListener('change', function () {
-                    // Check/uncheck ALL rows in ALL pages, not just visible ones
-                    document.querySelectorAll('.reg-chk').forEach(function (chk) {
-                        chk.checked = selectAllChk.checked;
-                    });
-                    // If DataTables is active, also update rows on other pages via API
-                    if (table) {
-                        table.rows().nodes().each(function (node) {
-                            const chk = node.querySelector('.reg-chk');
-                            if (chk) chk.checked = selectAllChk.checked;
+            // Per-table select-all checkboxes
+            document.querySelectorAll('.tab-select-all').forEach(function (chk) {
+                chk.addEventListener('change', function () {
+                    const tableId = this.dataset.table;
+                    const t = tableId === 'sirimTable' ? tableS : tableE;
+                    if (t) {
+                        t.rows().nodes().each(function (node) {
+                            const c = node.querySelector('.reg-chk');
+                            if (c) c.checked = chk.checked;
                         });
+                    } else {
+                        document.querySelectorAll('#' + tableId + ' .reg-chk').forEach(function (c) { c.checked = chk.checked; });
                     }
-                    updateBlastToolbar();
-                    const checked2 = getCheckedBoxes();
-                    deleteSelectedBtn && deleteSelectedBtn.classList.toggle('d-none', checked2.length === 0);
-                    if (deleteCountEl) deleteCountEl.textContent = checked2.length;
+                    updateAllToolbars();
                 });
-            }
+            });
 
             document.addEventListener('change', function (e) {
                 if (!e.target.classList.contains('reg-chk')) return;
-                // Count ALL rows across all pages
-                const allChks     = table
-                    ? Array.from(table.rows().nodes()).map(function(n){ return n.querySelector('.reg-chk'); }).filter(Boolean)
-                    : Array.from(document.querySelectorAll('.reg-chk'));
-                const checkedChks = allChks.filter(function(c){ return c.checked; });
-                if (selectAllChk) {
-                    selectAllChk.checked       = allChks.length > 0 && allChks.length === checkedChks.length;
-                    selectAllChk.indeterminate = checkedChks.length > 0 && checkedChks.length < allChks.length;
-                }
-                updateBlastToolbar();
-                deleteSelectedBtn && deleteSelectedBtn.classList.toggle('d-none', checkedChks.length === 0);
-                if (deleteCountEl) deleteCountEl.textContent = checkedChks.length;
+                updateAllToolbars();
             });
 
-            // ── Delete Participants ──────────────────────────────────────────
-            const deleteSelectedBtn   = document.getElementById('deleteSelectedBtn');
-            const deleteCountEl       = document.getElementById('deleteCount');
+            // ── Toolbar state ────────────────────────────────────────────
+            const sendQrBlastBtn = document.getElementById('sendQrBlastBtn');
+            const blastCountEl   = document.getElementById('blastCount');
+            const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+            const deleteCountEl  = document.getElementById('deleteCount');
+
+            function updateAllToolbars() {
+                const n = getCheckedBoxes().length;
+                if (sendQrBlastBtn) sendQrBlastBtn.classList.toggle('d-none', n === 0);
+                if (blastCountEl) blastCountEl.textContent = n;
+                if (deleteSelectedBtn) deleteSelectedBtn.classList.toggle('d-none', n === 0);
+                if (deleteCountEl) deleteCountEl.textContent = n;
+            }
+
+            // ── Delete Participants ──────────────────────────────────────
             const deleteParticipantsModal = document.getElementById('deleteParticipantsModal') ? new bootstrap.Modal(document.getElementById('deleteParticipantsModal')) : null;
             const deleteModalCountEl  = document.getElementById('deleteModalCount');
             const confirmDeleteBtn    = document.getElementById('confirmDeleteBtn');
-
-            const origUpdateBlastToolbar = updateBlastToolbar;
-            function updateAllToolbars() {
-                origUpdateBlastToolbar();
-                const checked = getCheckedBoxes();
-                if (checked.length > 0) {
-                    deleteSelectedBtn && deleteSelectedBtn.classList.remove('d-none');
-                    if (deleteCountEl) deleteCountEl.textContent = checked.length;
-                } else {
-                    deleteSelectedBtn && deleteSelectedBtn.classList.add('d-none');
-                    if (deleteCountEl) deleteCountEl.textContent = '0';
-                }
-            }
 
             if (deleteSelectedBtn) {
                 deleteSelectedBtn.addEventListener('click', function () {
@@ -900,41 +991,28 @@ unset($_SESSION['msg']);
                 confirmDeleteBtn.addEventListener('click', function () {
                     const checked = getCheckedBoxes();
                     if (checked.length === 0) return;
-
                     confirmDeleteBtn.disabled = true;
                     confirmDeleteBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Deleting…';
-
                     const formData = new FormData();
                     formData.append('event_id', <?= json_encode($eventId) ?>);
-                    checked.forEach(function (chk) {
-                        formData.append('registration_ids[]', chk.dataset.id);
-                    });
-
-                    fetch('../../api/delete-participants.php', {
-                        method: 'POST',
-                        body: formData,
-                        credentials: 'same-origin'
-                    })
-                    .then(function (res) { return res.json(); })
-                    .then(function (data) {
-                        if (deleteParticipantsModal) deleteParticipantsModal.hide();
-                        if (data.success) {
-                            window.location.reload();
-                        } else {
-                            alert('Delete failed: ' + (data.message || 'Unknown error'));
-                        }
-                    })
-                    .catch(function (err) {
-                        alert('Request failed: ' + err.message);
-                    })
-                    .finally(function () {
-                        confirmDeleteBtn.disabled = false;
-                        confirmDeleteBtn.innerHTML = '<i class="bi bi-trash me-1"></i>Delete';
-                    });
+                    checked.forEach(function (chk) { formData.append('registration_ids[]', chk.dataset.id); });
+                    fetch('../../api/delete-participants.php', { method: 'POST', body: formData, credentials: 'same-origin' })
+                        .then(function (res) { return res.json(); })
+                        .then(function (data) {
+                            if (deleteParticipantsModal) deleteParticipantsModal.hide();
+                            if (data.success) window.location.reload();
+                            else alert('Delete failed: ' + (data.message || 'Unknown error'));
+                        })
+                        .catch(function (err) { alert('Request failed: ' + err.message); })
+                        .finally(function () {
+                            confirmDeleteBtn.disabled = false;
+                            confirmDeleteBtn.innerHTML = '<i class="bi bi-trash me-1"></i>Delete';
+                        });
                 });
             }
 
-            const qrBlastModal    = document.getElementById('qrBlastModal')    ? new bootstrap.Modal(document.getElementById('qrBlastModal'))    : null;
+            // ── QR Blast ─────────────────────────────────────────────────
+            const qrBlastModal    = document.getElementById('qrBlastModal') ? new bootstrap.Modal(document.getElementById('qrBlastModal')) : null;
             const qrBlastSendBtn  = document.getElementById('qrBlastSendBtn');
             const blastRecipient  = document.getElementById('blastRecipientCount');
             const blastWarning    = document.getElementById('blastNoEmailWarning');
@@ -944,9 +1022,7 @@ unset($_SESSION['msg']);
                 sendQrBlastBtn.addEventListener('click', function () {
                     const checked = getCheckedBoxes();
                     if (checked.length === 0) return;
-
                     const withoutEmail = checked.filter(function (c) { return !c.dataset.email || c.dataset.email === '-' || c.dataset.email === ''; }).length;
-
                     if (blastRecipient) blastRecipient.textContent = checked.length;
                     if (blastWarning) {
                         if (withoutEmail > 0) {
@@ -961,7 +1037,6 @@ unset($_SESSION['msg']);
                     if (blastAgenda) blastAgenda.value = '';
                     const blastAgendaError = document.getElementById('blastAgendaError');
                     if (blastAgendaError) blastAgendaError.style.display = 'none';
-
                     if (qrBlastModal) qrBlastModal.show();
                 });
             }
@@ -970,14 +1045,11 @@ unset($_SESSION['msg']);
                 qrBlastSendBtn.addEventListener('click', function () {
                     const checked = getCheckedBoxes();
                     if (checked.length === 0) return;
-
                     qrBlastSendBtn.disabled = true;
                     qrBlastSendBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Sending…';
-
                     const formData = new FormData();
                     formData.append('event_id', <?= json_encode($eventId) ?>);
                     formData.append('instructions', blastInstructions ? blastInstructions.value : '');
-
                     const blastAgendaFile = document.getElementById('blastAgenda');
                     if (blastAgendaFile && blastAgendaFile.files[0]) {
                         const agendaFile = blastAgendaFile.files[0];
@@ -998,36 +1070,22 @@ unset($_SESSION['msg']);
                         if (agendaError) agendaError.style.display = 'none';
                         formData.append('agenda', agendaFile);
                     }
-
-                    checked.forEach(function (chk) {
-                        formData.append('registration_ids[]', chk.dataset.id);
-                    });
-
-                    fetch('../../api/send-qr-blast.php', {
-                        method: 'POST',
-                        body: formData,
-                        credentials: 'same-origin'
-                    })
-                    .then(function (res) { return res.json(); })
-                    .then(function (data) {
-                        if (qrBlastModal) qrBlastModal.hide();
-                        let msg = 'Sent: ' + data.sent + '  |  Failed: ' + data.failed;
-                        if (data.errors && data.errors.length > 0) {
-                            msg += '\n\nDetails:\n' + data.errors.map(function (e) {
-                                return '• ' + e.id + ': ' + e.reason;
-                            }).join('\n');
-                        }
-                        alert(msg);
-                    })
-                    .catch(function (err) {
-                        alert('Request failed: ' + err.message);
-                    })
-                    .finally(function () {
-                        qrBlastSendBtn.disabled = false;
-                        qrBlastSendBtn.innerHTML = '<i class="bi bi-send me-1"></i>Send Email';
-                        sendQrBlastBtn.innerHTML = '<i class="bi bi-envelope-fill me-1"></i>Send QR Email (<span id="blastCount">' + getCheckedBoxes().length + '</span>)';
-                        blastCountEl && (blastCountEl.textContent = getCheckedBoxes().length);
-                    });
+                    checked.forEach(function (chk) { formData.append('registration_ids[]', chk.dataset.id); });
+                    fetch('../../api/send-qr-blast.php', { method: 'POST', body: formData, credentials: 'same-origin' })
+                        .then(function (res) { return res.json(); })
+                        .then(function (data) {
+                            if (qrBlastModal) qrBlastModal.hide();
+                            let msg = 'Sent: ' + data.sent + '  |  Failed: ' + data.failed;
+                            if (data.errors && data.errors.length > 0) {
+                                msg += '\n\nDetails:\n' + data.errors.map(function (e) { return '• ' + e.id + ': ' + e.reason; }).join('\n');
+                            }
+                            alert(msg);
+                        })
+                        .catch(function (err) { alert('Request failed: ' + err.message); })
+                        .finally(function () {
+                            qrBlastSendBtn.disabled = false;
+                            qrBlastSendBtn.innerHTML = '<i class="bi bi-send me-1"></i>Send Email';
+                        });
                 });
             }
         });

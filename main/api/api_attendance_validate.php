@@ -36,9 +36,14 @@ $stmt = $conn->prepare("
         e.event_startDate,
         e.event_endDate,
         e.event_status,
-        e.event_owner_id
+        e.event_owner_id,
+        COALESCE(NULLIF(u.nama, ''), NULLIF(r.walkin_name, ''), '-') AS participant_name,
+        COALESCE(NULLIF(u.email, ''), NULLIF(r.walkin_email, ''), '-') AS participant_email,
+        COALESCE(NULLIF(p.participant_company, ''), NULLIF(r.walkin_company, ''), '-') AS participant_company
     FROM att_registration r
     JOIN att_event e ON e.event_id = r.event_id
+    LEFT JOIN user u ON u.userId = r.participant_id
+    LEFT JOIN att_participant p ON p.participant_id = r.participant_id
     WHERE r.registration_id = ?
     LIMIT 1
 ");
@@ -132,11 +137,13 @@ $insert->bind_param("ssss", $nextId, $reg['registration_id'], $reg['event_id'], 
 
 if ($insert->execute()) {
     respond('success', 'Attendance recorded successfully', [
-        'attendance_id'   => $nextId,
-        'registration_id' => $reg['registration_id'],
-        'event_id'        => $reg['event_id'],
-        'event_name'      => $reg['event_name'],
-        'check_in_time'   => date('Y-m-d H:i:s', $now->getTimestamp())
+        'registration_id'    => $reg['registration_id'],
+        'event_id'           => $reg['event_id'],
+        'event_name'         => $reg['event_name'],
+        'participant_name'   => $reg['participant_name'],
+        'participant_email'  => $reg['participant_email'],
+        'participant_company'=> $reg['participant_company'],
+        'check_in_time'      => date('Y-m-d H:i:s', $now->getTimestamp())
     ]);
 }
 

@@ -10,6 +10,9 @@ $event = null;
 $error = null;
 $success = null;
 $registrationId = null;
+$walkinTypeRaw = isset($_GET['type']) ? trim($_GET['type']) : (isset($_POST['type']) ? trim($_POST['type']) : null);
+$walkinType = in_array($walkinTypeRaw, ['external', 'sirim'], true) ? $walkinTypeRaw : null;
+$registrationSource = $walkinType === 'sirim' ? 'walk_in_sirim' : 'walk_in';
 if ($eventId === '') {
     $error = 'Invalid event.';
 } else {
@@ -31,7 +34,7 @@ if ($eventId === '') {
 
 $isEventCurrent = $event && (($event['event_status'] ?? '') === 'Current');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error && $walkinType !== null) {
     if (!$isEventCurrent) {
         $error = 'Walk-in is only allowed while the event is ongoing.';
     } else {
@@ -55,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                     SELECT registration_id
                     FROM att_registration
                     WHERE event_id = ?
-                      AND registration_source = 'walk_in'
+                      AND registration_source = ?
                       AND (
                         (? <> '' AND walkin_email = ?)
                         OR
@@ -66,13 +69,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
 
                 $dupStmt = $conn->prepare($dupSql);
                 if ($dupStmt) {
-                    $dupStmt->bind_param("sssss", $eventId, $walkinEmail, $walkinEmail, $walkinPhone, $walkinPhone);
+                    $dupStmt->bind_param("ssssss", $eventId, $registrationSource, $walkinEmail, $walkinEmail, $walkinPhone, $walkinPhone);
                     $dupStmt->execute();
                     $dupRes = $dupStmt->get_result();
                     if ($dupRes && $dupRes->num_rows > 0) {
                         $existing = $dupRes->fetch_assoc();
                         $registrationId = $existing['registration_id'];
-                        $success = 'Anda sudah berdaftar sebagai walk-in untuk event ini.';
+                        $success = 'This email has successfully registered on this event.';
                     }
                     $dupStmt->close();
                 }
@@ -101,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
             $insertSql = "
                 INSERT INTO att_registration
                     (registration_id, event_id, participant_id, registration_source, walkin_name, walkin_email, walkin_phone, walkin_company)
-                VALUES (?, ?, ?, 'walk_in', ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ";
 
             $insertStmt = $conn->prepare($insertSql);
@@ -109,10 +112,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                 $error = 'Server error while registering walk-in.';
             } else {
                 $insertStmt->bind_param(
-                    "sssssss",
+                    "ssssssss",
                     $newCode,
                     $eventId,
                     $walkinParticipantId,
+                    $registrationSource,
                     $walkinName,
                     $walkinEmail,
                     $walkinPhone,
@@ -165,7 +169,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
     <div class="container py-8" style="max-width: 780px;">
         <div class="card shadow-sm">
             <div class="card-body p-6">
-                <h2 class="fw-bold mb-2">Walk-in Registration</h2>
+                <h2 class="fw-bold mb-2">
+                    <?php if ($walkinType === 'sirim'): ?>SIRIM Staff Walk-in Registration
+                    <?php elseif ($walkinType === 'external'): ?>Walk-in Registration (External)
+                    <?php else: ?>Walk-in Registration<?php endif; ?>
+                </h2>
                 <br>
                 <?php if ($event): ?>
                     <div class="text-muted mb-4">
@@ -217,37 +225,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                     <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
                 <?php endif; ?>
 
-                <?php if ($registrationId): ?>
-                    <div class="text-center mb-5">
-                        <div class="fw-bold mb-2">Registration ID: <?= htmlspecialchars($registrationId) ?></div>
+                <?php if ($event && $isEventCurrent && $walkinType === null): ?>
+                    <p class="text-muted mb-4">Please select your participant type to continue:</p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="?event=<?= urlencode($eventId) ?>&type=external" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-person me-2"></i>External Participant
+                        </a>
+                        <a href="?event=<?= urlencode($eventId) ?>&type=sirim" class="btn btn-secondary btn-lg px-5">
+                            <i class="bi bi-building me-2"></i>SIRIM Staff
+                        </a>
                     </div>
-                <?php endif; ?>
-
-                <?php if ($event && $isEventCurrent): ?>
+                <?php elseif ($event && $isEventCurrent && $walkinType !== null): ?>
+                    <?php if ($walkinType === 'sirim'): ?>
+                        <div class="alert alert-info py-2 small mb-3"><i class="bi bi-info-circle me-1"></i>For SIRIM staff only. Please enter your details below.</div>
+                    <?php endif; ?>
                     <form method="POST" class="row g-3">
                         <input type="hidden" name="event" value="<?= htmlspecialchars($eventId) ?>">
+                        <input type="hidden" name="type" value="<?= htmlspecialchars($walkinType) ?>">
                         <div class="col-12">
-                            <label class="form-label">Name <span class="text-danger">*</span></label>
+                            <label class="form-label"><?= $walkinType === 'sirim' ? 'Full Name' : 'Name' ?> <span class="text-danger">*</span></label>
                             <input type="text" name="walkin_name" class="form-control" required>
                         </div>
+                        <?php if ($walkinType === 'sirim'): ?>
+                        <div class="col-12">
+                            <label class="form-label">Department / Section</label>
+                            <input type="text" name="walkin_company" class="form-control">
+                        </div>
+                        <?php endif; ?>
                         <div class="col-md-6">
                             <label class="form-label">Email</label>
                             <input type="email" name="walkin_email" class="form-control">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Phone Number</label>
+                            <label class="form-label"><?= $walkinType === 'sirim' ? 'Contact Number' : 'Phone Number' ?></label>
                             <input type="text" name="walkin_phone" class="form-control">
                         </div>
+                        <?php if ($walkinType !== 'sirim'): ?>
                         <div class="col-12">
                             <label class="form-label">Company</label>
                             <input type="text" name="walkin_company" class="form-control">
                         </div>
+                        <?php endif; ?>
                         <div class="col-12 d-flex gap-2 mt-2">
-                            <button type="submit" class="btn btn-primary">Register Walk-in</button>
-                            <a href="/sirimace" class="btn btn-light border">Back</a>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <a href="?event=<?= urlencode($eventId) ?>" class="btn btn-light border">Back</a>
                         </div>
                     </form>
-                <?php elseif ($event): ?>
+                <?php elseif ($event && !$isEventCurrent): ?>
                     <div class="alert alert-warning mb-0">Walk-in is only available when the event is started.</div>
                 <?php endif; ?>
             </div>

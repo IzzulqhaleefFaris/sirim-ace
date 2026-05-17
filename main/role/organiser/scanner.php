@@ -142,8 +142,14 @@ require_manage_events();
                 if (details.event_name) {
                     html += '<div class="small"><strong>Event:</strong> ' + details.event_name + '</div>';
                 }
-                if (details.attendance_id) {
-                    html += '<div class="small"><strong>Attendance ID:</strong> ' + details.attendance_id + '</div>';
+                if (details.participant_name) {
+                    html += '<div class="small"><strong>Name:</strong> ' + details.participant_name + '</div>';
+                }
+                if (details.participant_company) {
+                    html += '<div class="small"><strong>Company:</strong> ' + details.participant_company + '</div>';
+                }
+                if (details.participant_email) {
+                    html += '<div class="small"><strong>Email:</strong> ' + details.participant_email + '</div>';
                 }
                 if (details.check_in_time) {
                     html += '<div class="small"><strong>Check-in Time:</strong> ' + details.check_in_time + '</div>';
@@ -218,7 +224,9 @@ require_manage_events();
 
                     showResult('success', data.message || 'Attendance recorded successfully!', {
                         event_name: data.event_name,
-                        attendance_id: data.attendance_id,
+                        participant_name: data.participant_name,
+                        participant_company: data.participant_company,
+                        participant_email: data.participant_email,
                         check_in_time: data.check_in_time
                     });
                 } else {
