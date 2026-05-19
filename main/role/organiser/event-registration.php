@@ -311,8 +311,12 @@ unset($_SESSION['msg']);
                                         <i class="bi bi-qr-code me-1"></i>Walk-in QR
                                     </button>
                                     <a class="btn btn-success"
-                                        href="event-registrations-export.php?id=<?= urlencode($eventId) ?>">
-                                        <i class="bi bi-download me-1"></i>Export CSV (Excel)
+                                        href="event-registrations-export.php?id=<?= urlencode($eventId) ?>&type=sirim">
+                                        <i class="bi bi-download me-1"></i>Export SIRIM CSV
+                                    </a>
+                                    <a class="btn btn-outline-success"
+                                        href="event-registrations-export.php?id=<?= urlencode($eventId) ?>&type=external">
+                                        <i class="bi bi-download me-1"></i>Export External CSV
                                     </a>
                                     <a class="btn btn-secondary"
                                         href="email-log.php?event_id=<?= urlencode($eventId) ?>">

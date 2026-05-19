@@ -11,6 +11,7 @@ updateEventStatuses($conn);
 
 $eventId = trim($_GET['id'] ?? '');
 $filter = trim($_GET['filter'] ?? ''); // Registered|Present|Absent|''(all)
+$type   = trim($_GET['type']   ?? ''); // sirim|external|''(all)
 
 if ($eventId === '') {
     http_response_code(400);
@@ -67,7 +68,8 @@ while (ob_get_level() > 0) {
 }
 
 // CSV headers (Excel-friendly)
-$filename = 'event_' . preg_replace('/[^A-Za-z0-9_-]/', '_', $eventId) . '_registrations.csv';
+$typeSuffix = ($type === 'sirim') ? '_sirim' : (($type === 'external') ? '_external' : '');
+$filename = 'event_' . preg_replace('/[^A-Za-z0-9_-]/', '_', $eventId) . '_registrations' . $typeSuffix . '.csv';
 header('Content-Type: text/csv; charset=utf-8');
 header('Content-Disposition: attachment; filename="' . $filename . '"');
 
@@ -97,6 +99,11 @@ if ($res) {
         if ($filter !== '' && $status !== $filter) {
             continue;
         }
+
+        // Filter by participant type: sirim = account/walk_in_sirim, external = walk_in
+        $isSirim = ($row['registration_source'] ?? 'account') !== 'walk_in';
+        if ($type === 'sirim' && !$isSirim) continue;
+        if ($type === 'external' && $isSirim) continue;
 
         // Normalize null values
         $registrationId = $row['registration_id'] ?? '';
